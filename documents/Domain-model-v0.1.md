@@ -9,9 +9,7 @@ skinparam classAttributeIconSize 0
 skinparam linetype ortho
 skinparam packageStyle rectangle
 
-' ==============================
 '         DOMAIN LAYER
-' ==============================
 
 package "Model" {
 
@@ -68,9 +66,7 @@ package "Model" {
     MusicPlayer -- "1" Song : plays
 }
 
-' ==============================
 '        PRESENTATION LAYER
-' ==============================
 
 package "Controllers" {
 
@@ -92,9 +88,7 @@ package "Views" {
     class PlaylistView
 }
 
-' ==============================
 '         MVC LINKS
-' ==============================
 
 ' ---- Player MVC ----
 MusicPlayerController -- MusicPlayer
