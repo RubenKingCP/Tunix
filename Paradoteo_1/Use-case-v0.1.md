@@ -27,6 +27,7 @@ rectangle "Music Platform System" {
   Basic_User -- (Apply For Artist)
   
  rectangle "Premium"{
+  Basic_User -- (Manage Premium Subscription)
   Basic_User -- (Purchase Premium)
   Basic_User -- (Try Premium)
   
@@ -90,14 +91,16 @@ rectangle "Notifications Loop" {
   (Premium_User) --> (General_User)
   
   (Recieve Monetization) <.. (Purchase Premium) : <<include>>
+  (Manage Premium Subscription) ..> (Try Premium) : <<extend>>
+  (Try Premium) <.. (Purchase Premium) : <<extend>>
   (Auto-Renew Premium) ..> (Purchase Premium) : <<include>>
-
+  (Cancel Premium) ..> (Manage Premium Subscription) : <<extend>>
 }
 
 @enduml
 
 [Εικόνα]
-![alt text](Use-case-v0.1.png)
+![alt text](Paradoteo_1/Use-case-v0.1.png)
 
 # Επεξήγηση των Use Cases
 
