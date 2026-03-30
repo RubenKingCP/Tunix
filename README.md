@@ -1,3 +1,3 @@
-# Namify (Placeholder name)
+# Tunix
 
 An open source music listening platform
