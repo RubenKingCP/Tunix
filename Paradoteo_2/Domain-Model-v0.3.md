@@ -1,73 +1,71 @@
 @startuml
-title Music Streaming Application - Improved UML
+title Music Streaming Application - Spring JPA Architecture (with Admin)
 
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 skinparam packageStyle rectangle
 
-'         DOMAIN LAYER
+' =====================
+' DOMAIN LAYER (ENTITIES)
+' =====================
 
-package "Model" {
+package "Model (Entities)" {
 
-    ' ---- Accounts ----
+    ' -------- ACCOUNT HIERARCHY --------
     abstract class Account
-    class UserAccount
-    class ArtistAccount
-    class CuratorAccount
+    class User
+    class Artist
+    class Admin
 
-    Account <|-- UserAccount
-    UserAccount <|-- ArtistAccount
-    Account <|-- CuratorAccount
+    Account <|-- User
+    Account <|-- Artist
+    Account <|-- Admin
 
-
-    ' ---- Music Assets ----
-    abstract class MusicAsset
-    
-    class Album
-    class Playlist
+    ' -------- MUSIC CORE --------
     class Song
+    class Album
     class Genre
 
-    MusicAsset <|-- ArtistAccount
-    MusicAsset <|-- Album
-    MusicAsset <|-- Playlist
-    MusicAsset <|-- Song  
+    Artist "1" --> "0..*" Song : creates
+    Artist "1" --> "0..*" Album : creates
 
+    Album "1" *-- "1..*" Song
 
-    ' ---- Relationships ----
+    Song "0..*" -- "0..*" Genre
 
-    ' A Song belongs to ONE Artist and ONE Genre
-    Song -- ArtistAccount
-    Song -- Genre
+    ' -------- PLAYLIST SYSTEM --------
+    class Playlist
 
-    ' An Album is created by ONE Artist
-    Album -- ArtistAccount
+    User "1" --> "0..*" Playlist : owns
+    Playlist "0..*" -- "0..*" Song
 
-    ' Album contains Songs (strong ownership)
-    Album *-- "1..*" Song
-
-    ' Playlist contains Songs (not ownership — songs can exist without playlist)
-    Playlist o-- "0..*" Song
-
-    ' User owns a Library
+    ' -------- LIBRARY --------
     class Library
 
-    UserAccount "1" *-- "1" Library
+    User "1" *-- "1" Library
 
-    ' Library contains different music assets
-    Library o-- "0..*" MusicAsset
+    Library "0..*" --> Song
+    Library "0..*" --> Album
+    Library "0..*" --> Playlist
 
-    ' ---- Music Player ----
+    ' -------- LISTENING HISTORY --------
+    class ListeningHistory
+
+    User "1" --> "0..*" ListeningHistory
+    ListeningHistory --> Song
+
+    ' -------- PLAYER --------
     class MusicPlayer
-    MusicPlayer -- "1" Song : plays
+    MusicPlayer --> Song
 }
 
-'        PRESENTATION LAYER
+' =====================
+' PRESENTATION LAYER
+' =====================
 
-package "Controllers" {
+package "Controllers (UI)" {
 
     class MainController
-
     class MusicPlayerController
     class HomeController
     class LibraryController
@@ -83,92 +81,105 @@ package "Views" {
     class PlaylistView
 }
 
-'         MVC LINKS
-
-' ---- Player MVC ----
+' UI links
 MusicPlayerController -- MusicPlayer
 MusicPlayerView -- MusicPlayerController
 MainController -- MusicPlayerController
 
-' ---- Home MVC ----
 HomeView -- HomeController
 MainController -- HomeController
 
-' ---- Library MVC ----
 LibraryView -- LibraryController
 MainController -- LibraryController
 
-' ---- Playlist MVC ----
 PlaylistView -- PlaylistController
 PlaylistController -- MainController
 
-' ---- Top Bar MVC ----
 TopBarView -- TopBarController
-MainController -- TopBarController
-
-' ---- Main Controller interacts with current Account ----
 MainController -- Account
 
+' =====================
+' SPRING BACKEND
+' =====================
 
+package "Spring Backend" {
 
-package "Repository"{
-    ' Makes the connection with the server
-    class SocketClient
-    class ClientMessageDispatcher
-    class ClientMessageReceiver
-    'Messages the client can send to the server
-    interface ClientMessage
-    class FetchSong
-    class FetchPlaylist
-    class FetchArtist
-    class Authenticate
-    class AddSong
-   
+    ' Controllers (REST)
+    class AccountController
+    class UserController
+    class ArtistController
+    class AdminController
+    class SongController
+    class AlbumController
+    class PlaylistControllerAPI
+    class LibraryControllerAPI
+    class GenreController
+    class ListeningHistoryController
+
+    ' Services
+    class AccountService
+    class UserService
+    class ArtistService
+    class AdminService
+    class SongService
+    class AlbumService
+    class PlaylistService
+    class LibraryService
+    class GenreService
+    class ListeningHistoryService
+
+    ' Repositories (JPA)
+    class AccountRepository
+    class UserRepository
+    class ArtistRepository
+    class AdminRepository
+    class SongRepository
+    class AlbumRepository
+    class PlaylistRepository
+    class LibraryRepository
+    class GenreRepository
+    class ListeningHistoryRepository
 }
 
+' Controller → Service
+AccountController --> AccountService
+UserController --> UserService
+ArtistController --> ArtistService
+AdminController --> AdminService
+SongController --> SongService
+AlbumController --> AlbumService
+PlaylistControllerAPI --> PlaylistService
+LibraryControllerAPI --> LibraryService
+GenreController --> GenreService
+ListeningHistoryController --> ListeningHistoryService
 
+' Service → Repository
+AccountService --> AccountRepository
+UserService --> UserRepository
+ArtistService --> ArtistRepository
+AdminService --> AdminRepository
+SongService --> SongRepository
+AlbumService --> AlbumRepository
+PlaylistService --> PlaylistRepository
+LibraryService --> LibraryRepository
+GenreService --> GenreRepository
+ListeningHistoryService --> ListeningHistoryRepository
 
-ClientMessageReceiver --o ClientMessage
-ClientMessageDispatcher --o ClientMessage
-MainController -- SocketClient
-SocketClient -- Account
-SocketClient -- ClientMessageDispatcher
-ClientMessageReceiver -- MainController
-ClientMessage <|-- FetchSong
-ClientMessage <|-- FetchPlaylist
-ClientMessage <|-- FetchArtist
-ClientMessage <|-- Authenticate
-ClientMessage <|-- AddSong
+' Repository → Entities
+AccountRepository --> Account
+UserRepository --> User
+ArtistRepository --> Artist
+AdminRepository --> Admin
+SongRepository --> Song
+AlbumRepository --> Album
+PlaylistRepository --> Playlist
+LibraryRepository --> Library
+GenreRepository --> Genre
+ListeningHistoryRepository --> ListeningHistory
 
-'---- Server Side ----
-package "Database_Server"{
-    class DataBaseConnection
-    class ServerSocket
-    'ServerConsole only manages the server (starting or stopping it)
-    class ServerConsole
-    class ServerMessageDispatcher
-    class ServerMessageReceiver
-    interface ServerMessage
-    class SendSong
-    class SendPlaylist
-    class SendArtist
-    class ValidateAuth
-    class ValidateSong
-}
-
-ServerMessage <|-- SendSong
-ServerMessage <|-- SendPlaylist
-ServerMessage <|-- SendArtist
-ServerMessage <|-- ValidateAuth
-ServerMessage <|-- ValidateSong
-ServerConsole -- DataBaseConnection
-ServerConsole -- ServerSocket
-ServerSocket -- ServerMessageReceiver
-ServerSocket -- ServerMessageDispatcher
-ServerMessageDispatcher -- DataBaseConnection
-ServerMessage -- DataBaseConnection
-ServerMessage -- ClientMessageReceiver
-ClientMessage -- ServerMessageReceiver
-
+PlaylistController -- Playlist
+LibraryController -- Library
+Library -- LibraryControllerAPI
+Playlist -- PlaylistControllerAPI
 
 @enduml

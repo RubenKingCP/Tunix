@@ -1,0 +1,11 @@
+@startuml name
+
+title  Επιλογή Λίστας Αναπαραγωγής
+
+actor User
+participant PlaylistController
+participant MainController
+participant PlaylistView
+
+
+@enduml
