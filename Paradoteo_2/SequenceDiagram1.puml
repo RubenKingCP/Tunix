@@ -28,28 +28,46 @@ activate PlaylistController
 PlaylistController -> Playlist : requestPlaylists()
 activate Playlist
 'async Διότι μπορεί να παίζει ήδη κάποιο playlist και να μην χρειάζεται να αναβληθεί η αναπαραγωγή των τραγουδιών για να κάνει fetch τα άλλα playlists
+
 Playlist ->> PlaylistControllerAPI : sendHTTPrequest()
+activate PlaylistControllerAPI
 PlaylistControllerAPI ->> PlaylistService : proccessHTTPRequest()
+activate PlaylistService
 PlaylistService ->> PlaylistRepository : runQuery()
+activate PlaylistRepository
 PlaylistRepository --> PlaylistService : return results
+deactivate PlaylistRepository
 PlaylistService --> PlaylistControllerAPI : return results
+deactivate PlaylistService
 PlaylistControllerAPI --> Playlist : return results
+deactivate PlaylistControllerAPI
 Playlist --> PlaylistController : return Playlists
+deactivate Playlist
 alt Playlists != null
     PlaylistController -> PlaylistView : showPlaylists()
     activate PlaylistView
     User -> PlaylistView : selectPlaylist()
     PlaylistView -> PlaylistController : getPlaylistSongs()
-    PlaylistController -> Song : getSongs()
+    PlaylistController -> Playlist : getSongs()
+    activate Playlist
+    Playlist -> Song : getSongs()
     activate Song
     Song ->> SongControllerAPI : sendHTTPRequest()
+    activate SongControllerAPI
     SongControllerAPI ->> SongService : processHTTPRequest()
+    activate SongService
     SongService ->> SongRepository : runQuery()
+    activate SongRepository
     SongRepository --> SongService : return Songs
+    deactivate SongRepository
     SongService --> SongControllerAPI : return Songs
+    deactivate SongService
     SongControllerAPI --> Song : return Songs
+    deactivate SongControllerAPI
     Song --> Playlist : return Songs
+    deactivate Song
     Playlist --> PlaylistController : return Songs
+    deactivate Playlist
     alt Songs =! null
         PlaylistController -> PlaylistView : showSelectedPlaylist()
     else Songs == null
