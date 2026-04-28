@@ -146,6 +146,11 @@ AccountControllerAPI -- Account
 UserControllerAPI -- User
 AdminControllerAPI -- Admin
 AccountControllerAPI -- AccountService
+ArtistControllerAPI -- Artist
+AlbumControllerAPI -- Album
+GenreControllerAPI -- Genre
+SongControllerAPI -- Song
+ListeningHistoryControllerAPI -- ListeningHistory
 UserControllerAPI -- UserService
 ArtistControllerAPI -- ArtistService
 AdminControllerAPI -- AdminService

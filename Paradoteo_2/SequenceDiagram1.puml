@@ -3,23 +3,43 @@
 title  Επιλογή Λίστας Αναπαραγωγής
 
 actor User
-
+participant HomeView
+participant HomeController
 participant PlaylistView
 participant PlaylistController
 participant Playlist
+participant Song
+participant SongControllerAPI
+participant SongService
+participant SongRepository
 participant PlaylistControllerAPI
 participant PlaylistService
 participant PlaylistRepository
-
+activate HomeController
+HomeController -> HomeView : display()
+activate HomeView
+User -> HomeView : showPlaylists()
+HomeView -> HomeController : showPlaylist()
+deactivate HomeView
+HomeController -> PlaylistController : getPlaylists()
+deactivate HomeController
 activate PlaylistController
-PlaylistController -> PlaylistView : display()
-activate PlaylistView
-User -> PlaylistView : showPlaylists()
-PlaylistView -> PlaylistController : fetchPlaylists()
-deactivate PlaylistView
+
 PlaylistController -> Playlist : requestPlaylists()
 activate Playlist
 Playlist ->> PlaylistControllerAPI : sendHTTPrequest()
-PlaylistControllerAPI ->> PlaylistService : 
+PlaylistControllerAPI ->> PlaylistService : proccessHTTPRequest()
+PlaylistService ->> PlaylistRepository : runQuery()
+PlaylistRepository --> PlaylistService : return results
+PlaylistService --> PlaylistControllerAPI : return results
+PlaylistControllerAPI --> Playlist : return results
+Playlist --> PlaylistController : return Playlists
+PlaylistController -> PlaylistView : showPlaylists()
+activate PlaylistView
+User -> PlaylistView : selectPlaylist()
+PlaylistView -> PlaylistController : getPlaylistSongs()
+PlaylistController -> Song : getSongs()
+Song ->> SongControllerAPI : 
+
 
 @enduml
