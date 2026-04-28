@@ -35,20 +35,29 @@ PlaylistRepository --> PlaylistService : return results
 PlaylistService --> PlaylistControllerAPI : return results
 PlaylistControllerAPI --> Playlist : return results
 Playlist --> PlaylistController : return Playlists
-PlaylistController -> PlaylistView : showPlaylists()
-activate PlaylistView
-User -> PlaylistView : selectPlaylist()
-PlaylistView -> PlaylistController : getPlaylistSongs()
-PlaylistController -> Song : getSongs()
-activate Song
-Song ->> SongControllerAPI : sendHTTPRequest()
-SongControllerAPI ->> SongService : processHTTPRequest()
-SongService ->> SongRepository : runQuery()
-SongRepository --> SongService : return Songs
-SongService --> SongControllerAPI : return Songs
-SongControllerAPI --> Song : return Songs
-Song --> Playlist : return Songs
-Playlist --> PlaylistController : return Songs
-PlaylistController -> PlaylistView : showSelectedPlaylist()
-
+alt Playlists != null
+    PlaylistController -> PlaylistView : showPlaylists()
+    activate PlaylistView
+    User -> PlaylistView : selectPlaylist()
+    PlaylistView -> PlaylistController : getPlaylistSongs()
+    PlaylistController -> Song : getSongs()
+    activate Song
+    Song ->> SongControllerAPI : sendHTTPRequest()
+    SongControllerAPI ->> SongService : processHTTPRequest()
+    SongService ->> SongRepository : runQuery()
+    SongRepository --> SongService : return Songs
+    SongService --> SongControllerAPI : return Songs
+    SongControllerAPI --> Song : return Songs
+    Song --> Playlist : return Songs
+    Playlist --> PlaylistController : return Songs
+    alt Songs =! null
+        PlaylistController -> PlaylistView : showSelectedPlaylist()
+    else Songs == null
+        PlaylistController -> PlaylistView : showSelectedEmptyPlaylist()
+        User -> PlaylistView : addSong()
+    end
+else Playlists == null
+    PlaylistController -> PlaylistView : showPlaylistsScreen()
+    User -> PlaylistView : createPlaylist()
+end
 @enduml
