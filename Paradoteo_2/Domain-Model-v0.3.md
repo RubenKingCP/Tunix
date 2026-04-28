@@ -105,16 +105,16 @@ MainController -- Account
 package "Spring Backend" {
 
     ' Controllers (REST)
-    class AccountController
-    class UserController
-    class ArtistController
-    class AdminController
-    class SongController
-    class AlbumController
+    class AccountControllerAPI
+    class UserControllerAPI
+    class ArtistControllerAPI
+    class AdminControllerAPI
+    class SongControllerAPI
+    class AlbumControllerAPI
     class PlaylistControllerAPI
     class LibraryControllerAPI
-    class GenreController
-    class ListeningHistoryController
+    class GenreControllerAPI
+    class ListeningHistoryControllerAPI
 
     ' Services
     class AccountService
@@ -142,40 +142,33 @@ package "Spring Backend" {
 }
 
 ' Controller → Service
-AccountController --> AccountService
-UserController --> UserService
-ArtistController --> ArtistService
-AdminController --> AdminService
-SongController --> SongService
-AlbumController --> AlbumService
-PlaylistControllerAPI --> PlaylistService
-LibraryControllerAPI --> LibraryService
-GenreController --> GenreService
-ListeningHistoryController --> ListeningHistoryService
+AccountControllerAPI -- Account
+UserControllerAPI -- User
+AdminControllerAPI -- Admin
+AccountControllerAPI -- AccountService
+UserControllerAPI -- UserService
+ArtistControllerAPI -- ArtistService
+AdminControllerAPI -- AdminService
+SongControllerAPI -- SongService
+AlbumControllerAPI -- AlbumService
+PlaylistControllerAPI -- PlaylistService
+LibraryControllerAPI -- LibraryService
+GenreControllerAPI -- GenreService
+ListeningHistoryControllerAPI -- ListeningHistoryService
 
 ' Service → Repository
-AccountService --> AccountRepository
-UserService --> UserRepository
-ArtistService --> ArtistRepository
-AdminService --> AdminRepository
-SongService --> SongRepository
-AlbumService --> AlbumRepository
-PlaylistService --> PlaylistRepository
-LibraryService --> LibraryRepository
-GenreService --> GenreRepository
-ListeningHistoryService --> ListeningHistoryRepository
+AccountService -- AccountRepository
+UserService -- UserRepository
+ArtistService -- ArtistRepository
+AdminService -- AdminRepository
+SongService -- SongRepository
+AlbumService -- AlbumRepository
+PlaylistService -- PlaylistRepository
+LibraryService -- LibraryRepository
+GenreService -- GenreRepository
+ListeningHistoryService -- ListeningHistoryRepository
 
-' Repository → Entities
-AccountRepository --> Account
-UserRepository --> User
-ArtistRepository --> Artist
-AdminRepository --> Admin
-SongRepository --> Song
-AlbumRepository --> Album
-PlaylistRepository --> Playlist
-LibraryRepository --> Library
-GenreRepository --> Genre
-ListeningHistoryRepository --> ListeningHistory
+
 
 PlaylistController -- Playlist
 LibraryController -- Library

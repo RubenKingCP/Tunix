@@ -3,9 +3,23 @@
 title  Επιλογή Λίστας Αναπαραγωγής
 
 actor User
-participant PlaylistController
-participant MainController
-participant PlaylistView
 
+participant PlaylistView
+participant PlaylistController
+participant Playlist
+participant PlaylistControllerAPI
+participant PlaylistService
+participant PlaylistRepository
+
+activate PlaylistController
+PlaylistController -> PlaylistView : display()
+activate PlaylistView
+User -> PlaylistView : showPlaylists()
+PlaylistView -> PlaylistController : fetchPlaylists()
+deactivate PlaylistView
+PlaylistController -> Playlist : requestPlaylists()
+activate Playlist
+Playlist ->> PlaylistControllerAPI : sendHTTPrequest()
+PlaylistControllerAPI ->> PlaylistService : 
 
 @enduml
