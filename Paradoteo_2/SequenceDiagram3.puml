@@ -1,0 +1,57 @@
+@startuml name
+
+title Δημιουργία Λίστας Αναπαραγωγής
+
+actor User
+participant HomeView
+participant HomeController
+participant PlaylistView
+participant PlaylistController
+participant Playlist
+participant PlaylistControllerAPI
+participant PlaylistService
+participant PlaylistRepository
+
+activate HomeController
+HomeController -> HomeView : display()
+activate HomeView
+User -> HomeView : showPlaylists()
+HomeView -> HomeController : showPlaylists()
+deactivate HomeView
+
+HomeController -> PlaylistController : showPlaylists()
+deactivate HomeController
+activate PlaylistController
+PlaylistController -> PlaylistView : display()
+activate PlaylistView
+User -> PlaylistView : createPlaylist()
+PlaylistView -> PlaylistView : showPlaylistEditor()
+User -> PlaylistView : playlist details
+User -> PlaylistView : create()
+PlaylistView -> PlaylistController : checkForDuplicateName()
+PlaylistController -> Playlist : checkDuplicate()
+activate Playlist
+Playlist -> PlaylistControllerAPI : sendHTTPRequest()
+activate PlaylistControllerAPI
+PlaylistControllerAPI -> PlaylistService : processRequest()
+activate PlaylistService
+PlaylistService -> PlaylistRepository : runQuery()
+activate PlaylistRepository
+PlaylistRepository --> PlaylistService : return No Duplicates
+deactivate PlaylistRepository
+PlaylistService --> PlaylistControllerAPI : return No Duplicates
+deactivate PlaylistService
+PlaylistControllerAPI --> Playlist : return No Duplicates
+deactivate PlaylistControllerAPI
+Playlist --> PlaylistController : return No Duplicates
+deactivate Playlist
+PlaylistController -> Playlist : createPlaylist()
+activate Playlist
+Playlist -> PlaylistControllerAPI : sendHTTPRequest()
+activate PlaylistControllerAPI
+PlaylistControllerAPI -> PlaylistService : processRequest()
+activate PlaylistService
+PlaylistService -> PlaylistRepository : runQuery()
+activate PlaylistRepository
+
+@enduml
