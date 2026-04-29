@@ -37,21 +37,36 @@ PlaylistControllerAPI -> PlaylistService : processRequest()
 activate PlaylistService
 PlaylistService -> PlaylistRepository : runQuery()
 activate PlaylistRepository
-PlaylistRepository --> PlaylistService : return No Duplicates
-deactivate PlaylistRepository
-PlaylistService --> PlaylistControllerAPI : return No Duplicates
-deactivate PlaylistService
-PlaylistControllerAPI --> Playlist : return No Duplicates
-deactivate PlaylistControllerAPI
-Playlist --> PlaylistController : return No Duplicates
-deactivate Playlist
-PlaylistController -> Playlist : createPlaylist()
-activate Playlist
-Playlist -> PlaylistControllerAPI : sendHTTPRequest()
-activate PlaylistControllerAPI
-PlaylistControllerAPI -> PlaylistService : processRequest()
-activate PlaylistService
-PlaylistService -> PlaylistRepository : runQuery()
-activate PlaylistRepository
-
+alt No Duplicate Playlists
+    PlaylistRepository --> PlaylistService : return No Duplicates
+    deactivate PlaylistRepository
+    PlaylistService --> PlaylistControllerAPI : return No Duplicates
+    deactivate PlaylistService
+    PlaylistControllerAPI --> Playlist : return No Duplicates
+    deactivate PlaylistControllerAPI
+    Playlist --> PlaylistController : return No Duplicates
+    deactivate Playlist
+    PlaylistController --> PlaylistView : return No Duplicates
+    User -> PlaylistView : createPlaylist()
+    PlaylistView -> PlaylistController : createPlaylist() 
+    PlaylistController -> Playlist : createPlaylist()
+    activate Playlist
+    Playlist -> PlaylistControllerAPI : sendHTTPRequest()
+    activate PlaylistControllerAPI
+    PlaylistControllerAPI -> PlaylistService : processRequest()
+    activate PlaylistService
+    PlaylistService -> PlaylistRepository : runQuery()
+    activate PlaylistRepository
+else Duplicate Found
+    PlaylistRepository --> PlaylistService : return Duplicates Found
+    deactivate PlaylistRepository
+    PlaylistService --> PlaylistControllerAPI : return Duplicates Found
+    deactivate PlaylistService
+    PlaylistControllerAPI --> Playlist : return Duplicates Found
+    deactivate PlaylistControllerAPI
+    Playlist --> PlaylistController : return Duplicates Found
+    deactivate Playlist
+    PlaylistController --> PlaylistView : return Duplicates Found
+    PlaylistView -> PlaylistView : showDuplicateFoundError()
+end
 @enduml
