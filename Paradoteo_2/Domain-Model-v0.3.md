@@ -71,6 +71,7 @@ package "Controllers (UI)" {
     class LibraryController
     class TopBarController
     class PlaylistController
+    class ProfileController
 }
 
 package "Views" {
@@ -79,6 +80,7 @@ package "Views" {
     class LibraryView
     class TopBarView
     class PlaylistView
+    class ProfileView
 }
 
 ' UI links

@@ -1,0 +1,12 @@
+@startuml name
+
+title Αίτηση για Λογαριασμό Καλιτέχνη
+
+actor User
+participant HomeView
+participant HomeController
+participant ProfileView
+participant ProfileController
+
+
+@enduml
