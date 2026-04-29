@@ -27,13 +27,11 @@ activate PlaylistController
 
 PlaylistController -> Playlist : requestPlaylists()
 activate Playlist
-'async Διότι μπορεί να παίζει ήδη κάποιο playlist και να μην χρειάζεται να αναβληθεί η αναπαραγωγή των τραγουδιών για να κάνει fetch τα άλλα playlists
-
-Playlist ->> PlaylistControllerAPI : sendHTTPrequest()
+Playlist -> PlaylistControllerAPI : sendHTTPrequest()
 activate PlaylistControllerAPI
-PlaylistControllerAPI ->> PlaylistService : proccessHTTPRequest()
+PlaylistControllerAPI -> PlaylistService : proccessHTTPRequest()
 activate PlaylistService
-PlaylistService ->> PlaylistRepository : runQuery()
+PlaylistService -> PlaylistRepository : runQuery()
 activate PlaylistRepository
 PlaylistRepository --> PlaylistService : return results
 deactivate PlaylistRepository
@@ -52,11 +50,11 @@ alt Playlists != null
     activate Playlist
     Playlist -> Song : getSongs()
     activate Song
-    Song ->> SongControllerAPI : sendHTTPRequest()
+    Song -> SongControllerAPI : sendHTTPRequest()
     activate SongControllerAPI
-    SongControllerAPI ->> SongService : processHTTPRequest()
+    SongControllerAPI -> SongService : processHTTPRequest()
     activate SongService
-    SongService ->> SongRepository : runQuery()
+    SongService -> SongRepository : runQuery()
     activate SongRepository
     SongRepository --> SongService : return Songs
     deactivate SongRepository

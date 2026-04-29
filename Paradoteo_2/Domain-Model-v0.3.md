@@ -87,7 +87,9 @@ package "Views" {
 MusicPlayerController -- MusicPlayer
 MusicPlayerView -- MusicPlayerController
 MainController -- MusicPlayerController
-
+MainController -- ProfileController
+ProfileView -- ProfileController
+ProfileController -- User
 HomeView -- HomeController
 MainController -- HomeController
 

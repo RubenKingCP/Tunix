@@ -7,6 +7,23 @@ participant HomeView
 participant HomeController
 participant ProfileView
 participant ProfileController
+participant UserAccount
+participant AccountControllerAPI
+participant AccountService
+participant AccountRepository
+
+activate HomeController
+HomeController -> HomeView : display()
+activate HomeView
+User -> HomeView : showProfile()
+HomeView -> HomeController : showProfile()
+deactivate HomeView
+HomeController -> ProfileController : showProfile()
+deactivate HomeController
+activate ProfileController
+ProfileController -> UserAccount : getUserProfile()
+activate UserAccount
+UserAccount -> AccountControllerAPI : sendHTTPRequest()
 
 
 @enduml
