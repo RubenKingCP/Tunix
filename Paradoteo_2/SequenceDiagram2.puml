@@ -24,6 +24,25 @@ activate ProfileController
 ProfileController -> UserAccount : getUserProfile()
 activate UserAccount
 UserAccount -> AccountControllerAPI : sendHTTPRequest()
+activate AccountControllerAPI
+AccountControllerAPI -> AccountService : processRequest()
+activate AccountService
+AccountService -> AccountRepository : runQuery()
+activate AccountRepository
+AccountRepository --> AccountService : return Profile
+deactivate AccountRepository
+AccountService --> AccountControllerAPI : return Profile
+deactivate AccountService
+AccountControllerAPI --> UserAccount : return Profile
+deactivate AccountControllerAPI
+UserAccount --> ProfileController : reutrn Profile
+deactivate UserAccount
+ProfileController -> ProfileView : displayProfile()
+activate ProfileView
+User -> ProfileView : showSettings()
+ProfileView -> ProfileView : openSettings()
+User -> ProfileView : applyForArtist()
+
 
 
 @enduml
