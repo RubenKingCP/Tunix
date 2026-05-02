@@ -9,11 +9,95 @@ participant Artist
 participant ArtistControllerAPI
 participant ArtistService
 participant ArtistRepository
+participant Song
+participant SongControllerAPI
+participant SongService
+participant SongRepository
 
 activate HomeController
 activate HomeView
 AppAdmin -> HomeView : removeMedia()
-HomeView -> HomeController : removeMedia()
-
-
+HomeView -> HomeView : showRemovalReasonPopup()
+AppAdmin -> HomeView : insert issues
+AppAdmin -> HomeView : continueRemoval()
+HomeView -> HomeController : checkWarnings()
+HomeController -> Artist : checkWarnings()
+activate Artist
+Artist -> ArtistControllerAPI : sendHTTPRequest()
+activate ArtistControllerAPI 
+ArtistControllerAPI -> ArtistService : processRequest()
+activate ArtistService
+ArtistService -> ArtistRepository : runQuery()
+activate ArtistRepository
+ArtistRepository --> ArtistService : return warnings
+deactivate ArtistRepository
+ArtistService --> ArtistControllerAPI : return warnings
+deactivate ArtistService
+ArtistControllerAPI --> Artist : return warnings
+deactivate ArtistControllerAPI
+Artist --> HomeController : return warnings
+deactivate Artist
+HomeController -> HomeView : displayCuratorPopUp()
+alt No Further action
+    AppAdmin -> HomeView : No further actions
+    AppAdmin -> HomeView : curateContent()
+    HomeView -> HomeController : curateContent()
+    
+else Issue warning
+    AppAdmin -> HomeView : Issue Warning
+    AppAdmin -> HomeView : curateContent()
+    HomeView -> HomeController : curateContent()
+    HomeController -> Artist : issueWarning()
+    activate Artist
+    Artist -> ArtistControllerAPI : sendHTTPRequest()
+    activate ArtistControllerAPI 
+    ArtistControllerAPI -> ArtistService : processRequest()
+    activate ArtistService
+    ArtistService -> ArtistRepository : runQuery()
+    activate ArtistRepository
+    ArtistRepository --> ArtistService : return save status
+    deactivate ArtistRepository
+    ArtistService --> ArtistControllerAPI : return save status
+    deactivate ArtistService
+    ArtistControllerAPI --> Artist : return save status
+    deactivate ArtistControllerAPI
+    Artist --> HomeController : return save status
+    deactivate Artist
+else Issue Ban
+    AppAdmin -> HomeView : Issue Ban
+    AppAdmin -> HomeView : curateContent()
+    HomeView -> HomeController : curateContent()
+    HomeController -> Artist : issueBan()
+    activate Artist
+    Artist -> ArtistControllerAPI : sendHTTPRequest()
+    activate ArtistControllerAPI 
+    ArtistControllerAPI -> ArtistService : processRequest()
+    activate ArtistService
+    ArtistService -> ArtistRepository : runQuery()
+    activate ArtistRepository
+    ArtistRepository --> ArtistService : return save status
+    deactivate ArtistRepository
+    ArtistService --> ArtistControllerAPI : return save status
+    deactivate ArtistService
+    ArtistControllerAPI --> Artist : return save status
+    deactivate ArtistControllerAPI
+    Artist --> HomeController : return save status
+    deactivate Artist
+end
+HomeController -> Song : removeSong()
+activate Song
+Song -> SongControllerAPI : sendHTTPRequest()
+activate SongControllerAPI
+SongControllerAPI -> SongService : processRequest()
+activate SongService
+SongService -> SongRepository : runQuery()
+activate SongRepository
+SongRepository --> SongService : return deletion status
+deactivate SongRepository
+SongService --> SongControllerAPI : return deletion status
+deactivate SongService
+SongControllerAPI --> Song : return deletion status
+deactivate SongControllerAPI
+Song -> HomeController : return deletion status
+deactivate Song
 @enduml
