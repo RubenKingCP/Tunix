@@ -2,28 +2,31 @@
 
 title Αίτηση για Λογαριασμό Καλιτέχνη
 
-actor User
+actor AppUser
 participant HomeView
 participant HomeController
 participant ProfileView
 participant ProfileController
-participant UserAccount
+participant User
 participant AccountControllerAPI
 participant AccountService
 participant AccountRepository
+participant ArtistRequestControllerAPI
+participant ArtistRequestService
+participant ArtistRequestRepository
 
 activate HomeController
 HomeController -> HomeView : display()
 activate HomeView
-User -> HomeView : showProfile()
+AppUser -> HomeView : showProfile()
 HomeView -> HomeController : showProfile()
 deactivate HomeView
 HomeController -> ProfileController : showProfile()
 deactivate HomeController
 activate ProfileController
-ProfileController -> UserAccount : getUserProfile()
-activate UserAccount
-UserAccount -> AccountControllerAPI : sendHTTPRequest()
+ProfileController -> User : getUserProfile()
+activate User
+User -> AccountControllerAPI : sendHTTPRequest()
 activate AccountControllerAPI
 AccountControllerAPI -> AccountService : processRequest()
 activate AccountService
@@ -33,16 +36,27 @@ AccountRepository --> AccountService : return Profile
 deactivate AccountRepository
 AccountService --> AccountControllerAPI : return Profile
 deactivate AccountService
-AccountControllerAPI --> UserAccount : return Profile
+AccountControllerAPI --> User : return Profile
 deactivate AccountControllerAPI
-UserAccount --> ProfileController : reutrn Profile
-deactivate UserAccount
+User --> ProfileController : reutrn Profile
+deactivate User
 ProfileController -> ProfileView : displayProfile()
 activate ProfileView
-User -> ProfileView : showSettings()
+AppUser -> ProfileView : showSettings()
 ProfileView -> ProfileView : openSettings()
-User -> ProfileView : applyForArtist()
-
+AppUser -> ProfileView : applyForArtist()
+ProfileView -> ProfileView : showForm()
+AppUser -> ProfileView : fill form
+AppUser -> ProfileView : finishApplication()
+ProfileView -> ProfileController : applyForArtist()
+ProfileController -> User : applyForArtist()
+activate User
+User -> ArtistRequestControllerAPI : sendHTTPRequest()
+activate ArtistRequestControllerAPI
+ArtistRequestControllerAPI -> ArtistRequestService : processRequest()
+activate ArtistRequestService
+ArtistRequestService -> ArtistRequestRepository : runQuery()
+activate ArtistRequestRepository
 
 
 @enduml
