@@ -1,0 +1,62 @@
+@startuml name
+
+title Αίτηση για Λογαριασμό Καλιτέχνη
+
+actor AppUser
+participant HomeView
+participant HomeController
+participant ProfileView
+participant ProfileController
+participant User
+participant AccountControllerAPI
+participant AccountService
+participant AccountRepository
+participant ArtistRequestControllerAPI
+participant ArtistRequestService
+participant ArtistRequestRepository
+
+activate HomeController
+HomeController -> HomeView : display()
+activate HomeView
+AppUser -> HomeView : showProfile()
+HomeView -> HomeController : showProfile()
+deactivate HomeView
+HomeController -> ProfileController : showProfile()
+deactivate HomeController
+activate ProfileController
+ProfileController -> User : getUserProfile()
+activate User
+User -> AccountControllerAPI : sendHTTPRequest()
+activate AccountControllerAPI
+AccountControllerAPI -> AccountService : processRequest()
+activate AccountService
+AccountService -> AccountRepository : runQuery()
+activate AccountRepository
+AccountRepository --> AccountService : return Profile
+deactivate AccountRepository
+AccountService --> AccountControllerAPI : return Profile
+deactivate AccountService
+AccountControllerAPI --> User : return Profile
+deactivate AccountControllerAPI
+User --> ProfileController : reutrn Profile
+deactivate User
+ProfileController -> ProfileView : displayProfile()
+activate ProfileView
+AppUser -> ProfileView : showSettings()
+ProfileView -> ProfileView : openSettings()
+AppUser -> ProfileView : applyForArtist()
+ProfileView -> ProfileView : showForm()
+AppUser -> ProfileView : fill form
+AppUser -> ProfileView : finishApplication()
+ProfileView -> ProfileController : applyForArtist()
+ProfileController -> User : applyForArtist()
+activate User
+User -> ArtistRequestControllerAPI : sendHTTPRequest()
+activate ArtistRequestControllerAPI
+ArtistRequestControllerAPI -> ArtistRequestService : processRequest()
+activate ArtistRequestService
+ArtistRequestService -> ArtistRequestRepository : runQuery()
+activate ArtistRequestRepository
+
+
+@enduml

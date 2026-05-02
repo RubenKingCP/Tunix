@@ -1,0 +1,19 @@
+@startuml name 
+
+title Εποπτεια Περιεχομενου
+
+actor AppAdmin
+participant HomeView
+participant HomeController
+participant Artist
+participant ArtistControllerAPI
+participant ArtistService
+participant ArtistRepository
+
+activate HomeController
+activate HomeView
+AppAdmin -> HomeView : removeMedia()
+HomeView -> HomeController : removeMedia()
+
+
+@enduml

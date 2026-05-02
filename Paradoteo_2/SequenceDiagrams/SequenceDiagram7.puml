@@ -1,0 +1,65 @@
+@startuml name
+
+title Κατέβασμα Τραγουδιού
+
+actor AppUser
+participant TopBarView
+participant TopBarController
+participant User
+participant UserControllerAPI
+participant UserService
+participant UserRepository
+participant Song
+participant SongControllerAPI
+participant SongService
+participant SongRepository
+
+activate TopBarController
+activate TopBarView
+AppUser -> TopBarView : downloadSong()
+TopBarView -> TopBarController : downloadSong()
+TopBarController -> User : checkPremium()
+activate User
+User -> UserControllerAPI : sendHTTPRequest()
+activate UserControllerAPI
+UserControllerAPI -> UserService : processHTTPRequest()
+activate UserService
+UserService -> UserRepository : runQuery()
+activate UserRepository
+UserRepository --> UserService : return Premium Status
+deactivate UserRepository
+UserService --> UserControllerAPI : return Premium Status
+deactivate UserService
+UserControllerAPI --> User : return Premium Status
+deactivate UserControllerAPI
+User --> TopBarController : return Premium Status
+deactivate User
+alt IsPremium
+    TopBarController ->> Song : downloadSong()
+    activate Song
+    Song -> SongControllerAPI : sentHTTPRequest()
+    activate SongControllerAPI
+    SongControllerAPI -> SongService : processHTTPRequest()
+    activate SongService
+    SongService -> SongRepository : runQuery()
+    activate SongRepository
+    SongRepository --> SongService : return song
+    deactivate SongRepository
+    SongService --> SongControllerAPI : return song
+    deactivate SongService
+    SongControllerAPI --> Song : return song
+    deactivate SongControllerAPI
+    Song -> Song : saveSongLocaly()
+    alt has enough space
+        Song --> TopBarController : return download status
+    else
+        Song --> TopBarController : return insuficient space
+        deactivate Song
+        TopBarController -> TopBarView : showInsufficientSpaceError()
+    end
+    
+else not IsPremium
+    TopBarController -> TopBarView : displayGetPremiumScreen()
+end
+
+@enduml

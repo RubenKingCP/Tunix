@@ -1,0 +1,77 @@
+@startuml name
+
+title Εγκριση/Απορριψη  Λογαριασμου Καλλιτεχνη 
+
+actor AppAdmin
+participant HomeView
+participant HomeController
+participant Admin
+participant ArtistRequestControllerAPI
+participant ArtistRequestService
+participant ArtistRequestRepository
+
+activate HomeController
+HomeController -> HomeView
+activate HomeView
+AppAdmin -> HomeView : showArtistApplications()
+HomeView -> HomeController : getArtistApplications()
+HomeController -> Admin : getArtistApplications()
+activate Admin
+Admin -> ArtistRequestControllerAPI : sendHTTPRequest()
+activate ArtistRequestControllerAPI
+ArtistRequestControllerAPI -> ArtistRequestService : processRequest()
+activate ArtistRequestService
+ArtistRequestService -> ArtistRequestRepository : runQuery() 
+activate ArtistRequestRepository
+ArtistRequestRepository --> ArtistRequestService : return Requests
+deactivate ArtistRequestRepository
+ArtistRequestService --> ArtistRequestControllerAPI : return Requests
+deactivate ArtistRequestService
+ArtistRequestControllerAPI --> Admin : return Requests
+deactivate ArtistRequestControllerAPI
+Admin --> HomeController : return Requests
+deactivate Admin
+HomeController -> HomeView : showRequests()
+AppAdmin -> HomeView : selectRequest()
+HomeView -> HomeView : showSelectedRequest()
+alt Reject
+    AppAdmin -> HomeView : rejectRequest()
+    HomeView -> HomeController : saveResponse()
+    HomeController -> Admin : saveResponse()
+    activate Admin
+    Admin -> ArtistRequestControllerAPI : sendHTTPRequest()
+    activate ArtistRequestControllerAPI
+    ArtistRequestControllerAPI -> ArtistRequestService : processRequest()
+    activate ArtistRequestService
+    ArtistRequestService -> ArtistRequestRepository : runQuery() 
+    activate ArtistRequestRepository
+    ArtistRequestRepository --> ArtistRequestService : return save status
+    deactivate ArtistRequestRepository
+    ArtistRequestService --> ArtistRequestControllerAPI : return save status
+    deactivate ArtistRequestService
+    ArtistRequestControllerAPI --> Admin : return save status
+    deactivate ArtistRequestControllerAPI
+    Admin --> HomeController : return save status
+    deactivate Admin
+else Approve
+    AppAdmin -> HomeView : approveRequest()
+    HomeView -> HomeController : saveResponse()
+    HomeController -> Admin : saveResponse()
+    activate Admin
+    Admin -> ArtistRequestControllerAPI : sendHTTPRequest()
+    activate ArtistRequestControllerAPI
+    ArtistRequestControllerAPI -> ArtistRequestService : processRequest()
+    activate ArtistRequestService
+    ArtistRequestService -> ArtistRequestRepository : runQuery() 
+    activate ArtistRequestRepository
+    ArtistRequestRepository --> ArtistRequestService : return save status
+    deactivate ArtistRequestRepository
+    ArtistRequestService --> ArtistRequestControllerAPI : return save status
+    deactivate ArtistRequestService
+    ArtistRequestControllerAPI --> Admin : return save status
+    deactivate ArtistRequestControllerAPI
+    Admin --> HomeController : return save status
+    deactivate Admin
+end
+
+@enduml

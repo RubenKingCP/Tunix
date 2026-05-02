@@ -1,0 +1,37 @@
+@startuml name 
+
+title Αφαίρεση Τραγουδιού Από Λίστα Αναπαραγωγής
+
+actor User
+participant PlaylistView
+participant PlaylistController
+participant Playlist
+participant PlaylistControllerAPI
+participant PlaylistService
+participant PlaylistRepository
+
+activate PlaylistController
+PlaylistController -> PlaylistView : display()
+activate PlaylistView
+deactivate PlaylistController
+User -> PlaylistView : selectSong
+PlaylistView -> PlaylistView : openSongOptions()
+User -> PlaylistView : removeFromPlaylist
+PlaylistView -> PlaylistController : removeFromPlaylist(int index)
+activate PlaylistController
+deactivate PlaylistView
+PlaylistController -> Playlist : remove(int index)
+activate Playlist
+deactivate PlaylistController
+Playlist -> PlaylistControllerAPI : remove(Song s)
+activate PlaylistControllerAPI
+deactivate Playlist
+PlaylistControllerAPI -> PlaylistService : remove(Song s)
+deactivate PlaylistControllerAPI
+activate PlaylistService
+deactivate PlaylistControllerAPI
+PlaylistService -> PlaylistRepository : remove(Song s)
+deactivate PlaylistService
+activate PlaylistRepository
+PlaylistRepository -> PlaylistRepository : remove(Song s)
+@enduml
