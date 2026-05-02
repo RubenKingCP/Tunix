@@ -94,6 +94,9 @@ PlaylistControllerAPI --> Playlist : return Results
 deactivate PlaylistControllerAPI
 Playlist --> TopBarController : return Results
 deactivate Playlist
-TopBarController -> TopBarView : showResults()
-
+alt Results != null
+    TopBarController -> TopBarView : showResults()
+else Results == null
+    TopBarController -> TopBarView : showNoResultsError()
+end
 @enduml
