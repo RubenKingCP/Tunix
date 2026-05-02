@@ -1,0 +1,99 @@
+@startuml name
+
+title Αναζητηση Περιεχομενου
+
+actor User
+participant TopBarView
+participant TopBarController
+participant Song
+participant SongControllerAPI
+participant SongService
+participant SongRepository
+participant Album
+participant AlbumControllerAPI
+participant AlbumService
+participant AlbumRepository
+participant Artist
+participant ArtistControllerAPI
+participant ArtistService
+participant ArtistRepository
+participant Playlist
+participant PlaylistControllerAPI
+participant PlaylistService
+participant PlaylistRepository
+
+activate TopBarController
+TopBarController -> TopBarView : display()
+activate TopBarView
+User -> TopBarView : showSearch()
+TopBarView -> TopBarView : showSearch()
+User -> TopBarView : item to search
+User -> TopBarView : search()
+TopBarView -> TopBarController : search()
+TopBarController -> Song : search()
+activate Song
+Song -> SongControllerAPI : sendHTTPRequest()
+activate SongControllerAPI
+SongControllerAPI -> SongService : processHTTPRequest()
+activate SongService
+SongService -> SongRepository : runQuery()
+activate SongRepository
+SongRepository --> SongService : return Results
+deactivate SongRepository
+SongService --> SongControllerAPI : return Results
+deactivate SongService
+SongControllerAPI --> Song : return Results
+deactivate SongControllerAPI
+Song --> TopBarController : return Results
+deactivate Song
+TopBarController -> Album : search()
+activate Album
+Album -> AlbumControllerAPI : sendHTTPRequest()
+activate AlbumControllerAPI
+AlbumControllerAPI -> AlbumService : processHTTPRequest()
+activate AlbumService
+AlbumService -> AlbumRepository : runQuery()
+activate AlbumRepository
+AlbumRepository --> AlbumService : return Results
+deactivate AlbumRepository
+AlbumService --> AlbumControllerAPI : return Results
+deactivate AlbumService
+AlbumControllerAPI --> Album : return Results
+deactivate AlbumControllerAPI
+Album --> TopBarController : return Results
+deactivate Album
+TopBarController -> Artist : search()
+activate Artist
+Artist -> ArtistControllerAPI : sendHTTPRequest()
+activate ArtistControllerAPI
+ArtistControllerAPI -> ArtistService : processHTTPRequest()
+activate ArtistService
+ArtistService -> ArtistRepository : runQuery()
+activate ArtistRepository
+ArtistRepository --> ArtistService : return Results
+deactivate ArtistRepository
+ArtistService --> ArtistControllerAPI : return Results
+deactivate ArtistService
+ArtistControllerAPI --> Artist : return Results
+deactivate ArtistControllerAPI
+Artist --> TopBarController : return Results
+deactivate Artist
+TopBarController -> Playlist : search()
+activate Playlist
+Playlist -> PlaylistControllerAPI : sendHTTPRequest()
+activate PlaylistControllerAPI
+PlaylistControllerAPI -> PlaylistService : processHTTPRequest()
+activate PlaylistService
+PlaylistService -> PlaylistRepository : runQuery()
+activate PlaylistRepository
+PlaylistRepository --> PlaylistService : return Results
+deactivate PlaylistRepository
+PlaylistService --> PlaylistControllerAPI : return Results
+deactivate PlaylistService
+PlaylistControllerAPI --> Playlist : return Results
+deactivate PlaylistControllerAPI
+Playlist --> TopBarController : return Results
+deactivate Playlist
+TopBarController -> TopBarView : showResults()
+
+@enduml
