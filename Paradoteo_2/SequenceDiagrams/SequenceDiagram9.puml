@@ -13,11 +13,6 @@ participant SongRepository
 participant ArtistControllerAPI
 participant ArtistService
 participant ArtistRepository
-participant Admin
-participant AdminControllerAPI
-participant AdminService
-participant AdminRepository
-actor AppAdmin
 
 activate HomeController
 HomeController -> HomeView : display()
@@ -41,16 +36,30 @@ deactivate ArtistService
 ArtistControllerAPI --> Artist : return HasDuplicate
 deactivate ArtistControllerAPI
 Artist --> HomeController : return HasDuplicate
+deactivate Artist
 alt not HasDuplicate
     HomeController -> HomeView : approve()
     Artist -> HomeView : uploadSong()
     HomeView -> HomeController : uploadSong()
-    HomeController -> Admin : sendForApproval()
-    activate Admin
-    Admin -> AdminControllerAPI : sendHTTPRequest()
-    
+    HomeController -> Song : uploadSong()
+    activate Song
+    Song -> SongControllerAPI : sendHTTPRequest()
+    activate SongControllerAPI
+    SongControllerAPI -> SongService : processRequest()
+    activate SongService
+    SongService -> SongRepository : runQuery()
+    activate SongRepository
+    SongRepository --> SongService : return upload status
+    deactivate SongRepository
+    SongService --> SongControllerAPI : return upload status
+    deactivate SongService
+    SongControllerAPI --> Song : return upload status
+    deactivate SongControllerAPI
+    Song --> HomeController : return upload status
+    deactivate Song
+    HomeController -> HomeView : showUploadStatus()
 else HasDuplicate
-
+    HomeController -> HomeView : showDuplicateFoundError()
 end
 
 @enduml
