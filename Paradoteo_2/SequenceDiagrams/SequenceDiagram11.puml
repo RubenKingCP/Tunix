@@ -1,0 +1,43 @@
+@startuml name 
+
+title Ακολούθηση καλλιτέχνη
+
+actor User 
+participant "Αναζήτηση Καλλιτέχνη" as Search 
+participant ProfileController
+participant MainController
+participant Account
+participant AccountControllerAPI
+participant AccountService
+participant AccountRepository
+
+activate Search
+Search --> User : searchResults()
+User -> Search : artist
+Search --> User : artistInfo()
+User -> Search : followArtist()
+Search -> ProfileController : artist()
+deactivate Search
+activate ProfileController
+ProfileController -> MainController : artist()
+deactivate ProfileController
+activate MainController
+MainController -> Account : artist()
+deactivate MainController
+activate Account
+Account -> AccountControllerAPI : artist()
+deactivate Account
+activate AccountControllerAPI
+AccountControllerAPI -> AccountService : artist()
+deactivate AccountControllerAPI
+activate AccountService
+AccountService -> AccountRepository : artist()
+deactivate AccountService
+activate AccountRepository
+AccountRepository -> AccountRepository : exists()
+alt Already Following
+    AccountRepository --> User : Already exists
+else
+    AccountRepository -> AccountRepository : addFollowingArtist()
+    AccountRepository --> User : Task successful
+end 
