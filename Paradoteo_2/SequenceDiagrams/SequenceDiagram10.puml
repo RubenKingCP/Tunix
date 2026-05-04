@@ -1,0 +1,32 @@
+@startuml name
+
+title Shuffle/Play in Sequence 
+
+actor User
+participant PlaylistView
+participant PlaylistController
+participant MainController
+participant MusicPlayerView
+participant MusicPlayerController
+participant MusicPlayer
+
+User -> PlaylistView : order()
+activate PlaylistView
+PlaylistView -> PlaylistController : order()
+deactivate PlaylistView
+activate PlaylistController
+PlaylistController -> MainController : order()
+activate MainController
+alt input == shuffle
+    MainController --> PlaylistController : shuffle/sequence
+    PlaylistController -> PlaylistController : shufflePlaylist()
+end
+deactivate PlaylistController
+MainController -> MusicPlayerController : sequence()
+deactivate MainController
+activate MusicPlayerController
+MusicPlayerController -> MusicPlayer : sequence() 
+activate MusicPlayer
+MusicPlayerController -> MusicPlayerView : displaySong()
+activate MusicPlayerView
+@enduml 
