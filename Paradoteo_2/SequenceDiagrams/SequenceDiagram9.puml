@@ -1,0 +1,56 @@
+@startuml name
+
+title Ανέβασμα Τραγουδιού
+
+actor AppArtist
+participant HomeView
+participant HomeController
+participant Song
+participant Artist
+participant SongControllerAPI
+participant SongService
+participant SongRepository
+participant ArtistControllerAPI
+participant ArtistService
+participant ArtistRepository
+participant Admin
+participant AdminControllerAPI
+participant AdminService
+participant AdminRepository
+actor AppAdmin
+
+activate HomeController
+HomeController -> HomeView : display()
+activate HomeView
+AppArtist -> HomeView : uploadSong()
+HomeView -> HomeView : showUploadSongScreen()
+AppArtist -> HomeView : song details
+HomeView -> HomeController : checkForDuplicate()
+HomeController -> Artist : checkForDuplicate()
+activate Artist
+Artist -> ArtistControllerAPI : sendHTTPRequest()
+activate ArtistControllerAPI
+ArtistControllerAPI -> ArtistService : processRequest()
+activate ArtistService
+ArtistService -> ArtistRepository : runQuery()
+activate ArtistRepository
+ArtistRepository --> ArtistService : return HasDuplicate
+deactivate ArtistRepository
+ArtistService --> ArtistControllerAPI : return HasDuplicate
+deactivate ArtistService
+ArtistControllerAPI --> Artist : return HasDuplicate
+deactivate ArtistControllerAPI
+Artist --> HomeController : return HasDuplicate
+alt not HasDuplicate
+    HomeController -> HomeView : approve()
+    Artist -> HomeView : uploadSong()
+    HomeView -> HomeController : uploadSong()
+    HomeController -> Admin : sendForApproval()
+    activate Admin
+    Admin -> AdminControllerAPI : sendHTTPRequest()
+    
+else HasDuplicate
+
+end
+
+@enduml
