@@ -1,32 +1,55 @@
 @startuml name
 
-title Shuffle/Play in Sequence 
+title Προσθήκη Τραγουδιού σε Λίστα Αναπαραγωγής
 
-actor User
-participant PlaylistView
+actor User 
+participant "Αναζήτηση Περιεχομένου" as Search
+participant "Επιλογή Λίστας Αναπαραγωγής" as PlaylistOfChoice
+participant Playlist 
 participant PlaylistController
-participant MainController
-participant MusicPlayerView
-participant MusicPlayerController
-participant MusicPlayer
-
-User -> PlaylistView : order()
-activate PlaylistView
-PlaylistView -> PlaylistController : order()
-deactivate PlaylistView
-activate PlaylistController
-PlaylistController -> MainController : order()
-activate MainController
-alt input == shuffle
-    MainController --> PlaylistController : shuffle/sequence
-    PlaylistController -> PlaylistController : shufflePlaylist()
+participant PlaylistControllerAPI
+participant PlaylistService
+participant PlaylistRepository
+activate Search
+Search --> User : searchResults()
+deactivate Search
+activate PlaylistOfChoice
+alt PlaylistOfChoice == Favorites
+    User -> Playlist : song
+    activate Playlist
+    Playlist -> PlaylistController : addSongToFavorites()
+    activate PlaylistController
+    PlaylistController -> PlaylistControllerAPI : addSong()
+    deactivate PlaylistController
+    activate PlaylistControllerAPI
+    PlaylistControllerAPI -> PlaylistService : addSong()
+    deactivate PlaylistControllerAPI
+    activate PlaylistService
+    PlaylistService -> PlaylistRepository : addSong()
+    deactivate PlaylistService
+    activate PlaylistRepository
+    alt Song exists 
+        Playlist --> User : Song exists
+    end
+    deactivate Playlist
+else
+    User -> PlaylistOfChoice : song
+    PlaylistOfChoice -> Playlist : song
+    activate Playlist
+    deactivate PlaylistOfChoice
+    Playlist -> PlaylistController : addSong()
+    activate PlaylistController
+    PlaylistController -> PlaylistControllerAPI : addSong()
+    deactivate PlaylistController
+    activate PlaylistControllerAPI
+    PlaylistControllerAPI -> PlaylistService : addSong()
+    deactivate PlaylistControllerAPI
+    activate PlaylistService
+    PlaylistService -> PlaylistRepository : addSong()
+    deactivate PlaylistService
+    alt Song exists 
+        Playlist --> User : Song exists
+    end
+    deactivate Playlist
 end
-deactivate PlaylistController
-MainController -> MusicPlayerController : sequence()
-deactivate MainController
-activate MusicPlayerController
-MusicPlayerController -> MusicPlayer : sequence() 
-activate MusicPlayer
-MusicPlayerController -> MusicPlayerView : displaySong()
-activate MusicPlayerView
 @enduml 

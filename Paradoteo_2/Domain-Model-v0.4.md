@@ -100,6 +100,7 @@ PlaylistView -- PlaylistController
 PlaylistController -- MainController
 
 TopBarView -- TopBarController
+TopBarController -- MainController
 MainController -- Account
 
 ' =====================
