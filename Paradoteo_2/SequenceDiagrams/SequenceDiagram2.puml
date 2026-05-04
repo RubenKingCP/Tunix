@@ -26,19 +26,19 @@ deactivate HomeController
 activate ProfileController
 ProfileController -> User : getUserProfile()
 activate User
-User -> AccountControllerAPI : sendHTTPRequest()
+User -> AccountControllerAPI : fetchUserProfile(UserId)
 activate AccountControllerAPI
-AccountControllerAPI -> AccountService : processRequest()
+AccountControllerAPI -> AccountService : findById(userId)
 activate AccountService
-AccountService -> AccountRepository : runQuery()
+AccountService -> AccountRepository : SELECT * FROM profile WHERE id=userId
 activate AccountRepository
-AccountRepository --> AccountService : return Profile
+AccountRepository --> AccountService : row Profile
 deactivate AccountRepository
-AccountService --> AccountControllerAPI : return Profile
+AccountService --> AccountControllerAPI : Profile
 deactivate AccountService
-AccountControllerAPI --> User : return Profile
+AccountControllerAPI --> User : Profile
 deactivate AccountControllerAPI
-User --> ProfileController : reutrn Profile
+User --> ProfileController : Profile
 deactivate User
 ProfileController -> ProfileView : displayProfile()
 activate ProfileView
@@ -51,11 +51,11 @@ AppUser -> ProfileView : finishApplication()
 ProfileView -> ProfileController : applyForArtist()
 ProfileController -> User : applyForArtist()
 activate User
-User -> ArtistRequestControllerAPI : sendHTTPRequest()
+User -> ArtistRequestControllerAPI : postArtistRequest()
 activate ArtistRequestControllerAPI
-ArtistRequestControllerAPI -> ArtistRequestService : processRequest()
+ArtistRequestControllerAPI -> ArtistRequestService : createArtistRequest()
 activate ArtistRequestService
-ArtistRequestService -> ArtistRequestRepository : runQuery()
+ArtistRequestService -> ArtistRequestRepository : INSERT INTO artist_request (artist_name, artist_id) \nVALUES ('USERNAME', user_id)
 activate ArtistRequestRepository
 
 
