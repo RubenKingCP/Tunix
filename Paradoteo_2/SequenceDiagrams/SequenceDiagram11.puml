@@ -41,3 +41,4 @@ else
     AccountRepository -> AccountRepository : addFollowingArtist()
     AccountRepository --> User : Task successful
 end 
+@enduml

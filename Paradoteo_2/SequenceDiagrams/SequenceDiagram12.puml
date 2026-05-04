@@ -1,0 +1,42 @@
+@startuml name 
+
+title Ακύρωση Συνδρομής Premium
+
+actor "Premium User" as PS
+participant HomeView 
+participant HomeController
+participant MainController
+participant Account 
+participant AccountControllerAPI
+participant AccountService
+participant AccountRepository
+
+activate HomeView
+PS -> HomeView : Premium
+HomeView --> PS : managePremiumScreen()
+PS -> HomeView : Cancel Premium
+HomeView --> PS : confirm()
+alt "Premium user decides to buy another package"
+    PS -> HomeView : buyPackage()
+else 
+    PS -> HomeView : yes
+    HomeView -> HomeController : flipStatus()
+    deactivate HomeView
+    activate HomeController
+    HomeController -> MainController : flipStatus()
+    deactivate HomeController
+    activate MainController
+    MainController -> Account : flipStatus()
+    deactivate MainController
+    activate Account
+    Account -> Account : flipStatus()
+    Account -> AccountControllerAPI : new_status()
+    deactivate Account
+    activate AccountControllerAPI
+    AccountControllerAPI -> AccountService : new_status()
+    deactivate AccountControllerAPI
+    activate AccountService
+    AccountService -> AccountRepository : new_status()
+    deactivate AccountService
+    activate AccountRepository
+end
