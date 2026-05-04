@@ -16,6 +16,8 @@ participant PlaylistControllerAPI
 participant PlaylistService
 participant PlaylistRepository
 activate HomeController
+
+
 HomeController -> HomeView : display()
 activate HomeView
 User -> HomeView : showPlaylists()
@@ -27,44 +29,45 @@ activate PlaylistController
 
 PlaylistController -> Playlist : requestPlaylists()
 activate Playlist
-Playlist -> PlaylistControllerAPI : sendHTTPrequest()
+Playlist -> PlaylistControllerAPI : fetchPlaylistsById(userId)
 activate PlaylistControllerAPI
-PlaylistControllerAPI -> PlaylistService : proccessHTTPRequest()
+PlaylistControllerAPI -> PlaylistService : findByUserId(userId)
 activate PlaylistService
-PlaylistService -> PlaylistRepository : runQuery()
+PlaylistService -> PlaylistRepository : SELECT * FROM playlist where id=userId
 activate PlaylistRepository
-PlaylistRepository --> PlaylistService : return results
+PlaylistRepository --> PlaylistService : playlist rows
 deactivate PlaylistRepository
-PlaylistService --> PlaylistControllerAPI : return results
+PlaylistService --> PlaylistControllerAPI : List<Playlists>
 deactivate PlaylistService
-PlaylistControllerAPI --> Playlist : return results
+PlaylistControllerAPI --> Playlist : List<Playlists>
 deactivate PlaylistControllerAPI
-Playlist --> PlaylistController : return Playlists
+Playlist --> PlaylistController : List<Playlists>
 deactivate Playlist
+
 alt Playlists != null
     PlaylistController -> PlaylistView : showPlaylists()
     activate PlaylistView
     User -> PlaylistView : selectPlaylist()
     PlaylistView -> PlaylistController : getPlaylistSongs()
-    PlaylistController -> Playlist : getSongs()
+    PlaylistController -> Playlist : getPlaylistSongs()
     activate Playlist
-    Playlist -> Song : getSongs()
+    Playlist -> Song : getSongsByPlaylistId(playlistId)
     activate Song
-    Song -> SongControllerAPI : sendHTTPRequest()
+    Song -> SongControllerAPI : fetchSongByPlId(plId)
     activate SongControllerAPI
-    SongControllerAPI -> SongService : processHTTPRequest()
+    SongControllerAPI -> SongService : findByPlaylistId(plId)
     activate SongService
-    SongService -> SongRepository : runQuery()
+    SongService -> SongRepository : SELECT s.* FROM song.s join pl_song ps on s.id= ps.song_id where ps.playlistId = plId
     activate SongRepository
-    SongRepository --> SongService : return Songs
+    SongRepository --> SongService : rows Songs
     deactivate SongRepository
-    SongService --> SongControllerAPI : return Songs
+    SongService --> SongControllerAPI : List<Songs>
     deactivate SongService
-    SongControllerAPI --> Song : return Songs
+    SongControllerAPI --> Song : List<Songs>
     deactivate SongControllerAPI
-    Song --> Playlist : return Songs
+    Song --> Playlist : List<Songs>
     deactivate Song
-    Playlist --> PlaylistController : return Songs
+    Playlist --> PlaylistController : List<Songs>
     deactivate Playlist
     alt Songs =! null
         PlaylistController -> PlaylistView : showSelectedPlaylist()
