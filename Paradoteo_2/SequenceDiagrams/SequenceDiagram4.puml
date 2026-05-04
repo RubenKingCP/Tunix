@@ -20,18 +20,16 @@ User -> PlaylistView : removeFromPlaylist
 PlaylistView -> PlaylistController : removeFromPlaylist(int index)
 activate PlaylistController
 deactivate PlaylistView
-PlaylistController -> Playlist : remove(int index)
+PlaylistController -> Playlist : remove(songId, playlistId)
 activate Playlist
 deactivate PlaylistController
-Playlist -> PlaylistControllerAPI : remove(Song s)
+Playlist -> PlaylistControllerAPI : postRemoveSongById(songId,playlistId)
 activate PlaylistControllerAPI
 deactivate Playlist
-PlaylistControllerAPI -> PlaylistService : remove(Song s)
+PlaylistControllerAPI -> PlaylistService : removeSongById(songId, playlistId)
 deactivate PlaylistControllerAPI
 activate PlaylistService
 deactivate PlaylistControllerAPI
-PlaylistService -> PlaylistRepository : remove(Song s)
+PlaylistService -> PlaylistRepository : DELETE FROM playlist where song_id = songId and playlist_id = playlistId 
 deactivate PlaylistService
-activate PlaylistRepository
-PlaylistRepository -> PlaylistRepository : remove(Song s)
 @enduml
