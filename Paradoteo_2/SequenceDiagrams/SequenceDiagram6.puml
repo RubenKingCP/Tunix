@@ -17,19 +17,19 @@ AppAdmin -> HomeView : showArtistApplications()
 HomeView -> HomeController : getArtistApplications()
 HomeController -> Admin : getArtistApplications()
 activate Admin
-Admin -> ArtistRequestControllerAPI : sendHTTPRequest()
+Admin -> ArtistRequestControllerAPI : fetchArtistApplications()
 activate ArtistRequestControllerAPI
-ArtistRequestControllerAPI -> ArtistRequestService : processRequest()
+ArtistRequestControllerAPI -> ArtistRequestService : findAllApplication()
 activate ArtistRequestService
-ArtistRequestService -> ArtistRequestRepository : runQuery() 
+ArtistRequestService -> ArtistRequestRepository : select * from artist_application 
 activate ArtistRequestRepository
-ArtistRequestRepository --> ArtistRequestService : return Requests
+ArtistRequestRepository --> ArtistRequestService : row Applications
 deactivate ArtistRequestRepository
-ArtistRequestService --> ArtistRequestControllerAPI : return Requests
+ArtistRequestService --> ArtistRequestControllerAPI : List<Applications>
 deactivate ArtistRequestService
-ArtistRequestControllerAPI --> Admin : return Requests
+ArtistRequestControllerAPI --> Admin : List<Applications>
 deactivate ArtistRequestControllerAPI
-Admin --> HomeController : return Requests
+Admin --> HomeController : List<Applications>
 deactivate Admin
 HomeController -> HomeView : showRequests()
 AppAdmin -> HomeView : selectRequest()
@@ -39,38 +39,38 @@ alt Reject
     HomeView -> HomeController : saveResponse()
     HomeController -> Admin : saveResponse()
     activate Admin
-    Admin -> ArtistRequestControllerAPI : sendHTTPRequest()
+    Admin -> ArtistRequestControllerAPI : postRejectResponse()
     activate ArtistRequestControllerAPI
-    ArtistRequestControllerAPI -> ArtistRequestService : processRequest()
+    ArtistRequestControllerAPI -> ArtistRequestService : RejectResponse()
     activate ArtistRequestService
-    ArtistRequestService -> ArtistRequestRepository : runQuery() 
+    ArtistRequestService -> ArtistRequestRepository : ALTER TABLE artist_application MODIFY COLUMN STATUS REJECT where artist_application.id = aplicatonId;
     activate ArtistRequestRepository
-    ArtistRequestRepository --> ArtistRequestService : return save status
+    ArtistRequestRepository --> ArtistRequestService : row Status
     deactivate ArtistRequestRepository
-    ArtistRequestService --> ArtistRequestControllerAPI : return save status
+    ArtistRequestService --> ArtistRequestControllerAPI : Status
     deactivate ArtistRequestService
-    ArtistRequestControllerAPI --> Admin : return save status
+    ArtistRequestControllerAPI --> Admin : Status
     deactivate ArtistRequestControllerAPI
-    Admin --> HomeController : return save status
+    Admin --> HomeController : Status
     deactivate Admin
 else Approve
     AppAdmin -> HomeView : approveRequest()
     HomeView -> HomeController : saveResponse()
     HomeController -> Admin : saveResponse()
     activate Admin
-    Admin -> ArtistRequestControllerAPI : sendHTTPRequest()
+    Admin -> ArtistRequestControllerAPI : postApproveResponse()
     activate ArtistRequestControllerAPI
-    ArtistRequestControllerAPI -> ArtistRequestService : processRequest()
+    ArtistRequestControllerAPI -> ArtistRequestService : ApproveResponse()
     activate ArtistRequestService
-    ArtistRequestService -> ArtistRequestRepository : runQuery() 
+    ArtistRequestService -> ArtistRequestRepository : ALTER TABLE artist_application MODIFY COLUMN STATUS APPROVE where artist_application.id = aplicatonId;
     activate ArtistRequestRepository
-    ArtistRequestRepository --> ArtistRequestService : return save status
+    ArtistRequestRepository --> ArtistRequestService : row Status
     deactivate ArtistRequestRepository
-    ArtistRequestService --> ArtistRequestControllerAPI : return save status
+    ArtistRequestService --> ArtistRequestControllerAPI : Status
     deactivate ArtistRequestService
-    ArtistRequestControllerAPI --> Admin : return save status
+    ArtistRequestControllerAPI --> Admin : Status
     deactivate ArtistRequestControllerAPI
-    Admin --> HomeController : return save status
+    Admin --> HomeController : Status
     deactivate Admin
 end
 

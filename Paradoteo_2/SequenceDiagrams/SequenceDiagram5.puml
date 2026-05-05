@@ -32,67 +32,67 @@ User -> TopBarView : search()
 TopBarView -> TopBarController : search()
 TopBarController -> Song : search()
 activate Song
-Song -> SongControllerAPI : sendHTTPRequest()
+Song -> SongControllerAPI : fetchSong(searchName)
 activate SongControllerAPI
-SongControllerAPI -> SongService : processHTTPRequest()
+SongControllerAPI -> SongService : findSongByName(searchName)
 activate SongService
-SongService -> SongRepository : runQuery()
+SongService -> SongRepository : SELECT * FROM song where song_name = searchName
 activate SongRepository
-SongRepository --> SongService : return Results
+SongRepository --> SongService : row Songs
 deactivate SongRepository
-SongService --> SongControllerAPI : return Results
+SongService --> SongControllerAPI : List<Songs>
 deactivate SongService
-SongControllerAPI --> Song : return Results
+SongControllerAPI --> Song : List<Songs>
 deactivate SongControllerAPI
-Song --> TopBarController : return Results
+Song --> TopBarController : List<Songs>
 deactivate Song
 TopBarController -> Album : search()
 activate Album
-Album -> AlbumControllerAPI : sendHTTPRequest()
+Album -> AlbumControllerAPI : fetchAlbum(searchName)
 activate AlbumControllerAPI
-AlbumControllerAPI -> AlbumService : processHTTPRequest()
+AlbumControllerAPI -> AlbumService : findAlbumByName(searchName)
 activate AlbumService
-AlbumService -> AlbumRepository : runQuery()
+AlbumService -> AlbumRepository : SELECT * FROM album WHERE album_name = searchName
 activate AlbumRepository
-AlbumRepository --> AlbumService : return Results
+AlbumRepository --> AlbumService : row Albums
 deactivate AlbumRepository
-AlbumService --> AlbumControllerAPI : return Results
+AlbumService --> AlbumControllerAPI : List<Albums>
 deactivate AlbumService
-AlbumControllerAPI --> Album : return Results
+AlbumControllerAPI --> Album : List<Albums>
 deactivate AlbumControllerAPI
-Album --> TopBarController : return Results
+Album --> TopBarController : List<Albums>
 deactivate Album
 TopBarController -> Artist : search()
 activate Artist
-Artist -> ArtistControllerAPI : sendHTTPRequest()
+Artist -> ArtistControllerAPI : fetchArtist(searchName)
 activate ArtistControllerAPI
-ArtistControllerAPI -> ArtistService : processHTTPRequest()
+ArtistControllerAPI -> ArtistService : findArtistByName(searchName)
 activate ArtistService
-ArtistService -> ArtistRepository : runQuery()
+ArtistService -> ArtistRepository : SELECT * FROM artist WHERE artist_name = searchName
 activate ArtistRepository
-ArtistRepository --> ArtistService : return Results
+ArtistRepository --> ArtistService : row Artists
 deactivate ArtistRepository
-ArtistService --> ArtistControllerAPI : return Results
+ArtistService --> ArtistControllerAPI : List<Artist>
 deactivate ArtistService
-ArtistControllerAPI --> Artist : return Results
+ArtistControllerAPI --> Artist : List<Artist>
 deactivate ArtistControllerAPI
-Artist --> TopBarController : return Results
+Artist --> TopBarController : List<Artist>
 deactivate Artist
 TopBarController -> Playlist : search()
 activate Playlist
-Playlist -> PlaylistControllerAPI : sendHTTPRequest()
+Playlist -> PlaylistControllerAPI : fetchPlaylist(searchName)
 activate PlaylistControllerAPI
-PlaylistControllerAPI -> PlaylistService : processHTTPRequest()
+PlaylistControllerAPI -> PlaylistService : findPlaylistByName(searchName)
 activate PlaylistService
-PlaylistService -> PlaylistRepository : runQuery()
+PlaylistService -> PlaylistRepository : SELECT * FROM playlist where name=searchName
 activate PlaylistRepository
-PlaylistRepository --> PlaylistService : return Results
+PlaylistRepository --> PlaylistService : List<playlist>
 deactivate PlaylistRepository
-PlaylistService --> PlaylistControllerAPI : return Results
+PlaylistService --> PlaylistControllerAPI : List<Playlist>
 deactivate PlaylistService
-PlaylistControllerAPI --> Playlist : return Results
+PlaylistControllerAPI --> Playlist : List<Playlist>
 deactivate PlaylistControllerAPI
-Playlist --> TopBarController : return Results
+Playlist --> TopBarController : List<Playlist>
 deactivate Playlist
 alt Results != null
     TopBarController -> TopBarView : showResults()
