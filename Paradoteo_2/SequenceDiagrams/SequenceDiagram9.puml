@@ -23,13 +23,13 @@ AppArtist -> HomeView : song details
 HomeView -> HomeController : checkForDuplicate()
 HomeController -> Artist : checkForDuplicate()
 activate Artist
-Artist -> ArtistControllerAPI : sendHTTPRequest()
+Artist -> ArtistControllerAPI : checkDuplicateSong()
 activate ArtistControllerAPI
-ArtistControllerAPI -> ArtistService : processRequest()
+ArtistControllerAPI -> ArtistService : checkForDuplicateSong
 activate ArtistService
-ArtistService -> ArtistRepository : runQuery()
+ArtistService -> ArtistRepository : SELECT * from song where song_name = songName
 activate ArtistRepository
-ArtistRepository --> ArtistService : return HasDuplicate
+ArtistRepository --> ArtistService : row Songs
 deactivate ArtistRepository
 ArtistService --> ArtistControllerAPI : return HasDuplicate
 deactivate ArtistService
@@ -43,11 +43,11 @@ alt not HasDuplicate
     HomeView -> HomeController : uploadSong()
     HomeController -> Song : uploadSong()
     activate Song
-    Song -> SongControllerAPI : sendHTTPRequest()
+    Song -> SongControllerAPI : postSong()
     activate SongControllerAPI
-    SongControllerAPI -> SongService : processRequest()
+    SongControllerAPI -> SongService : inseertSongToDatabase()
     activate SongService
-    SongService -> SongRepository : runQuery()
+    SongService -> SongRepository : INSERT INTO song (songId, file_location)
     activate SongRepository
     SongRepository --> SongService : return upload status
     deactivate SongRepository

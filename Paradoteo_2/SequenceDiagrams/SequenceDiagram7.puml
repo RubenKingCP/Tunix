@@ -20,11 +20,11 @@ AppUser -> TopBarView : downloadSong()
 TopBarView -> TopBarController : downloadSong()
 TopBarController -> User : checkPremium()
 activate User
-User -> UserControllerAPI : sendHTTPRequest()
+User -> UserControllerAPI : fetchUserStatus())
 activate UserControllerAPI
-UserControllerAPI -> UserService : processHTTPRequest()
+UserControllerAPI -> UserService : checkUserStatus()
 activate UserService
-UserService -> UserRepository : runQuery()
+UserService -> UserRepository : SELECT status FROM user where user_id = curUserId
 activate UserRepository
 UserRepository --> UserService : return Premium Status
 deactivate UserRepository
@@ -37,17 +37,17 @@ deactivate User
 alt IsPremium
     TopBarController ->> Song : downloadSong()
     activate Song
-    Song -> SongControllerAPI : sentHTTPRequest()
+    Song -> SongControllerAPI : fetchSong()
     activate SongControllerAPI
-    SongControllerAPI -> SongService : processHTTPRequest()
+    SongControllerAPI -> SongService : getSong()
     activate SongService
-    SongService -> SongRepository : runQuery()
+    SongService -> SongRepository : SELECT status FROM user where user_id = curUserId
     activate SongRepository
-    SongRepository --> SongService : return song
+    SongRepository --> SongService : songFile
     deactivate SongRepository
-    SongService --> SongControllerAPI : return song
+    SongService --> SongControllerAPI : songFile
     deactivate SongService
-    SongControllerAPI --> Song : return song
+    SongControllerAPI --> Song : songFile
     deactivate SongControllerAPI
     Song -> Song : saveSongLocaly()
     alt has enough space
