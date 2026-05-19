@@ -1,4 +1,4 @@
-@startuml
+@startuml name
 actor User as foo1
 participant UserProfileView as foo2
 participant UserProfileController as foo3
