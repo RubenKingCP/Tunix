@@ -6,7 +6,7 @@ actor User
 participant SongView
 participant SongController
 participant PlaylistService
-participant PlaylistApiClient
+participant PlaylistApi
 participant ApiClient
 participant PlaylistBackendController
 participant PlaylistBackendService
@@ -27,9 +27,9 @@ SongView -> SongController : addSongToPlaylist(songId, playlistId)
 activate SongController
 SongController -> PlaylistService : addSongToPlaylist(songId, playlistId)
 activate PlaylistService
-PlaylistService -> PlaylistApiClient : addSongToPlaylist(songId, playlistId)
-activate PlaylistApiClient
-PlaylistApiClient -> ApiClient : post("/playlists/" + playlistId + "/add", new AddSongRequest(songId), AddSongResponse.class)
+PlaylistService -> PlaylistApi : addSongToPlaylist(songId, playlistId)
+activate PlaylistApi
+PlaylistApi -> ApiClient : post("/playlists/" + playlistId + "/add", new AddSongRequest(songId), AddSongResponse.class)
 activate ApiClient
 ApiClient -> PlaylistBackendController : POST /playlists/{playlistId}/add
 activate PlaylistBackendController
@@ -45,11 +45,11 @@ deactivate PlaylistBackendRepository
 alt Song already in playlist
     PlaylistBackendService -> PlaylistBackendController : return false
     PlaylistBackendController -> ApiClient : return HTTP 409 Conflict with error message
-    ApiClient -> PlaylistApiClient : return error 
-    PlaylistApiClient -> PlaylistService : return error
+    ApiClient -> PlaylistApi : return error 
+    PlaylistApi -> PlaylistService : return error
     PlaylistService -> SongController : showError("Song already exists in playlist")
     SongController -> SongView : showErrorDialog("Song already exists in playlist")
-    SongView -> User : Show error dialog
+    'SongView -> User : Show error dialog
 else Song not in playlist
     PlaylistBackendService -> PlaylistBackendRepository : Insert song into playlist
     activate PlaylistBackendRepository
@@ -59,10 +59,10 @@ else Song not in playlist
     deactivate PlaylistBackendRepository
     PlaylistBackendService -> PlaylistBackendController : return success response
     PlaylistBackendController -> ApiClient : return HTTP 200 OK
-    ApiClient -> PlaylistApiClient : return success
-    PlaylistApiClient -> PlaylistService : return success
+    ApiClient -> PlaylistApi : return success
+    PlaylistApi -> PlaylistService : return success
     PlaylistService -> SongController : showSuccess("Song added to playlist")
     SongController -> SongView : showSuccessDialog("Song added to playlist")
-    SongView -> User : Show success dialog
+    'SongView -> User : Show success dialog
 end
 @enduml
