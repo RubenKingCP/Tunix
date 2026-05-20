@@ -6,7 +6,8 @@ actor User
 participant SongView
 participant SongController
 participant PlaylistService
-participant PlaylistAPI
+participant PlaylistApiClient
+participant ApiClient
 participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistRepository
@@ -15,78 +16,46 @@ database Database
 activate SongView
 User -> SongView : Right click on song
 SongView -> SongView : onSongRightClick()
-SongView -> SongView : showContextMenu()
+SongView -> SongView : showOptionsMenu()
 User -> SongView : Click "Add to Playlist"
+SongView -> SongView : onAddToPlaylistClicked()
 SongView -> SongView : showPlaylistSelectionDialog()
-User -> SongView : Select playlist and confirm
-alt "User selected a playlist"
-    SongView -> SongController : addSongToPlaylist(songId, playlistId)
-    activate SongController
-    SongController -> PlaylistService : addSongToPlaylist(songId, playlistId)
-    activate PlaylistService
-    PlaylistService -> PlaylistService : checkForDuplicate(songId, playlistId)
-    PlaylistService --> SongController : Duplicate check result
-    alt "No duplicate found"
-        PlaylistService -> PlaylistAPI : addSongToPlaylist(songId, playlistId)
-        activate PlaylistAPI
-        PlaylistAPI -> PlaylistBackendController : addSongToPlaylist(songId, playlistId)
-        activate PlaylistBackendController
-        PlaylistBackendController -> PlaylistBackendService : addSongToPlaylist(songId, playlistId)
-        activate PlaylistBackendService
-        PlaylistBackendService -> PlaylistRepository : addSongToPlaylist(songId, playlistId)
-        activate PlaylistRepository
-        PlaylistRepository -> Database : Execute SQL to add song to playlist
-        Database --> PlaylistRepository : Success/Failure
-        PlaylistRepository --> PlaylistBackendService : Success/Failure
-        deactivate PlaylistRepository
-        PlaylistBackendService --> PlaylistBackendController : Success/Failure
-        deactivate PlaylistBackendService
-        PlaylistBackendController --> PlaylistAPI : Success/Failure
-        deactivate PlaylistBackendController
-        PlaylistAPI --> PlaylistService : Success/Failure
-        deactivate PlaylistAPI
-        PlaylistService --> SongController : Success/Failure
-        deactivate PlaylistService
-        SongController --> SongView : Show success/failure message
-        deactivate SongController
-    else "Duplicate found"
-        
-
-        activate PlaylistService
-        PlaylistService --> SongController : Duplicate found message
-        activate SongController
-        deactivate PlaylistService
-        SongController --> SongView : Show duplicate message
-        deactivate SongController
-    end
-else "User Selected Favourites"
-    SongView -> SongController : addSongToFavourites(songId)
-    activate SongController
-    SongController -> PlaylistService : addSongToFavourites(songId)
-    activate PlaylistService
-    PlaylistService -> PlaylistAPI : addSongToFavourites(songId)
-    activate PlaylistAPI
-    PlaylistAPI -> PlaylistBackendController : addSongToFavourites(songId)
-    activate PlaylistBackendController
-    PlaylistBackendController -> PlaylistBackendService : addSongToFavourites(songId)
-    activate PlaylistBackendService
-    PlaylistBackendService -> PlaylistRepository : addSongToFavourites(songId)
+User -> SongView : Select playlist or "Favourites"
+User -> SongView : Click "Confirm" in dialog
+SongView -> SongView : onConfirmAddToPlaylistClicked(playlistId, songId)
+SongView -> SongController : addSongToPlaylist(songId, playlistId)
+activate SongController
+SongController -> PlaylistService : addSongToPlaylist(songId, playlistId)
+activate PlaylistService
+PlaylistService -> PlaylistApiClient : addSongToPlaylist(songId, playlistId)
+activate PlaylistApiClient
+PlaylistApiClient -> ApiClient : post("/playlists/" + playlistId + "/add", new AddSongRequest(songId), AddSongResponse.class)
+activate ApiClient
+ApiClient -> PlaylistBackendController : POST /playlists/{playlistId}/add
+activate PlaylistBackendController
+PlaylistBackendController -> PlaylistBackendService : addSongToPlaylist(playlistId, songId)
+activate PlaylistBackendService
+PlaylistBackendService -> PlaylistBackendService :checkDuplicate(playlistId, songId)
+alt Song already in playlist
+    PlaylistBackendService -> PlaylistBackendController : return false
+    PlaylistBackendController -> ApiClient : return HTTP 409 Conflict with error message
+    ApiClient -> PlaylistApiClient : return error 
+    PlaylistApiClient -> PlaylistService : return error
+    PlaylistService -> SongController : showError("Song already exists in playlist")
+    SongController -> SongView : showErrorDialog("Song already exists in playlist")
+    SongView -> User : Show error dialog
+else Song not in playlist
+    PlaylistBackendService -> PlaylistRepository : Insert song into playlist
+    PlaylistRepostiory -> database : Query playlist_songs table to check for existing record
     activate PlaylistRepository
-    PlaylistRepository -> Database : Execute SQL to add song to favourites
-    Database --> PlaylistRepository : Success/Failure
-    PlaylistRepository --> PlaylistBackendService : Success/Failure
+    PlaylistRepository -> Database : Insert record into playlist_songs table
     deactivate PlaylistRepository
-    PlaylistBackendService --> PlaylistBackendController : Success/Failure
-    deactivate PlaylistBackendService
-    PlaylistBackendController --> PlaylistAPI : Success/Failure
-    deactivate PlaylistBackendController
-    PlaylistAPI --> PlaylistService : Success/Failure
-    deactivate PlaylistAPI
-    PlaylistService --> SongController : Success/Failure
-    deactivate PlaylistService
-    SongController --> SongView : Show success/failure message
-    deactivate SongController
-
+    PlaylistBackendService -> PlaylistBackendController : return success response
+    PlaylistBackendController -> ApiClient : return HTTP 200 OK
+    ApiClient -> PlaylistApiClient : return success
+    PlaylistApiClient -> PlaylistService : return success
+    PlaylistService -> SongController : showSuccess("Song added to playlist")
+    SongController -> SongView : showSuccessDialog("Song added to playlist")
+    SongView -> User : Show success dialog
 end
-
 @enduml

@@ -17,4 +17,8 @@ public class SongEntity {
         this.coverImageUrl = coverImageUrl;
 
     }
+
+    public int getId() {
+        return songId;
+    }
 }
