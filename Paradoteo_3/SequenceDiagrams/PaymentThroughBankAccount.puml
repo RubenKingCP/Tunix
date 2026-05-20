@@ -37,12 +37,12 @@ PS --> PC
 deactivate PS
 PC --> PV
 deactivate PC
-alt results == NULL
+opt results == NULL
     PV -> PV : drawPaymentScreen()
     u -> PV : fills out payment form
     PV -> PV : popSave()
     u -> PV : presses option
-    alt option == true
+    opt option == true
         PV -> PC : saveCred(userId, bankCred)
         activate PC
         PC -> PS : saveCred(userId, bankCred)
