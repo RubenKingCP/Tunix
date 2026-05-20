@@ -9,6 +9,7 @@ import java.net.http.HttpResponse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class ApiClient {
     private final HttpClient httpClient;
@@ -49,6 +50,25 @@ public class ApiClient {
             throw new RuntimeException("GET failed: " + path, e);
         }
     }
+
+    // GET for lists
+    public <T> ApiResponse<T> get(String path, TypeReference<ApiResponse<T>> typeRef) {
+    try {
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + path))
+                .GET()
+                .build();
+
+        HttpResponse<String> response =
+                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return objectMapper.readValue(response.body(), typeRef);
+
+    } catch (Exception e) {
+        throw new RuntimeException("GET failed", e);
+    }
+}
 
     // DELETE
     public <T> ApiResponse<T> delete(String path, Class<T> dataType) {

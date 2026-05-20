@@ -16,6 +16,19 @@ public class SongController {
     }
 
     public void addSongToPlaylist(int playlistId, int songId) {
-        this.playlistService.addSongToPlaylist(playlistId, songId);
+        if(this.playlistService.addSongToPlaylist(playlistId, songId)){
+            this.showSuccess("Song added to playlist successfully!");
+        } else {
+            this.showError("Failed to add song to playlist.");
+        }
+        
+    }
+
+    public void showError(String message) {
+        this.songView.showErrorDialog(message);
+    }
+
+    public void showSuccess(String message) {
+        this.songView.showSuccessDialog(message);
     }
 }

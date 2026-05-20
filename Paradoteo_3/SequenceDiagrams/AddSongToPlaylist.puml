@@ -10,7 +10,7 @@ participant PlaylistApiClient
 participant ApiClient
 participant PlaylistBackendController
 participant PlaylistBackendService
-participant PlaylistRepository
+participant PlaylistBackendRepository
 database Database
 
 activate SongView
@@ -36,6 +36,12 @@ activate PlaylistBackendController
 PlaylistBackendController -> PlaylistBackendService : addSongToPlaylist(playlistId, songId)
 activate PlaylistBackendService
 PlaylistBackendService -> PlaylistBackendService :checkDuplicate(playlistId, songId)
+PlaylistBackendService -> PlaylistBackendRepository : findByPlaylistIdAndSongId(playlistId, songId)
+activate PlaylistBackendRepository
+PlaylistBackendRepository -> Database : Execute SQL to check if song is already in playlist
+Database --> PlaylistBackendRepository : Return true/false
+PlaylistBackendRepository --> PlaylistBackendService : Return true/false
+deactivate PlaylistBackendRepository
 alt Song already in playlist
     PlaylistBackendService -> PlaylistBackendController : return false
     PlaylistBackendController -> ApiClient : return HTTP 409 Conflict with error message
@@ -45,11 +51,12 @@ alt Song already in playlist
     SongController -> SongView : showErrorDialog("Song already exists in playlist")
     SongView -> User : Show error dialog
 else Song not in playlist
-    PlaylistBackendService -> PlaylistRepository : Insert song into playlist
-    PlaylistRepostiory -> database : Query playlist_songs table to check for existing record
-    activate PlaylistRepository
-    PlaylistRepository -> Database : Insert record into playlist_songs table
-    deactivate PlaylistRepository
+    PlaylistBackendService -> PlaylistBackendRepository : Insert song into playlist
+    activate PlaylistBackendRepository
+    PlaylistBackendRepository -> Database : Insert record into playlist_songs table
+    Database --> PlaylistBackendRepository : Success
+    PlaylistBackendRepository --> PlaylistBackendService : return success
+    deactivate PlaylistBackendRepository
     PlaylistBackendService -> PlaylistBackendController : return success response
     PlaylistBackendController -> ApiClient : return HTTP 200 OK
     ApiClient -> PlaylistApiClient : return success

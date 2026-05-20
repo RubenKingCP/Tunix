@@ -28,4 +28,12 @@ public class SongView {
     public void onConfirmAddToPlaylist(int playlistId, int songId) {
         this.songController.addSongToPlaylist(playlistId, songId);
     }
+
+    public void showErrorDialog(String message) {
+        // Logic to show an error dialog to the user
+    }
+
+    public void showSuccessDialog(String message) {
+        // Logic to show a success dialog to the user
+    }
 }

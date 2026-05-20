@@ -3,100 +3,138 @@
 title Approve / Reject Artist Request
 
 actor Admin
-participant HomeView
-participant HomeController
+participant AdminView
+participant AdminController
 participant ArtistRequestService
 participant ArtistRequestAPI
+participant ApiClient
 participant ArtistRequestBackendController
 participant ArtistRequestBackendService
-participant ArtistRequestRepository
+participant ArtistRequestBackendRepository
 database Database
 
-activate HomeView
-Admin -> HomeView : Click on "Artist Account Applications"
-HomeView -> HomeController : viewArtistRequests()
-activate HomeController
-HomeController -> ArtistRequestService : getAllArtistRequests()
+activate AdminView
+Admin -> AdminView : Click on "Artist Account Applications"
+AdminView -> AdminController : onArtistRequestsClicked()
+activate AdminController
+AdminController -> ArtistRequestService : onArtistRequestsClicked()
 activate ArtistRequestService
+ArtistRequestService -> ArtistRequestService: getArtistRequests()
 ArtistRequestService -> ArtistRequestAPI : getAllArtistRequests()
 activate ArtistRequestAPI
-ArtistRequestAPI -> ArtistRequestBackendController : getAllArtistRequests()
+ArtistRequestAPI -> ApiClient : get "/artist-requests/getAll", new TypeReference<ApiResponse<List<ArtistRequestResponse>>>() {}
+activate ApiClient
+ApiClient -> ArtistRequestBackendController : GET /artist-requests/getAll
 activate ArtistRequestBackendController
 ArtistRequestBackendController -> ArtistRequestBackendService : getAllArtistRequests()
 activate ArtistRequestBackendService
-ArtistRequestBackendService -> ArtistRequestRepository : getAllArtistRequests()
-activate ArtistRequestRepository
-ArtistRequestRepository -> Database : Execute SQL to get all artist requests
-Database --> ArtistRequestRepository : Return list of artist requests
-ArtistRequestRepository --> ArtistRequestBackendService : Return list of artist requests
-deactivate ArtistRequestRepository
-ArtistRequestBackendService --> ArtistRequestBackendController : Return list of artist requests
+ArtistRequestBackendService -> ArtistRequestBackendRepository : getAllArtistRequests()
+activate ArtistRequestBackendRepository
+ArtistRequestBackendRepository -> Database : findAllArtists();
+Database --> ArtistRequestBackendRepository : Return list of artist requests
+ArtistRequestBackendRepository --> ArtistRequestBackendService : Return list of artist requests
+deactivate ArtistRequestBackendRepository
+ArtistRequestBackendService --> ArtistRequestBackendService : map to ArtistRequestResponse
+ArtistRequestBackendService --> ArtistRequestBackendController : Return  ArtistRequestResponse list
 deactivate ArtistRequestBackendService
-ArtistRequestBackendController --> ArtistRequestAPI : Return list of artist requests
+ArtistRequestBackendController --> ApiClient : Return ArtistRequestResponse list
 deactivate ArtistRequestBackendController
-ArtistRequestAPI --> ArtistRequestService : Return list of artist requests
+ApiClient --> ArtistRequestAPI : Return ArtistRequestResponse list
+deactivate ApiClient
+ArtistRequestAPI --> ArtistRequestService : Return ArtistRequestResponse list
 deactivate ArtistRequestAPI
-ArtistRequestService --> HomeController : Return list of artist requests
+ArtistRequestService --> ArtistRequestService : map to ArtistRequest list
+ArtistRequestService --> AdminController : Return list of artist requests
 deactivate ArtistRequestService
-HomeController --> HomeView : Display list of artist requests
-deactivate HomeController
-Admin -> HomeView : Click on an artist request
-HomeView -> HomeView : showArtistRequestDetails()
-Admin -> HomeView : Click "Approve" or "Reject"
+AdminController --> AdminView : Return list of artist requests
+AdminView -> AdminView : displayArtistRequests()
+AdminView -> Admin : Show list of artist requests
+deactivate AdminController
+Admin -> AdminView : Click on an artist request
+AdminView -> AdminView : onArtistRequestShowDetailsClicked(artistRequest)
+AdminView -> AdminView : displayArtistRequestDetails(artistRequest)
+AdminView -> Admin : Show artist request details
+Admin -> AdminView : Click "Approve" or "Reject"
 alt Approve
-    HomeView -> HomeController : approveArtistRequest(requestId)
-    activate HomeController
-    HomeController -> ArtistRequestService : approveArtistRequest(requestId)
+    AdminView -> AdminController : onApproveArtistRequestClicked(requestId)
+    activate AdminController
+    AdminController -> ArtistRequestService : approveArtistRequest(requestId)
     activate ArtistRequestService
     ArtistRequestService -> ArtistRequestAPI : approveArtistRequest(requestId)
     activate ArtistRequestAPI
-    ArtistRequestAPI -> ArtistRequestBackendController : approveArtistRequest(requestId)
+    ArtistRequestAPI -> ApiClient : POST /artist-requests/approve/{requestId}
+    activate ApiClient
+    ApiClient -> ArtistRequestBackendController : POST /artist-requests/approve/{requestId}
     activate ArtistRequestBackendController
+    ArtistRequestBackendController -> ArtistRequestBackendController : approveArtistRequest(requestId)
     ArtistRequestBackendController -> ArtistRequestBackendService : approveArtistRequest(requestId)
     activate ArtistRequestBackendService
-    ArtistRequestBackendService -> ArtistRequestRepository : approveArtistRequest(requestId)
-    activate ArtistRequestRepository
-    ArtistRequestRepository -> Database : Execute SQL to approve artist request
-    Database --> ArtistRequestRepository : Success/Failure
-    ArtistRequestRepository --> ArtistRequestBackendService : Success/Failure
-    deactivate ArtistRequestRepository
-    ArtistRequestBackendService --> ArtistRequestBackendController : Success/Failure
+    ArtistRequestBackendService -> ArtistRequestBackendRepository : findById(requestId)
+    activate ArtistRequestBackendRepository
+    ArtistRequestBackendRepository -> Database : findById(requestId)
+    Database --> ArtistRequestBackendRepository : Return artist request
+    ArtistRequestBackendRepository -> ArtistRequestBackendService : Return artist request
+    deactivate ArtistRequestBackendRepository
+    ArtistRequestBackendService -> ArtistRequestBackendService : setStatus(Approved)
+    ArtistRequestBackendService -> ArtistRequestBackendRepository : save(artistRequest)
+    activate ArtistRequestBackendRepository
+    ArtistRequestBackendRepository -> Database : Query to modify the database
+    Database -> ArtistRequestBackendRepository : return success
+    ArtistRequestBackendRepository -> ArtistRequestBackendService : return success
+    deactivate ArtistRequestBackendRepository
+    ArtistRequestBackendService -> ArtistRequestBackendController : return ApiResponse
     deactivate ArtistRequestBackendService
-    ArtistRequestBackendController --> ArtistRequestAPI : Success/Failure
+    ArtistRequestBackendController -> ApiClient : return ApiResponse
     deactivate ArtistRequestBackendController
-    ArtistRequestAPI --> ArtistRequestService : Success/Failure
+    ApiClient -> ArtistRequestAPI: returnApiReponse
+    deactivate ApiClient
+    ArtistRequestAPI -> ArtistRequestService : return ApiResponse
     deactivate ArtistRequestAPI
-    ArtistRequestService --> HomeController : Success/Failure
+    ArtistRequestService -> AdminController : return success
     deactivate ArtistRequestService
-    HomeController --> HomeView : Show success/failure message
-    deactivate HomeController
+    AdminController -> AdminView : showMessage("Approved")
+    deactivate AdminController 
+    AdminView -> Admin : Show approved message
 else Reject
-    HomeView -> HomeController : rejectArtistRequest(requestId)
-    activate HomeController
-    HomeController -> ArtistRequestService : rejectArtistRequest(requestId)
+    AdminView -> AdminController : onRejectArtistRequestClicked(requestId)
+    activate AdminController
+    AdminController -> ArtistRequestService : rejectArtistRequest(requestId)
     activate ArtistRequestService
     ArtistRequestService -> ArtistRequestAPI : rejectArtistRequest(requestId)
     activate ArtistRequestAPI
-    ArtistRequestAPI -> ArtistRequestBackendController : rejectArtistRequest(requestId)
+    ArtistRequestAPI -> ApiClient : POST /artist-requests/reject/{requestId}
+    activate ApiClient
+    ApiClient -> ArtistRequestBackendController : POST /artist-requests/reject/{requestId}
     activate ArtistRequestBackendController
+    ArtistRequestBackendController -> ArtistRequestBackendController : rejectArtistRequest(requestId)
     ArtistRequestBackendController -> ArtistRequestBackendService : rejectArtistRequest(requestId)
     activate ArtistRequestBackendService
-    ArtistRequestBackendService -> ArtistRequestRepository : rejectArtistRequest(requestId)
-    activate ArtistRequestRepository
-    ArtistRequestRepository -> Database : Execute SQL to reject artist request
-    Database --> ArtistRequestRepository : Success/Failure
-    ArtistRequestRepository --> ArtistRequestBackendService : Success/Failure
-    deactivate ArtistRequestRepository
-    ArtistRequestBackendService --> ArtistRequestBackendController : Success/Failure
+    ArtistRequestBackendService -> ArtistRequestBackendRepository : findById(requestId)
+    activate ArtistRequestBackendRepository
+    ArtistRequestBackendRepository -> Database : findById(requestId)
+    Database --> ArtistRequestBackendRepository : Return artist request
+    ArtistRequestBackendRepository -> ArtistRequestBackendService : Return artist request
+    deactivate ArtistRequestBackendRepository
+    ArtistRequestBackendService -> ArtistRequestBackendService : setStatus(Rejected)
+    ArtistRequestBackendService -> ArtistRequestBackendRepository : save(artistRequest)
+    activate ArtistRequestBackendRepository
+    ArtistRequestBackendRepository -> Database : Query to modify the database
+    Database -> ArtistRequestBackendRepository : return success
+    ArtistRequestBackendRepository -> ArtistRequestBackendService : return success
+    deactivate ArtistRequestBackendRepository
+    ArtistRequestBackendService -> ArtistRequestBackendController : return ApiResponse
     deactivate ArtistRequestBackendService
-    ArtistRequestBackendController --> ArtistRequestAPI : Success/Failure
+    ArtistRequestBackendController -> ApiClient : return ApiResponse
     deactivate ArtistRequestBackendController
-    ArtistRequestAPI --> ArtistRequestService : Success/Failure
+    ApiClient -> ArtistRequestAPI: returnApiReponse
+    deactivate ApiClient
+    ArtistRequestAPI -> ArtistRequestService : return ApiResponse
     deactivate ArtistRequestAPI
-    ArtistRequestService --> HomeController : Success/Failure
+    ArtistRequestService -> AdminController : return success
     deactivate ArtistRequestService
-    HomeController --> HomeView : Show success/failure message
-    deactivate HomeController
+    AdminController -> AdminView : showMessage("Reject")
+    deactivate AdminController 
+    AdminView -> Admin : Show reject message
 end
 
 @enduml
