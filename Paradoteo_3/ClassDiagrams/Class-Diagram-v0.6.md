@@ -42,6 +42,7 @@ package "Frontend" {
         + setDisplayName(displayName : String) : void
         + getProfilePictureUrl() : String
         + setProfilePictureUrl(profilePictureUrl : String) : void
+        + setBankCred(in : int) : void
     }
 
     class Artist {
@@ -286,6 +287,8 @@ package "Frontend" {
         class LibraryPlaylistView
         class LibraryArtistView
 
+        class PaymentView
+
         View <|.. HomeView
         View <|.. SearchView
         View <|.. SongView
@@ -297,7 +300,7 @@ package "Frontend" {
         View <|.. AdminView
         View <|.. LibraryView
         View <|.. RightClickMenuView
-
+        View <|.. PaymentView
         LibraryAssetView <|.. LibrarySongView
         LibraryAssetView <|.. LibraryAlbumView
         LibraryAssetView <|.. LibraryPlaylistView
@@ -433,6 +436,8 @@ package "Frontend" {
 
         class AlbumController
 
+        class PaymentController
+
         MusicPlayerController ..|> IController
         HomeController ..|> IController
         LibraryController ..|> IController
@@ -440,6 +445,7 @@ package "Frontend" {
         PlaylistController ..|> IController
         ProfileController ..|> IController
         RightClickMenuController ..|> IController
+        PaymentController ..|> IController
     }
     
     ' =====================================================
@@ -589,6 +595,8 @@ package "Frontend" {
         class ArtistService {
             + getArtist(searchName : String) : List<Artist>
         }
+
+        class PaymentService
     }
 
     ' =====================================================
@@ -625,6 +633,8 @@ package "Frontend" {
         class LoginApi
         class ArtistApi
         class ArtistRequestApi
+        class BankApi
+        class PaymentApi
     }
 
     ' =====================================================
@@ -680,6 +690,7 @@ package "Frontend" {
     AdminView -- AdminController
     UploadSongView -- UploadSongController
     ArtistProfileView -- ArtistProfileController
+    PaymentView -- PaymentController
 
 
     ' =====================================================
@@ -702,6 +713,8 @@ package "Frontend" {
         SongController -- SongService
 
         UploadSongController -- SongService
+
+        PaymentController -- PaymentService
 
 
     ' =====================================================
@@ -739,6 +752,9 @@ package "Frontend" {
 
         SongService -- SongClientApi
 
+        PaymentService -- BankApi
+        PaymentService -- PaymentApi
+
     ' =====================================================
     ' Api → CLIENT
     ' =====================================================
@@ -752,6 +768,7 @@ package "Frontend" {
     LoginApi -- ApiClient
     ArtistRequestApi -- ApiClient
     AdminApi -- ApiClient
+    PaymentApi -- ApiClient
 
 
     ' =====================================================
@@ -843,6 +860,7 @@ package "Controller Layer (REST)" as C{
     class LibraryBackendController
     class ListeningHistoryBackendController
     class ArtistRequestBackendController
+    class PaymentBackendController
 
     Api <|.. UserBackendController
     Api <|.. ArtistBackendController
@@ -853,6 +871,7 @@ package "Controller Layer (REST)" as C{
     Api <|.. LibraryBackendController
     Api <|.. ListeningHistoryBackendController
     Api <|.. ArtistRequestBackendController
+    Api <|.. PaymentBackendController
 }
 
 
@@ -876,6 +895,7 @@ package "BackendService Layer" as S{
     class LibraryBackendService
     class ListeningHistoryBackendService
     class ArtistRequestBackendService
+    class PaymentBackendService
 
     BackendService <|.. UserBackendService
     BackendService <|.. ArtistBackendService
@@ -909,6 +929,7 @@ package "BackendRepository Layer (JPA)" {
     class LibraryBackendRepository
     class ListeningHistoryBackendRepository
     class ArtistRequestBackendRepository
+    class PaymentRepository
 
     JpaBackendRepository <|.. UserBackendRepository
     JpaBackendRepository <|.. ArtistBackendRepository
@@ -919,7 +940,7 @@ package "BackendRepository Layer (JPA)" {
     JpaBackendRepository <|.. LibraryBackendRepository
     JpaBackendRepository <|.. ListeningHistoryBackendRepository
     JpaBackendRepository <|.. ArtistRequestBackendRepository
-
+    JpaBackendRepository <|.. PaymentRepository
 }
 
 
@@ -934,6 +955,7 @@ AlbumBackendController -- S.AlbumBackendService
 UserBackendController -- S.UserBackendService
 ArtistBackendController -- S.ArtistBackendService
 LibraryBackendController -- S.LibraryBackendService
+PaymentBackendController -- S.PaymentBackendService
 
 ' =====================================================
 ' FLOW: BackendService → BackendRepository
@@ -945,6 +967,7 @@ S.AlbumBackendService -- AlbumBackendRepository
 S.UserBackendService -- UserBackendRepository
 S.ArtistBackendService -- ArtistBackendRepository
 S.LibraryBackendService -- LibraryRepository
+S.PaymentBackendService -- PaymentRepository
 
 ' =====================================================
 ' BackendService → DOMAIN
@@ -956,6 +979,7 @@ S.AlbumBackendService .. E.Album
 S.UserBackendService .. E.User
 S.LibraryBackendService .. E.Library
 S.ArtistBackendService .. E.Artist
+S.PaymentBackendService .. E.User
 
 ' =====================================================
 ' CONTROLLER → DTO
@@ -979,5 +1003,6 @@ UserApi -- UserBackendController
 ArtistRequestApi -- ArtistRequestBackendController
 ArtistApi -- ArtistBackendController
 AdminApi -- AdminBackendController
+PaymentApi -- PaymentBackendController
 }
 @enduml
