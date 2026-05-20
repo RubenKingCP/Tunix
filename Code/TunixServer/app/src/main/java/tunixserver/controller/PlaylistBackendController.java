@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import tunixserver.dto.request.PlaylistCreateRequest;
 import tunixserver.dto.response.ApiResponse;
 import tunixserver.service.PlaylistBackendService;
 
@@ -30,6 +31,12 @@ public class PlaylistBackendController {
                 ApiResponse.error("Song already exists")
             );
         }
+    } 
+
+    @PostMapping("/upload")
+    public ResponseEntity<ApiResponse<Void>> createPlaylist(PlaylistCreateRequest playlistCreateRequest) {
+        playlistBackendService.createPlaylist(playlistCreateRequest);
+        return null;
     }
 
 }

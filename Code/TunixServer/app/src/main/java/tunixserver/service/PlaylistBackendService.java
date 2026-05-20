@@ -1,5 +1,6 @@
 package tunixserver.service;
 
+import tunixserver.dto.request.PlaylistCreateRequest;
 import tunixserver.entities.PlaylistEntity;
 import tunixserver.entities.SongEntity;
 import tunixserver.repository.PlaylistBackendRepository;
@@ -37,5 +38,12 @@ public class PlaylistBackendService {
             }
         }
         return false; // Song not in playlist
+    } 
+
+    public boolean createPlaylist(PlaylistCreateRequest playlistCreateRequest) {
+        // Code for this
+        // PlaylistEntity playlistEntity = playlistCreateRequest.toPlaylistEntity();
+        // playlistBackendRepository.save(playlistEntity);
+        return false;
     }
 }

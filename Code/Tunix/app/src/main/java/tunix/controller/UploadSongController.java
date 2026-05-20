@@ -2,7 +2,7 @@ package tunix.controller;
 
 import tunix.service.SongService;
 import tunix.view.centralView.UploadSongView;
-import tunix.dto.request.SongFormDTO;
+import tunix.dto.request.SongRequest;
 import tunix.event.EventBus;
 import tunix.model.Song;
 import tunix.event.SongUploadedEvent;
@@ -42,9 +42,9 @@ public class UploadSongController {
     }
 
     public void onSubmitButtonClicked() {
-        SongFormDTO songFormDTO = new SongFormDTO(null, 0, null, 0, null);
+        SongRequest songRequest = new SongRequest(null, 0, null, 0, null);
 
-        Song song = songService.uploadSong(songFormDTO);
+        Song song = songService.uploadSong(songRequest);
     }
 
     public void displayError(String message) {

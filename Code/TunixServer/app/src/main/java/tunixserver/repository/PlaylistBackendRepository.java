@@ -10,5 +10,5 @@ public class PlaylistBackendRepository {
 
     public void save(PlaylistEntity playlist) {
         // Logic to save the updated playlist back to the database
-    }
+    } 
 }

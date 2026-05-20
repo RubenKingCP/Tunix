@@ -3,7 +3,7 @@ package tunix.service;
 import tunix.event.EventBus;
 import tunix.model.Song;
 import tunix.api.SongApiClient;
-import tunix.dto.request.SongFormDTO;
+import tunix.dto.request.SongRequest;
 
 public class SongService {
     private final EventBus eventBus;
@@ -14,8 +14,8 @@ public class SongService {
         this.songApiClient = songApiClient;
     }
 
-    public Song uploadSong(SongFormDTO songForm) {
-        return songApiClient.uploadSong(songForm).getData().toSong();
+    public Song uploadSong(SongRequest songRequest) {
+        return songApiClient.uploadSong(songRequest).getData().toSong();
     }
 
 }

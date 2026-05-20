@@ -2,64 +2,83 @@
 actor User as user 
 participant LibraryView as libraryView
 participant LibraryController as libraryController
-participant LibraryService as libraryService
-participant EventBus as eventBus
 participant PlaylistService as playlistService
-participant PlaylistView as playlistView
+participant PlaylistApiClient as playlistApi
+participant ApiClient as apiClient
+participant PlaylistBackendController as playlistBackendController
+participant PlaylistBackendService as playlistBackendService
+participant PlaylistBackendRepository as playlistBackendRepository
+database Database as database
+participant Eventbus as eventbus
 participant PlaylistController as playlistController
-    participant PlaylistAPI as playlistApi
-    participant PlaylistBackendController as playlistBackendController
-    participant PlaylistBackendService as playlistBackendService
-    participant PlaylistBackendRepository as playlistBackendRepository
-    database Database as database
+participant PlaylistView as playlistView 
+
 user -> libraryView: "Right click on library"
 activate libraryView
-libraryView -> libraryView : "popUpMenu()"
-'libraryView -> user : "Show pop-up menu"
+libraryView -> libraryView : onRightClickOnLibrary()
+libraryView -> libraryView : showLibraryOptions()
+libraryView -> user : "Show user library options"
 user -> libraryView : "Select 'Create Playlist'"
-libraryView -> libraryController : "createPlaylist()"
-activate libraryController
-libraryController -> libraryService : "createPlaylist()"
-activate libraryService
-libraryService -> eventBus : "publish(PlaylistCreatedEvent)"
-deactivate libraryService
-deactivate libraryController
+libraryView -> libraryView : onCreatePlaylistClicked()
+libraryView -> libraryView : showPlaylistCreationMenu()
+libraryView -> user : "Show user creation menu" 
+user -> libraryView : "User enter details and presses confirm"
+libraryView -> libraryView : onPlaylistCreateConfirmClicked()
 deactivate libraryView
-activate eventBus
-eventBus -> playlistController : "onPlaylistCreated(PlaylistCreatedEvent)"
-activate playlistController
-playlistController -> playlistView : "showPlaylist(Playlist)"
-activate playlistView
-playlistView -> playlistView : "showPlaylistEditor(Playlist)"
-'playlistView -> user : "Display playlist view and editor"
-user -> playlistView : "Enter playlist details and save"
-playlistView -> playlistController : "savePlaylist(Playlist)"
-activate playlistController
-playlistController -> playlistService : "savePlaylist(Playlist)"
+libraryView -> libraryController : createPlaylist(playlistCreateRequest)
+activate libraryController
+libraryController -> playlistService : createPlaylist(playlistCreateRequest, libraryAssets)
 activate playlistService
-playlistService -> playlistService : "checkForDuplicateName(Playlist)"
-alt Duplicate Name
-    playlistService -> playlistController : "notifyDuplicateName()"
-    playlistController -> playlistView : "showDuplicateNameError()"
-else Unique Name
-    playlistService -> playlistApi : "savePlaylist(Playlist)"
-    activate playlistApi
-    playlistApi -> playlistBackendController : "savePlaylist(Playlist)"
+playlistService -> playlistService : checkDuplicateName(playlistCreateRequest, libraryAssets)
+alt if unique
+    playlistService -> playlistApi : createPlaylist(playlistCreateRequest)
+    activate playlistApi 
+    playlistApi -> apiClient : post("/playlists/create", playlistCreateRequest, PlaylistResponse.class)
+    activate apiClient
+
+    apiClient -> playlistBackendController : POST /playlist/create
     activate playlistBackendController
-    playlistBackendController -> playlistBackendService : "savePlaylist(Playlist)"
+
+    playlistBackendController -> playlistBackendService : createPlaylist(playlistCreateRequest)
     activate playlistBackendService
-    playlistBackendService -> playlistBackendRepository : "savePlaylist(Playlist)"
-    activate playlistBackendRepository
-    playlistBackendRepository -> database : "insert playlist into database query"
-    database --> playlistBackendRepository : "playlist saved confirmation"
-    deactivate playlistBackendRepository
+
+    playlistBackendService -> playlistBackendRepository : save(playlistCreateRequest.toPlaylistEntity())
+    activate playlistBackendRepository 
+    playlistBackendRepository -> database : Insert playlist to user's playlists table
+    database -> playlistBackendRepository : return success
+    playlistBackendRepository -> playlistBackendService : return success
+    deactivate playlistBackendRepository 
+    playlistBackendService -> playlistBackendController : return success
     deactivate playlistBackendService
+    playlistBackendController -> apiClient : return succes ApiResponse
     deactivate playlistBackendController
+    apiClient -> playlistApi : return success ApiResponse
+    deactivate apiClient
+    playlistApi -> playlistService : return true
     deactivate playlistApi
+    playlistService -> libraryController : return true
+    deactivate playlistService
+    libraryController -> libraryView : showPlaylistCreationSuccess()
+    libraryView -> user : "Show user created succesdully message"
+
+    libraryController -> eventbus : publish(new PlaylistCreatedEvent(playlist))
+    deactivate libraryController
+    deactivate libraryView
+    activate eventbus
+
+    eventbus -> playlistController : "PlaylistCreatedEvent happened"
+    activate playlistController
+
+    deactivate eventbus
+    playlistController -> playlistView : displayPlaylist(playlist)
+    deactivate playlistController 
+    playlistView -> user : "Show created playlist view"
+else if duplicate found
+    
+    playlistService -> libraryController : showDuplicateNameError()
+    deactivate playlistService
+    libraryController -> libraryView : showDuplcateNameError()
+    deactivate libraryController
+    libraryView -> user : "Show duplicate name error"
 end
-playlistService -> playlistController : "playlist saved confirmation"
-deactivate playlistService
-playlistController -> playlistView : "updatePlaylistView(Playlist)"
-deactivate playlistController
-'playlistView -> user : "Show created playlist view and popup"
 @enduml

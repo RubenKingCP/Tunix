@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import tunixserver.service.SongBackendService;
-import tunixserver.dto.request.SongFormDTO;
+import tunixserver.dto.request.SongRequest;
 import tunixserver.dto.response.ApiResponse;
 import tunixserver.dto.response.SongResponse;
 import tunixserver.entities.SongEntity;
@@ -22,7 +22,7 @@ public class SongBackendController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<SongResponse>> uploadSong(@RequestBody SongFormDTO songformDTO) {
+    public ResponseEntity<ApiResponse<SongResponse>> uploadSong(@RequestBody SongRequest songformDTO) {
         try {
             SongEntity song = songService.uploadSong(songformDTO);
             return ResponseEntity.ok(new ApiResponse<>(true, "Song uploaded successfully", SongResponse.fromSong(song)));
