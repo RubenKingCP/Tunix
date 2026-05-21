@@ -1,0 +1,62 @@
+@startuml PremiumPurchase
+
+title Premium Purchase
+
+actor User as U
+
+participant UserProfileView
+participant UserProfileController
+participant UserService
+participant User
+participant UserApiClient
+participant ApiClient
+participant UserBackendController
+participant UserBackendService
+participant UserBackendRepository
+
+database Database
+
+activate UserProfileView
+U -> UserProfileView : purchase premium
+UserProfileView -> UserProfileController : purchasePremium()
+activate UserProfileController
+ref over UserProfileController
+    PaymentThroughBankAccount
+end ref
+alt Purchase successful
+    UserProfileController -> UserService : updatePremiumStatus(userId, true)
+    activate UserService
+    UserService -> User : updatePremiumStatus()
+    activate User
+    User --> UserService : premiumStatusUpdated
+    deactivate User
+    UserService -> UserApiClient : premiumStatusUpdated(userId, true)
+    activate UserApiClient
+    UserApiClient -> ApiClient : post("user/updatePremiumStatus", userId, PremiumStatusResponse)
+    activate ApiClient
+    ApiClient -> UserBackendController : POST user/updatePremiumStatus
+    activate UserBackendController
+    UserBackendController -> UserBackendService : updatePremiumStatus(userId, true)
+    activate UserBackendService
+    UserBackendService -> UserBackendRepository : updatePremiumStatus(userId, true)
+    activate UserBackendRepository
+    UserBackendRepository -> Database : UPDATE user SET isPremium = true WHERE userId = user
+    Database --> UserBackendRepository : success
+    UserBackendRepository --> UserBackendService : success
+    deactivate UserBackendRepository
+    UserBackendService --> UserBackendController : success
+    deactivate UserBackendService
+    UserBackendController --> ApiClient : 200 OK
+    deactivate UserBackendController
+    ApiClient --> UserApiClient : success
+    deactivate ApiClient
+    UserApiClient --> UserService : success
+    deactivate UserApiClient
+    UserService --> UserProfileController : success
+    deactivate UserService
+    UserProfileController -> UserProfileView : showPurchaseSuccess()
+else Purchase failed
+    UserProfileController -> UserProfileView : showPurchaseFailure()
+end
+
+@enduml

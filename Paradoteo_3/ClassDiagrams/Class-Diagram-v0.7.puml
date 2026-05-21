@@ -491,8 +491,9 @@ package "Frontend" {
             + onRejectRequestClicked(requestId : int, reason : String) : void
         }
         class UserProfileController{
-            checkTrialEligibility() : void
-            startTrial() : boolean
+            + checkTrialEligibility() : void
+            + startTrial() : boolean
+            + purchasePremiumPlan() : void
         }
         class ArtistProfileController{
             - artistProfileView : ArtistProfileView
@@ -625,6 +626,8 @@ package "Frontend" {
             + checkTrialEligibility(userId : int) : boolean
 
             + trialStarted(userId : int) : boolean
+
+            + updatePremiumStatus(userId : int, isPremium : boolean) : void
         }
 
 
@@ -741,6 +744,7 @@ package "Frontend" {
             - apiClient : ApiClient
             --
             + trialStarted(userId : int) : boolean
+            + premiumStatusUpdated(userId : int, isPremium : boolean) : boolean
         }
         class AdminApi
         class LoginApi
@@ -937,6 +941,7 @@ package "Domain (Entities)" as EB {
         + setProfilePictureUrl(profilePictureUrl : String) : void
         + checkTrialEligibility(userId : int) : boolean
         + startTrial(userId : int) : boolean
+        + updatePremiumStatus(isPremium : boolean) : boolean
     }
     class Artist
     class Admin

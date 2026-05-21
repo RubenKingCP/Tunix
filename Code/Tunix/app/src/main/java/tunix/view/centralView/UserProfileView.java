@@ -11,6 +11,7 @@ public class UserProfileView {
 
     }
     public void showTrialStartedMessage(){
-        
+
     }
+   
 }

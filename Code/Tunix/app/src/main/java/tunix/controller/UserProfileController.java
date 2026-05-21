@@ -8,4 +8,7 @@ public class UserProfileController {
         // Logic to start the trial for the user
         return true; // Return true if trial started successfully
     }
+    public void purchasePremiumPlan(){
+
+    }
 }
