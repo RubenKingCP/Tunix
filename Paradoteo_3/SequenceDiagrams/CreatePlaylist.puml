@@ -74,11 +74,14 @@ alt if unique
     deactivate playlistController 
     playlistView -> user : "Show created playlist view"
 else if duplicate found
-    
+    activate playlistService
     playlistService -> libraryController : showDuplicateNameError()
     deactivate playlistService
+    activate libraryController
     libraryController -> libraryView : showDuplcateNameError()
     deactivate libraryController
+    activate libraryView
     libraryView -> user : "Show duplicate name error"
+    deactivate libraryView
 end
 @enduml

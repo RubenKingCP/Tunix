@@ -22,9 +22,9 @@ public class SongBackendController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<SongResponse>> uploadSong(@RequestBody SongRequest songformDTO) {
+    public ResponseEntity<ApiResponse<SongResponse>> uploadSong(@RequestBody SongRequest songRequest) {
         try {
-            SongEntity song = songService.uploadSong(songformDTO);
+            SongEntity song = songService.uploadSong(songRequest);
             return ResponseEntity.ok(new ApiResponse<>(true, "Song uploaded successfully", SongResponse.fromSong(song)));
         } catch (Exception e) {
             return ResponseEntity.ok(new ApiResponse<>(false, "Failed to upload song: " + e.getMessage(), null));

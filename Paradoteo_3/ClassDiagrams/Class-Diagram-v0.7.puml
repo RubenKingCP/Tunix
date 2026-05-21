@@ -4,232 +4,278 @@ title Spotify-like Desktop App (Clean Architecture - Fixed)
 
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
-skinparam packageStyle rectangle
 skinparam shadowing false
 
-left to right direction
 
 ' =====================================================
 ' FRONTEND LAYER (WRAPPER)
 ' =====================================================
 
 package "Frontend" {
-    left to right direction
 
     ' =====================================================
     ' MODEL LAYER
     ' =====================================================
 
     package "Model Layer" {
-' -------- ACCOUNT HIERARCHY --------
-    abstract class Account {
-        - id : String
-        - username: String
-        - email: String
-        - status : AccountStatus
-    --
-        + getId() : String
-        + getUsername() : String
-        + getEmail() : String
-        + getStatus() : AccountStatus
-    }
-
-    class User {
-        - displayName: String
-        - profilePictureUrl: String
+        ' -------- ACCOUNT HIERARCHY --------
+        abstract class Account {
+            - id : String
+            - username: String
+            - email: String
+            - status : AccountStatus
         --
-        + getDisplayName() : String
-        + setDisplayName(displayName : String) : void
-        + getProfilePictureUrl() : String
-        + setProfilePictureUrl(profilePictureUrl : String) : void
+            + getId() : String
+            + getUsername() : String
+            + getEmail() : String
+            + getStatus() : AccountStatus
+        }
+
+        class User {
+            - displayName: String
+            - profilePictureUrl: String
+            --
+            + getDisplayName() : String
+            + setDisplayName(displayName : String) : void
+            + getProfilePictureUrl() : String
+            + setProfilePictureUrl(profilePictureUrl : String) : void
+        }
+
+        class Artist {
+            - bio : String
+            - followersCount : int
+            --
+            + getBio() : String
+            + setBio(bio : String) : void
+            + getFollowersCount() : int
+            + setFollowersCount(count : int) : void
+        }
+
+        class Admin {
+            
+        }
+
+        class ArtistRequest{
+            - applicantId : int
+            - status : ArtistRequestStatus
+            - reason : String
+            --
+            + getUserId() : int
+            + getStatus() : ArtistRequestStatus
+            + getReason() : String
+        }
+
+        User -- ArtistRequest : files
+        Admin -- ArtistRequest : inspects
+
+        Account <|-- User
+        Account <|-- Artist
+        Account <|-- Admin
+
+        interface ILibraryAsset {
+            + getTitle() : String
+            + getId() : int
+        }
+
+        Song ..|> ILibraryAsset
+        Album ..|> ILibraryAsset
+        Playlist ..|> ILibraryAsset
+
+        ' -------- MUSIC CORE --------
+        class Song {
+            - artist : Artist 
+            - songId : int
+            - title : String
+            - duration : int
+            - filepathUrl : String
+            --
+            + getTitle() : String
+            + getArtist() : Artist
+            + getDuration() : int
+            + getFilepathUrl() : String
+            + getId() : int
+            + checkIfEqual(song : Song)
+        }
+
+        class Album {
+            - artist : Artist
+            - albumId : int
+            - title : String
+            - releaseDate : Date
+            - songs : List<Song>
+            --
+            + getTitle() : String
+            + setTitle(title : String) : void
+            + getArtist() : Artist
+            + getReleaseDate() : Date
+            + getId() : int
+            + getSongs() : List<Song>
+            + addSong(song : Song) : void
+            + removeSong(song : Song) : void
+        }
+
+        class AlbumItem {
+            - song : Song
+            - trackNumber : int
+            - dateAdded : Date
+            --
+            + getSong() : Song
+            + getTrackNumber() : int
+            + void setTrackNumber(trackNumber : int) : void
+            + getDateAdded() : Date
+        }
+
+        Artist -- Song : creates
+        Artist -- Album : creates
+
+        Album -- AlbumItem
+        AlbumItem -- Song
+
+        ' -------- PLAYLIST SYSTEM --------
+        class Playlist {
+            - playlistItems : List<PlaylistItem>
+            - creator : User
+            - coauthors : List<User>
+            --
+            + getSongs() : List<Song>
+            + addSong(song : Song) : void
+            + removeSong(song : Song) : void
+            + getTitle() : String
+            + setTitle(title : String) : void
+            + getCreator() : User
+            + getCoauthors() : List<User>
+            + addCoauthor(user : User) : void
+            + removeCoauthor(user : User) : void
+            + toggleVisibility() : void
+            + getPlaylistItems() : List<PlaylistItem>
+        }
+
+        class PlaylistItem {
+            - song : Song
+            - position : int
+            --
+            + getSong() : Song
+            + getPosition() : int
+            + setPosition(position : int) : void
+        }
+
+        User -- Playlist : owns
+        Playlist -- PlaylistItem
+        PlaylistItem -- Song
+        Album -- Playlist
+
+        ' -------- LIBRARY --------
+        class Library {
+            - assets : List<ILibraryAsset>
+            --
+            + getAssets() : List<ILibraryAsset>
+            + addAsset(asset : ILibraryAsset) : void
+            + removeAsset(asset : ILibraryAsset) : void
+        }
+
+        User -- Library
+
+        Library -- ILibraryAsset
+
+        ' -------- LISTENING HISTORY --------
+        class ListeningHistory { 
+            - history : List<ListeningHistoryItem>
+            --
+            + addSong(Song song) : void
+            + getHistory() : List<ListeningHistoryItem>
+        }
+
+        class ListeningHistoryItem {
+            - song : Song
+            - playedAt : LocalDateTime
+            --
+            + getSong() : Song
+            + getPlayedAt() : LocalDateTime
+        }
+
+        User --> ListeningHistory
+        ListeningHistory -- ListeningHistoryItem
+        ListeningHistoryItem -- Song
     }
 
-    class Artist {
-        - bio : String
-        - followersCount : int
-        --
-        + getBio() : String
-        + setBio(bio : String) : void
-        + getFollowersCount() : int
-        + setFollowersCount(count : int) : void
+    ' =====================================================
+    ' DTO LAYER
+    ' =====================================================
+
+    package "DTO Layer" {
+        folder "Requests" {
+            class AddSongRequest {
+
+            }
+
+            class ApproveArtistRequest {
+
+            }
+
+            class ArtistApplicationRequest {
+
+            }
+
+            class SongRequest {
+
+            }
+        }
+
+        folder "Responses" {
+            ' ------ Respones ----- '
+            class PlaylistResponse {
+
+            }
+
+            class AddSongResponse {
+
+            }
+
+            class ArtistRequestResponse {
+
+            }
+
+            class ApiResponse {
+
+            }
+
+            class SongResponse {
+
+            }
+        }
     }
-
-    class Admin {
-        
-    }
-    class ArtistRequest{
-        - applicantId : int
-        - status : ArtistRequestStatus
-        - reason : String
-        --
-        + getUserId() : int
-        + getStatus() : ArtistRequestStatus
-        + getReason() : String
-    }
-
-    User -- ArtistRequest : files
-    Admin -- ArtistRequest : inspects
-
-    Account <|-- User
-    Account <|-- Artist
-    Account <|-- Admin
-
-    interface ILibraryAsset {
-        + getTitle() : String
-        + getId() : int
-    }
-
-    Song ..|> ILibraryAsset
-    Album ..|> ILibraryAsset
-    Playlist ..|> ILibraryAsset
-
-    ' -------- MUSIC CORE --------
-    class Song {
-        - artist : Artist 
-        - songId : int
-        - title : String
-        - duration : int
-        - filepathUrl : String
-        --
-        + getTitle() : String
-        + getArtist() : Artist
-        + getDuration() : int
-        + getFilepathUrl() : String
-        + getId() : int
-    }
-
-    class Album {
-        - artist : Artist
-        - albumId : int
-        - title : String
-        - releaseDate : Date
-        - songs : List<Song>
-        --
-        + getTitle() : String
-        + setTitle(title : String) : void
-        + getArtist() : Artist
-        + getReleaseDate() : Date
-        + getId() : int
-        + getSongs() : List<Song>
-        + addSong(song : Song) : void
-        + removeSong(song : Song) : void
-    }
-
-    class AlbumItem {
-        - song : Song
-        - trackNumber : int
-        - dateAdded : Date
-        --
-        + getSong() : Song
-        + getTrackNumber() : int
-        + void setTrackNumber(trackNumber : int) : void
-        + getDateAdded() : Date
-    }
-
-    Artist -- Song : creates
-    Artist -- Album : creates
-
-    Album -- AlbumItem
-    AlbumItem -- Song
-
-    ' -------- PLAYLIST SYSTEM --------
-    class Playlist {
-        - playlistItems : List<PlaylistItem>
-        - creator : User
-        - coauthors : List<User>
-        --
-        + getSongs() : List<Song>
-        + addSong(song : Song) : void
-        + removeSong(song : Song) : void
-        + getTitle() : String
-        + setTitle(title : String) : void
-        + getCreator() : User
-        + getCoauthors() : List<User>
-        + addCoauthor(user : User) : void
-        + removeCoauthor(user : User) : void
-        + toggleVisibility() : void
-        + getPlaylistItems() : List<PlaylistItem>
-    }
-
-    class PlaylistItem {
-        - song : Song
-        - position : int
-        --
-        + getSong() : Song
-        + getPosition() : int
-        + setPosition(position : int) : void
-    }
-
-    User -- Playlist : owns
-    Playlist -- PlaylistItem
-    PlaylistItem -- Song
-    Album -- Playlist
-
-    ' -------- LIBRARY --------
-    class Library {
-        - assets : List<ILibraryAsset>
-        --
-        + getAssets() : List<ILibraryAsset>
-        + addAsset(asset : ILibraryAsset) : void
-        + removeAsset(asset : ILibraryAsset) : void
-    }
-
-    User -- Library
-
-    Library -- ILibraryAsset
-
-    ' -------- LISTENING HISTORY --------
-    class ListeningHistory { 
-        - history : List<ListeningHistoryItem>
-        --
-        + addSong(Song song) : void
-        + getHistory() : List<ListeningHistoryItem>
-    }
-
-    class ListeningHistoryItem {
-        - song : Song
-        - playedAt : LocalDateTime
-        --
-        + getSong() : Song
-        + getPlayedAt() : LocalDateTime
-    }
-
-    User --> ListeningHistory
-    ListeningHistory -- ListeningHistoryItem
-    ListeningHistoryItem -- Song
-}
 
     ' =====================================================
     ' VIEW LAYER
     ' =====================================================
 
-    package "View Layer" {
+    package "View" {
 
         interface View
         interface LibraryAssetView
 
         ' Persistent UI
         class TopBarView{
-        + onHomeClicked() : void
-        + onSearchClicked() : void
-        + onProfileClicked() : void
-    }
+            + onHomeClicked() : void
+            + onSearchClicked() : void
+            + onProfileClicked() : void
+        }
        class MusicPlayerView{
-        + onPlayClicked() : void
-        + onPauseClicked() : void
-        + onNextClicked() : void
-        + onPreviousClicked() : void
-        + onVolumeChanged() : void
-        + onShuffleClicked() : void
-        + onRepeatClicked() : void
+            + onPlayClicked() : void
+            + onPauseClicked() : void
+            + onNextClicked() : void
+            + onPreviousClicked() : void
+            + onVolumeChanged() : void
+            + onShuffleClicked() : void
+            + onRepeatClicked() : void
 
-        'WIP'
-        + onQueueClicked() : void
-    }
+            'WIP'
+            + onQueueClicked() : void
+        }
         class LibraryView{
-        + onAssetClicked(asset : ILibraryAsset) : void
-        + onAssetRightClicked(asset : ILibraryAsset) : void
-    }
+            + onAssetClicked(asset : ILibraryAsset) : void
+            + onAssetRightClicked(asset : ILibraryAsset) : void
+        }
 
         ' Main screens
         class HomeView
@@ -239,6 +285,7 @@ package "Frontend" {
         }
 
         class SongView {
+            - songController : SongController
             + onRightClickSong() : void
             - showOptionsMenu() : void
             + onAddToPlaylistClicked() : void
@@ -262,7 +309,20 @@ package "Frontend" {
             + OnLogoutClicked() : void
         }
 
-        class AdminView
+        class AdminView {
+            - adminController : AdminController
+            - artistRequests : List<ArtistRequest>
+            --
+            + setAdminController(adminController : AdminController)
+            + setArtistRequests(artistRequests : List<ArtistRequest>)
+            + onArtistRequestClicked()
+            + displayArtistRequests(artistRequests : List<ArtistRequest>)
+            + onArtistRequestShowDetailsClicked(artistRequest : ArtistRequest)
+            + showArtistRequestDetails(artistRequest : ArtistRequest)
+            + onApproveArtistRequestClicked(int requestId)
+            + onRejectArtistRequestClicked(int requestId)
+            + showMessage(message : String)
+        }
 
         class ArtistProfileView {
             - artistProfileController : ArtistProfileController
@@ -319,7 +379,7 @@ package "Frontend" {
     ' CONTROLLER LAYER
     ' =====================================================
 
-    package "Controller Layer" {
+    package "ControllerFrontend" as cf{
 
          interface IController {
             + draw() : void
@@ -485,7 +545,7 @@ package "Frontend" {
     ' SERVICE LAYER
     ' =====================================================
 
-    package "Service Layer" {
+    package "ServiceFrontend" as sf{
 
         class ListeningHistoryService {
             + addSong(song : Song) : void
@@ -637,7 +697,7 @@ package "Frontend" {
     ' Api LAYER
     ' =====================================================
 
-    package "Api Layer" {
+    package "Api" as api{
 
         class ApiClient {
             - httpClient : HttpClient
@@ -664,6 +724,7 @@ package "Frontend" {
             + updatePlaylist() : void
         }
         class AlbumApi
+        class SongApi
         class LibraryApi
         class UserApi
         class AdminApi
@@ -684,7 +745,7 @@ package "Frontend" {
     ' EVENT SYSTEM
     ' =====================================================
 
-    package "Event System" {
+    package "EventSystem" {
 
         interface Event
         class EventBus
@@ -710,30 +771,30 @@ package "Frontend" {
     ' APP BOOTSTRAP
     ' =====================================================
 
-    MusicApp -- TopBarController
-    MusicApp -- LibraryController
-    MusicApp -- MusicPlayerController
-    MusicApp -- HomeView
+        MusicApp -- TopBarController
+        MusicApp -- LibraryController
+        MusicApp -- MusicPlayerController
+        MusicApp -- HomeView
 
     ' =====================================================
     ' VIEW → CONTROLLER
     ' =====================================================
 
-    HomeView -- HomeController
-    SearchView -- SearchController
-    SongView -- SongController
-    AlbumView -- AlbumController
-    PlaylistView -- PlaylistController
-    ArtistView -- ArtistProfileController
-    LoginView -- LoginController
-    LibraryView -- LibraryController
-    TopBarView -- TopBarController
-    MusicPlayerView -- MusicPlayerController
-    UserProfileView -- UserProfileController
-    AdminView -- AdminController
-    UploadSongView -- UploadSongController
-    ArtistProfileView -- ArtistProfileController
-    PaymentView -- PaymentController
+        HomeView -- HomeController
+        SearchView -- SearchController
+        SongView -- SongController
+        AlbumView -- AlbumController
+        PlaylistView -- PlaylistController
+        ArtistView -- ArtistProfileController
+        LoginView -- LoginController
+        LibraryView -- LibraryController
+        TopBarView -- TopBarController
+        MusicPlayerView -- MusicPlayerController
+        UserProfileView -- UserProfileController
+        AdminView -- AdminController
+        UploadSongView -- UploadSongController
+        ArtistProfileView -- ArtistProfileController
+        PaymentView -- PaymentController
 
 
     ' =====================================================
@@ -802,41 +863,42 @@ package "Frontend" {
     ' Api → CLIENT
     ' =====================================================
 
-    SongApi -- ApiClient
-    PlaylistApi -- ApiClient
-    AlbumApi -- ApiClient
-    LibraryApi -- ApiClient
-    UserApi -- ApiClient
-    ArtistApi -- ApiClient
-    LoginApi -- ApiClient
-    ArtistRequestApi -- ApiClient
-    AdminApi -- ApiClient
-    PaymentApi -- ApiClient
+        SongApi -- ApiClient
+        PlaylistApi -- ApiClient
+        AlbumApi -- ApiClient
+        LibraryApi -- ApiClient
+        UserApi -- ApiClient
+        ArtistApi -- ApiClient
+        LoginApi -- ApiClient
+        ArtistRequestApi -- ApiClient
+        AdminApi -- ApiClient
+        PaymentApi -- ApiClient
 
+    
 
     ' =====================================================
     ' EVENT SYSTEM USAGE
     ' =====================================================
 
-    HomeController ..> EventBus : publish
-    SearchController ..> EventBus : publish
-    PlaylistController ..> EventBus : publish
-    SongController ..> EventBus : publish
-    AlbumController ..> EventBus : publish
-    LibraryController ..> EventBus : publish
-    LoginController ..> EventBus : publish
+        HomeController ..> EventBus : publish
+        SearchController ..> EventBus : publish
+        PlaylistController ..> EventBus : publish
+        SongController ..> EventBus : publish
+        AlbumController ..> EventBus : publish
+        LibraryController ..> EventBus : publish
+        LoginController ..> EventBus : publish
 
-    MusicPlayerController ..> EventBus : subscribe
+        MusicPlayerController ..> EventBus : subscribe
 
     ' =====================================================
     ' MODEL USAGE (MINIMAL)
     ' =====================================================
 
-    LibraryService -- Library
-    LibraryService -- LibraryAsset
-    PlaybackService -- Song
-    LoginService -- Account
-    UserService -- Account
+        LibraryService -- Library
+        LibraryService -- LibraryAsset
+        PlaybackService -- Song
+        LoginService -- Account
+        UserService -- Account
 
 }
  
@@ -847,7 +909,7 @@ package "Spring Backend" <<External System>> {
 ' DOMAIN LAYER (ENTITIES)
 ' =====================================================
 
-package "Domain (Entities)" as E {
+package "Domain (Entities)" as EB {
 
     class Account
     class User
@@ -888,7 +950,7 @@ package "DTO Layer" {
 ' CONTROLLER LAYER (REST Api)
 ' =====================================================
 
-package "Controller Layer (REST)" as C{
+package "Backend Controller Layer (REST)" as C{
 
     interface Api
 
@@ -916,8 +978,6 @@ package "Controller Layer (REST)" as C{
     Api <|.. ArtistRequestBackendController
     Api <|.. PaymentBackendController
 }
-
-
 
 ' =====================================================
 ' SERVICE LAYER
@@ -952,8 +1012,6 @@ package "BackendService Layer" as S{
     BackendService <|.. ArtistRequestBackendService
     BackendService <|.. PaymentBackendService
 }
-
-
 
 ' =====================================================
 ' BackendRepository LAYER
@@ -990,7 +1048,10 @@ package "BackendRepository Layer (JPA)" {
     JpaBackendRepository <|.. PaymentRepository
 }
 
-
+' =====================================================
+' FLOW: API → CONTROLLER
+' =====================================================
+ApiClient -- Api
 
 ' =====================================================
 ' FLOW: CONTROLLER → BackendService
@@ -1039,17 +1100,5 @@ UserBackendController -- UserDTO
 ArtistBackendController -- ArtistDTO
 LibraryBackendController -- LibraryDTO
 
-' =====================================================
-' CONTROLLER → Api layer
-' =====================================================
-AlbumApi -- AlbumBackendController
-SongApi -- SongBackendController
-PlaylistApi -- PlaylistBackendController
-LibraryApi -- LibraryBackendController
-UserApi -- UserBackendController
-ArtistRequestApi -- ArtistRequestBackendController
-ArtistApi -- ArtistBackendController
-AdminApi -- AdminBackendController
-PaymentApi -- PaymentBackendController
 }
 @enduml

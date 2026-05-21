@@ -19,4 +19,4 @@ public class ArtistApplicationRequest {
     public String getMessage() {
         return message;
     }
-}
+} 

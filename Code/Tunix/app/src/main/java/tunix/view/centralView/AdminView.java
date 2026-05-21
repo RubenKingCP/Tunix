@@ -5,12 +5,8 @@ import tunix.model.ArtistRequest;
 import java.util.List;
 
 public class AdminView {
-    private final AdminController adminController;
+    private AdminController adminController;
     private List<ArtistRequest> artistRequests;
-
-    public AdminView(AdminController adminController) {
-        this.adminController = adminController;
-    }
 
     public void display() {
         // Logic to display the admin view
@@ -30,7 +26,7 @@ public class AdminView {
         // Logic to display artist requests in the view
     }
 
-    public void showArtistRequestDetails(ArtistRequest artistRequest) {
+    private void showArtistRequestDetails(ArtistRequest artistRequest) {
         // Logic to display artist request details in the view
     }
 
@@ -50,5 +46,9 @@ public class AdminView {
 
     public void showMessage(String message) {
         
+    }
+
+    public void setController(AdminController adminController) {
+        this.adminController = adminController;
     }
 }

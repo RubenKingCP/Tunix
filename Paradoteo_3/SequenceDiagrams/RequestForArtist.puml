@@ -26,7 +26,7 @@ ArtistRequestAPI -> ArtistRequestBackendController : applyForArtist()
 activate ArtistRequestBackendController
 ArtistRequestBackendController -> ArtistRequestBackendService : applyForArtist()
 activate ArtistRequestBackendService
-ArtistRequestBackendService -> ArtistRequestRepository : saveArtistRequest()
+ArtistRequestBackendService -> ArtistRequestRepository : save()
 activate ArtistRequestRepository
 ArtistRequestRepository -> Database : Execute SQL to save artist request
 Database --> ArtistRequestRepository : Success/Failure

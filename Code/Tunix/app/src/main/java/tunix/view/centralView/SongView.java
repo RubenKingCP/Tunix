@@ -13,7 +13,7 @@ public class SongView {
         this.showOptionsMenu();
     }
 
-    public void showOptionsMenu() {
+    private void showOptionsMenu() {
         // Gui work to show options menu for the song
     }
 
@@ -21,7 +21,7 @@ public class SongView {
         this.showSelectPlaylistDialog();
     }
 
-    public void showSelectPlaylistDialog() {
+    private void showSelectPlaylistDialog() {
         
     }
 
