@@ -307,6 +307,10 @@ package "Frontend" {
         class UserProfileView{
             + OnSettingsClicked() : void
             + OnLogoutClicked() : void
+            + onShowPremiumScreenClicked() : void
+            + showPremiumTrialScreen() : void
+            + showPremiumPlan() : void
+            + showTrialStartedMessage() : void
         }
 
         class AdminView {
@@ -486,7 +490,10 @@ package "Frontend" {
             + onApproveRequestClicked(requestId : int) : void
             + onRejectRequestClicked(requestId : int, reason : String) : void
         }
-        class UserProfileController
+        class UserProfileController{
+            checkTrialEligibility() : void
+            startTrial() : boolean
+        }
         class ArtistProfileController{
             - artistProfileView : ArtistProfileView
             - artistProfileService : ArtistProfileService
@@ -614,6 +621,10 @@ package "Frontend" {
             + updateUserProfile(user : User) : void
 
             + deactivateUser(userId : int) : void
+
+            + checkTrialEligibility(userId : int) : boolean
+
+            + trialStarted(userId : int) : boolean
         }
 
 
@@ -726,7 +737,11 @@ package "Frontend" {
         class AlbumApi
         class SongApi
         class LibraryApi
-        class UserApi
+        class UserApi{
+            - apiClient : ApiClient
+            --
+            + trialStarted(userId : int) : boolean
+        }
         class AdminApi
         class LoginApi
         class ArtistApi
@@ -912,7 +927,17 @@ package "Spring Backend" <<External System>> {
 package "Domain (Entities)" as EB {
 
     class Account
-    class User
+    class User{
+        + displayName: String
+        + profilePictureUrl: String
+        --
+        + getDisplayName() : String
+        + setDisplayName(displayName : String) : void
+        + getProfilePictureUrl() : String
+        + setProfilePictureUrl(profilePictureUrl : String) : void
+        + checkTrialEligibility(userId : int) : boolean
+        + startTrial(userId : int) : boolean
+    }
     class Artist
     class Admin
     class Song

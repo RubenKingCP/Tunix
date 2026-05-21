@@ -64,7 +64,7 @@ alt isEligible == true
     deactivate UserApiClient
     UserService --> UserProfileController : trialStarted
     deactivate UserService
-    UserProfileController --> UserProfileView : showTrialStartedMessage()
+    UserProfileController -> UserProfileView : showTrialStartedMessage()
     deactivate UserProfileController
 else
     UserProfileController -> UserProfileView : showPremiumPlan()
