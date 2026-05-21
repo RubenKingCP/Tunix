@@ -1,4 +1,7 @@
 @startuml Upload Song
+
+title Upload Song
+
 actor Artist as artist 
 participant ArtistProfileView as profileView
 participant ArtistProfileController as profileController

@@ -1,4 +1,7 @@
 @startuml CreatePlaylist
+
+title CreatePlaylist
+
 actor User as user 
 participant LibraryView as libraryView
 participant LibraryController as libraryController

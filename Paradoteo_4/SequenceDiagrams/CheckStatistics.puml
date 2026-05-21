@@ -1,0 +1,67 @@
+@startuml CheckStatistics
+
+title Check Statistics
+
+actor Artist as artist
+
+participant HomeView
+participant HomeController
+participant ArtistProfileView
+participant ArtistProfileController
+participant ArtistService
+participant ArtistApiClient
+participant ApiClient
+participant ArtistBackendController
+participant ArtistBackendService
+participant ArtistBackendRepository
+participant EventBus
+
+database Database
+
+activate HomeView
+artist -> HomeView : Click on "Profile"
+HomeView -> HomeController : onProfileClicked()
+deactivate HomeView
+activate HomeController
+HomeController -> EventBus : publish(OpenArtistProfileEvent) to subscribers
+deactivate HomeController
+activate EventBus
+EventBus -> ArtistProfileController : onOpenArtistProfileEvent()
+activate ArtistProfileController
+ArtistProfileController -> ArtistProfileView : showArtistProfile()
+activate ArtistProfileView
+artist -> ArtistProfileView : open settings
+ArtistProfileView -> ArtistProfileView : openSettings()
+artist -> ArtistProfileView : Click on "Statistics"
+ArtistProfileView -> ArtistProfileController : fetchStatistics()
+ArtistProfileController -> ArtistService : getArtistStatistics()
+activate ArtistService
+ArtistService -> ArtistApiClient : getArtistStatistics()
+activate ArtistApiClient
+ArtistApiClient -> ApiClient : get("/artist/statistics", new TypeReference<ApiResponse<ArtistStatisticsResponse>>() {})
+activate ApiClient
+ApiClient -> ArtistBackendController : GET /artist/statistics
+activate ArtistBackendController
+ArtistBackendController -> ArtistBackendService : getArtistStatistics()
+activate ArtistBackendService
+ArtistBackendService -> ArtistBackendRepository : getArtistStatistics()
+activate ArtistBackendRepository
+ArtistBackendRepository -> Database : Execute SQL to get artist statistics
+Database --> ArtistBackendRepository : Return artist statistics data
+ArtistBackendRepository --> ArtistBackendService : Return artist statistics data
+deactivate ArtistBackendRepository
+ArtistBackendService -> ArtistBackendController : Return artist statistics data
+deactivate ArtistBackendService
+ArtistBackendController -> ApiClient : Return artist statistics data
+deactivate ArtistBackendController
+ApiClient -> ArtistApiClient : Return artist statistics data
+deactivate ApiClient
+ArtistApiClient --> ArtistService : Return artist statistics data
+deactivate ArtistApiClient
+ArtistService --> ArtistProfileController : Return artist statistics data
+deactivate ArtistService
+ArtistProfileController -> ArtistProfileView : displayStatistics(statisticsData)
+deactivate ArtistProfileController
+
+
+@enduml
