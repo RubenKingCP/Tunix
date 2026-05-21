@@ -1,6 +1,6 @@
 @startuml Approve / Reject Artist Request
 
-title Approve / Reject Artist Request
+title Approve Reject Artist Request
 
 actor Admin
 participant AdminView
