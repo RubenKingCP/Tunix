@@ -1,6 +1,7 @@
 %% Διάγραμμα:
 
 @startuml
+skinparam linetype ortho
 
 left to right direction
 
