@@ -10,12 +10,12 @@ import tunix.model.ILibraryAsset;
 import tunix.model.Playlist;
 import tunix.model.Song;
 import tunix.model.User;
+import tunix.service.auth.SessionService;
 
 public class LibraryService {
 
     public List<ILibraryAsset> getLibraryAssets() {
-        User you = new User(1L, "you", "you@example.com", Role.USER);
-        you.setDisplayName("You");
+        User you = (User) SessionService.Instance.getUser();
 
         Artist arcticMonkeys = new Artist(
                 2L,

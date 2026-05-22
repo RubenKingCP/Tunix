@@ -8,9 +8,10 @@ import tunix.model.Account;
 public class SessionService {
     private Account currentUser;
     private final EventBus eventBus;
-
+    public static SessionService Instance;
     public SessionService(EventBus eventBus){
         this.eventBus = eventBus;
+        Instance = this;
 
         eventBus.subscribe(RegisterSuccessfulEvent.class, e -> {
             this.setUser(e);

@@ -133,17 +133,17 @@ public class AppLauncher {
         
         musicPlayerView.setController(musicPlayerController);
 
-        // Top Bar Controller
-        TopBarView topBarView = new TopBarView();
-        SearchService searchService = new SearchService(apiClient);
-        TopBarController topBarController = new TopBarController(topBarView, searchService, eventBus);
-    
-        topBarView.setController(topBarController);
-
         // Home
         HomeView homeView = new HomeView();
         HomeController homeController = new HomeController(homeView);
 
-        return new MainPanel(topBarView, libraryView, homeView, musicPlayerView);
+        // Top Bar Controller
+        TopBarView topBarView = new TopBarView();
+        SearchService searchService = new SearchService(apiClient);
+        TopBarController topBarController = new TopBarController(topBarView, searchService, eventBus, homeView);
+
+        topBarView.setController(topBarController);
+
+        return new MainPanel(topBarView, libraryView, homeView, musicPlayerView, eventBus);
     }
 }
