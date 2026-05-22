@@ -5,7 +5,9 @@ import tunixserver.entities.PlaylistEntity;
 import tunixserver.entities.SongEntity;
 import tunixserver.repository.PlaylistBackendRepository;
 import tunixserver.repository.SongBackendRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PlaylistBackendService {
     private final PlaylistBackendRepository playlistBackendRepository;
     private final SongBackendRepository songBackendRepository;
@@ -33,7 +35,7 @@ public class PlaylistBackendService {
     public boolean checkDuplicate(int playlistId, int songId) {
         PlaylistEntity playlist = playlistBackendRepository.findById(playlistId);
         for (SongEntity s : playlist.getSongs()) {
-            if (s.getId() == songId) {
+            if (s.getSongId() == songId) {
                 return true; // Song already in playlist
             }
         }

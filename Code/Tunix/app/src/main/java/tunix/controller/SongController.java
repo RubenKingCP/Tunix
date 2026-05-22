@@ -1,8 +1,9 @@
 package tunix.controller;
 
-import tunix.view.centralView.SongView;
+import tunix.model.Song;
 import tunix.service.PlaylistService;
 import tunix.service.SongService;
+import tunix.view.center.SongView;
 
 public class SongController {
     private final SongService songService;
@@ -13,6 +14,10 @@ public class SongController {
         this.songService = songService;
         this.songView = songView;
         this.playlistService = playlistService;
+    }
+
+    public void playSong(Song song) {
+        // Chnange the 
     }
 
     public void addSongToPlaylist(int playlistId, int songId) {

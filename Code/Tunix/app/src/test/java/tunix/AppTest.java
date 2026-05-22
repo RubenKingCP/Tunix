@@ -4,6 +4,9 @@
 package tunix;
 
 import org.junit.jupiter.api.Test;
+
+import tunix.app.TunixApp;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {

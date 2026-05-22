@@ -1,7 +1,7 @@
 package tunix.controller;
 
 import tunix.service.SongService;
-import tunix.view.centralView.UploadSongView;
+import tunix.view.center.UploadSongView;
 import tunix.dto.request.SongRequest;
 import tunix.event.EventBus;
 import tunix.model.Song;

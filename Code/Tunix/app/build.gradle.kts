@@ -40,7 +40,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "tunix.TunixApp"
+    mainClass = "tunix.app.TunixApp"
 }
 
 tasks.named<Test>("test") {

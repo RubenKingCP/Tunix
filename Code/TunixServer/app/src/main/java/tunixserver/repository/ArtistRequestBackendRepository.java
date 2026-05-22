@@ -3,7 +3,9 @@ package tunixserver.repository;
 import tunixserver.entities.ArtistRequestEntity;
 
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ArtistRequestBackendRepository {
     public List<ArtistRequestEntity> findAll() {
         // Logic to retrieve all artist requests from the database

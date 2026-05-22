@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class ArtistRequestBackendService {
     private final ArtistRequestBackendRepository artistRequestRepository;
     

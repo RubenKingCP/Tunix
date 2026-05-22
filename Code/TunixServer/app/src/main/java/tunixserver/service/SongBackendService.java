@@ -4,6 +4,9 @@ import tunixserver.dto.request.SongRequest;
 import tunixserver.entities.SongEntity;
 import tunixserver.repository.SongBackendRepository;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class SongBackendService {
     private final SongBackendRepository songRepository;
     

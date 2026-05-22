@@ -1,9 +1,8 @@
 package tunix.controller;
 
 import tunix.event.EventBus;
-
-import tunix.view.centralView.ArtistProfileView;
 import tunix.service.ArtistProfileService;
+import tunix.view.center.ArtistProfileView;
 import tunix.event.OpenSongUploadViewEvent;
 import tunix.model.Artist;
 

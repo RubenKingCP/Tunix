@@ -4,7 +4,7 @@ import java.util.List;
 
 import tunix.service.AdminService;
 import tunix.service.ArtistRequestService;
-import tunix.view.centralView.AdminView;
+import tunix.view.center.AdminView;
 import tunix.model.ArtistRequest;
 
 public class AdminController {
