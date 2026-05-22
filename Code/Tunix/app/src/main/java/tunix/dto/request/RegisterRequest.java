@@ -26,5 +26,5 @@ public class RegisterRequest {
     public String getPassword() {
         return this.password;
     }
-
+    
 }

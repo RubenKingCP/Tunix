@@ -1,3 +1,5 @@
+package tunix.view.center;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -21,6 +23,25 @@ public class UploadSongView extends JPanel {
         add(buildSubmitButton());
     }
 
+    public void displaySelectedImageCover(String imageFilePath) {
+
+    }   
+
+    public void displaySelectedSongFile(String songFilePath) {
+
+    }
+
+    public void display(){
+
+    }
+
+    public void displaySuccess(String messaString) {
+
+    }
+    
+    public void displayError(String meString) {
+
+    }
     private JLabel buildTitle() {
         JLabel title = new JLabel("Upload a Song");
         title.setFont(new Font("Arial", Font.BOLD, 28));
