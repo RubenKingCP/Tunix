@@ -47,7 +47,7 @@ public class UserBackendService {
                 savedAccount.getAccountId(),
                 savedAccount.getUsername(),
                 savedAccount.getEmail(),
-                savedAccount.getRole().name()
+                savedAccount.getRole()
         );
     }
 }

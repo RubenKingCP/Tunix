@@ -6,7 +6,7 @@ public class Artist extends Account {
     private String biography;
     private int followersCount;
 
-    public Artist(int id, String username, String email, Role accountStatus, String biography, int followersCount) {
+    public Artist(Long id, String username, String email, Role accountStatus, String biography, int followersCount) {
         super(id, username, email, accountStatus);
         this.biography = biography;
         this.followersCount = followersCount;

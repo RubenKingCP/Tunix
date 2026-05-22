@@ -2,7 +2,7 @@ package tunix.controller.auth;
 
 import tunix.event.EventBus;
 import tunix.event.GoToRegisterButtonClicked;
-import tunix.service.LoginService;
+import tunix.service.auth.LoginService;
 import tunix.view.auth.LoginView;
 
 public class LoginController {

@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import tunix.event.EventBus;
+import tunix.event.RegisterSuccessfulEvent;
 
 public class AppWindow extends JFrame {
 
@@ -34,7 +35,7 @@ public class AppWindow extends JFrame {
     }
 
     private void subscribe(EventBus eventBus) {
-        
+        eventBus.subscribe(RegisterSuccessfulEvent.class, e -> showMain());
     }
 
     public void showAuth() {

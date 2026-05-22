@@ -1,4 +1,4 @@
-package tunix.service;
+package tunix.service.auth;
 
 import tunix.api.LoginApiClient;
 

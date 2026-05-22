@@ -1,3 +1,5 @@
+package tunix.view.main;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -333,7 +335,7 @@ public class HomeView extends JPanel {
     // =========================================================
     //  Main (standalone test)
     // =========================================================
-    public static void main(String[] args) {
+    public void display() {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Tunix \u2013 Home");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

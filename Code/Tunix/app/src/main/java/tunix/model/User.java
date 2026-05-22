@@ -7,7 +7,7 @@ public class User extends Account {
     private String displayName;
     private String profilePictureUrl;
     
-    public User(int id, String username, String email, Role accountStatus) {
+    public User(Long id, String username, String email, Role accountStatus) {
         super(id, username, email, accountStatus);
     }
     

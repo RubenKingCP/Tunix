@@ -13,15 +13,17 @@ import tunix.controller.main.LibraryController;
 import tunix.controller.main.MusicPlayerController;
 import tunix.controller.main.TopBarController;
 import tunix.service.LibraryService;
-import tunix.service.LoginService;
 import tunix.service.MusicPlayerService;
 import tunix.service.PlaylistService;
-import tunix.service.RegisterService;
 import tunix.service.SearchService;
+import tunix.service.auth.LoginService;
+import tunix.service.auth.RegisterService;
+import tunix.service.auth.SessionService;
 import tunix.view.auth.AuthPanel;
 import tunix.view.auth.LoginView;
 import tunix.view.auth.RegisterView;
-import tunix.view.center.HomeView;
+import tunix.view.library.*;
+import tunix.view.main.HomeView;
 import tunix.view.main.LibraryView;
 import tunix.view.main.MainPanel;
 import tunix.view.main.MusicPlayerView;
@@ -67,7 +69,9 @@ public class AppLauncher {
     }
 
     private static AuthPanel createAuthPanel(ApiClient apiClient, EventBus eventBus) {
+        // Setup sessionService
 
+        SessionService sessionService = new SessionService(eventBus);
         // Setup login
         LoginView loginView = new LoginView();
 
@@ -91,13 +95,14 @@ public class AppLauncher {
 
         RegisterService registerService =
                 new RegisterService(
-                        new RegisterApiClient(apiClient)
+                        new RegisterApiClient(apiClient), eventBus
                 );
 
         RegisterController registerController =
                 new RegisterController(
                         registerView,
                         registerService,
+                        sessionService,
                         eventBus
                 );
 
