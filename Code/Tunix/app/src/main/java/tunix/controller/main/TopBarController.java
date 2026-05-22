@@ -14,4 +14,13 @@ public class TopBarController {
         this.searchService = searchService;
         this.eventBus = eventBus;
     }
+    public void onSearch(String query, String searchType) {
+        // Handle search logic using searchService
+    }
+    public void onHomeButtonClicked() {
+        // Handle home button click, possibly by posting an event to the EventBus
+    }
+    public void onProfileButtonClicked() {
+        // Handle profile button click, possibly by posting an event to the EventBus
+    }
 }
