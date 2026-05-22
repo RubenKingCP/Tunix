@@ -27,6 +27,16 @@ public class Song implements ILibraryAsset {
         return songId;
     }
 
+    @Override
+    public String getType() {
+        return "Song";
+    }
+
+    @Override
+    public String getSubtitle() {
+        return artist.getTitle();
+    }
+
     public Artist getArtist() {
         return artist;
     }

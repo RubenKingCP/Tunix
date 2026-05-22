@@ -29,6 +29,16 @@ public class Album implements ILibraryAsset{
         return albumId;
     }
 
+    @Override
+    public String getType() {
+        return "Album";
+    }
+
+    @Override
+    public String getSubtitle() {
+        return artist.getTitle();
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

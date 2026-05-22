@@ -25,6 +25,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,11 +40,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import tunix.controller.main.LibraryController;
 import tunix.dto.request.PlaylistCreateRequest;
-import tunix.model.Album;
-import tunix.model.Artist;
 import tunix.model.ILibraryAsset;
-import tunix.model.Playlist;
-import tunix.model.Song;
 
 public class LibraryView extends JPanel {
 
@@ -52,10 +49,6 @@ public class LibraryView extends JPanel {
     private String activeFilter = "All";
     private String searchQuery = "";
     private String sortMode = "Recent";
-
-    private boolean isGridView() {
-        return isExpanded;
-    }
 
     private JPanel headerPanel;
     private JPanel filterPanel;
@@ -119,13 +112,13 @@ public class LibraryView extends JPanel {
     }
 
     private int getParentWidth() {
-        Container p = getParent();
-        while (p != null) {
-            int w = p.getWidth();
-            if (w > 0) {
-                return w;
+        Container parent = getParent();
+        while (parent != null) {
+            int width = parent.getWidth();
+            if (width > 0) {
+                return width;
             }
-            p = p.getParent();
+            parent = parent.getParent();
         }
         return 1280;
     }
@@ -197,7 +190,7 @@ public class LibraryView extends JPanel {
         filterButtons.setBackground(BG);
 
         String[] filters = {"All", "Playlists", "Artists", "Albums", "Songs"};
-        javax.swing.ButtonGroup group = new javax.swing.ButtonGroup();
+        ButtonGroup group = new ButtonGroup();
 
         for (String filter : filters) {
             JToggleButton btn = new JToggleButton(filter);
@@ -205,9 +198,9 @@ public class LibraryView extends JPanel {
             styleFilterButton(btn, filter.equals(activeFilter));
             btn.addActionListener(e -> {
                 activeFilter = filter;
-                for (Component c : filterButtons.getComponents()) {
-                    if (c instanceof JToggleButton tb) {
-                        styleFilterButton(tb, tb.getText().equals(activeFilter));
+                for (Component component : filterButtons.getComponents()) {
+                    if (component instanceof JToggleButton toggleButton) {
+                        styleFilterButton(toggleButton, toggleButton.getText().equals(activeFilter));
                     }
                 }
                 refreshContent();
@@ -249,6 +242,7 @@ public class LibraryView extends JPanel {
                 }
             }
         });
+
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -290,16 +284,16 @@ public class LibraryView extends JPanel {
         return wrapper;
     }
 
-    private void styleFilterButton(JToggleButton btn, boolean selected) {
-        btn.setForeground(selected ? Color.BLACK : Color.WHITE);
-        btn.setBackground(selected ? Color.WHITE : new Color(40, 40, 40));
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setContentAreaFilled(false);
-        btn.setOpaque(true);
-        btn.setFont(new Font("Arial", Font.BOLD, 12));
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setBorder(BorderFactory.createCompoundBorder(
+    private void styleFilterButton(JToggleButton button, boolean selected) {
+        button.setForeground(selected ? Color.BLACK : Color.WHITE);
+        button.setBackground(selected ? Color.WHITE : new Color(40, 40, 40));
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setOpaque(true);
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(60, 60, 60), 1, true),
                 BorderFactory.createEmptyBorder(5, 14, 5, 14)
         ));
@@ -313,7 +307,7 @@ public class LibraryView extends JPanel {
         addMenuSectionLabel(menu, "Sort by");
         for (String option : new String[]{"Recent", "Alphabetical A-Z", "Alphabetical Z-A"}) {
             JMenuItem item = styledMenuItem(option);
-            item.addActionListener(ev -> {
+            item.addActionListener(event -> {
                 sortMode = option;
                 anchor.setText("↕ " + option);
                 refreshContent();
@@ -366,7 +360,7 @@ public class LibraryView extends JPanel {
 
         contentPanel.removeAll();
 
-        List<LibraryAssetData> visible = getVisibleAssets();
+        List<ILibraryAsset> visible = getVisibleAssets();
 
         if (visible.isEmpty()) {
             JLabel emptyLabel = new JLabel("No library assets match your filters.");
@@ -377,17 +371,17 @@ public class LibraryView extends JPanel {
             contentPanel.add(emptyLabel, BorderLayout.NORTH);
         } else if (isGridView()) {
             int panelWidth = getWidth();
-            int cols = Math.max(1, panelWidth > 100 ? panelWidth / 160 : 4);
-            contentPanel.setLayout(new java.awt.GridLayout(0, cols, 12, 12));
+            int columns = Math.max(1, panelWidth > 100 ? panelWidth / 160 : 4);
+            contentPanel.setLayout(new java.awt.GridLayout(0, columns, 12, 12));
             contentPanel.setBorder(BorderFactory.createEmptyBorder(8, 16, 16, 16));
-            for (LibraryAssetData item : visible) {
-                contentPanel.add(buildGridItem(item));
+            for (ILibraryAsset asset : visible) {
+                contentPanel.add(buildGridItem(asset));
             }
         } else {
             contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
             contentPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-            for (LibraryAssetData item : visible) {
-                contentPanel.add(buildListItem(item));
+            for (ILibraryAsset asset : visible) {
+                contentPanel.add(buildListItem(asset));
             }
         }
 
@@ -395,94 +389,39 @@ public class LibraryView extends JPanel {
         contentPanel.repaint();
     }
 
-    private List<LibraryAssetData> getVisibleAssets() {
-        List<LibraryAssetData> all = new ArrayList<>();
-        for (ILibraryAsset asset : libraryAssets) {
-            LibraryAssetData data = toDisplayData(asset);
-            if (data == null) {
-                continue;
-            }
-            if (!matchesFilter(data)) {
-                continue;
-            }
-            if (!searchQuery.isBlank() && !data.title().toLowerCase().contains(searchQuery.toLowerCase())) {
-                continue;
-            }
-            all.add(data);
+    private List<ILibraryAsset> getVisibleAssets() {
+        List<ILibraryAsset> visible = new ArrayList<>(libraryAssets);
+
+        visible.removeIf(asset -> !matchesFilter(asset));
+        if (!searchQuery.isBlank()) {
+            String query = searchQuery.toLowerCase();
+            visible.removeIf(asset -> !asset.getTitle().toLowerCase().contains(query));
         }
 
-        all.sort(getComparator());
-        return all;
+        visible.sort(getComparator());
+        return visible;
     }
 
-    private boolean matchesFilter(LibraryAssetData data) {
+    private boolean matchesFilter(ILibraryAsset asset) {
         if (activeFilter.equals("All")) {
             return true;
         }
-        return data.type().equals(activeFilter.substring(0, activeFilter.length() - 1));
+        return asset.getType().equals(activeFilter.substring(0, activeFilter.length() - 1));
     }
 
-    private Comparator<LibraryAssetData> getComparator() {
+    private Comparator<ILibraryAsset> getComparator() {
         return switch (sortMode) {
-            case "Alphabetical A-Z" -> Comparator.comparing(LibraryAssetData::title, String.CASE_INSENSITIVE_ORDER);
-            case "Alphabetical Z-A" -> Comparator.comparing(LibraryAssetData::title, String.CASE_INSENSITIVE_ORDER).reversed();
-            default -> Comparator.comparingInt(LibraryAssetData::sortPosition);
+            case "Alphabetical A-Z" -> Comparator.comparing(ILibraryAsset::getTitle, String.CASE_INSENSITIVE_ORDER);
+            case "Alphabetical Z-A" -> Comparator.comparing(ILibraryAsset::getTitle, String.CASE_INSENSITIVE_ORDER).reversed();
+            default -> Comparator.comparingInt(ILibraryAsset::getId).reversed();
         };
     }
 
-    private LibraryAssetData toDisplayData(ILibraryAsset asset) {
-        if (asset instanceof Song song) {
-            return new LibraryAssetData(
-                    song.getTitle(),
-                    song.getArtist().getTitle(),
-                    "Song",
-                    computeColor(song.getTitle()),
-                    false,
-                    0
-            );
-        }
-        if (asset instanceof Album album) {
-            return new LibraryAssetData(
-                    album.getTitle(),
-                    album.getArtist().getTitle(),
-                    "Album",
-                    computeColor(album.getTitle()),
-                    false,
-                    1
-            );
-        }
-        if (asset instanceof Playlist playlist) {
-            return new LibraryAssetData(
-                    playlist.getTitle(),
-                    "Playlist • " + playlist.getPlaylistItems().size() + " songs",
-                    "Playlist",
-                    computeColor(playlist.getTitle()),
-                    false,
-                    2
-            );
-        }
-        if (asset instanceof Artist artist) {
-            return new LibraryAssetData(
-                    artist.getTitle(),
-                    artist.getFollowersCount() + " followers",
-                    "Artist",
-                    computeColor(artist.getTitle()),
-                    true,
-                    3
-            );
-        }
-        return null;
+    private boolean isGridView() {
+        return isExpanded;
     }
 
-    private Color computeColor(String text) {
-        int hash = Math.abs(text.hashCode());
-        int r = 40 + (hash % 80);
-        int g = 50 + ((hash / 7) % 80);
-        int b = 70 + ((hash / 11) % 80);
-        return new Color(r, g, b);
-    }
-
-    private JPanel buildGridItem(LibraryAssetData item) {
+    private JPanel buildGridItem(ILibraryAsset asset) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(BG);
@@ -491,57 +430,61 @@ public class LibraryView extends JPanel {
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
         panel.setPreferredSize(new Dimension(140, 160));
 
-        int imgSize = 100;
-        JLabel img = buildImagePlaceholder(item, imgSize);
-        img.setAlignmentX(Component.CENTER_ALIGNMENT);
-        img.setMaximumSize(new Dimension(imgSize, imgSize));
-        panel.add(img);
+        JLabel image = buildImagePlaceholder(asset, 100);
+        image.setAlignmentX(Component.CENTER_ALIGNMENT);
+        image.setMaximumSize(new Dimension(100, 100));
+
+        JLabel title = new JLabel(asset.getTitle());
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("SansSerif", Font.BOLD, 12));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel subtitle = new JLabel(asset.getSubtitle());
+        subtitle.setForeground(new Color(160, 160, 160));
+        subtitle.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(image);
         panel.add(Box.createVerticalStrut(8));
-
-        JLabel name = new JLabel(item.title());
-        name.setForeground(Color.WHITE);
-        name.setFont(new Font("SansSerif", Font.BOLD, 12));
-        name.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel sub = new JLabel(item.subtitle());
-        sub.setForeground(new Color(160, 160, 160));
-        sub.setFont(new Font("SansSerif", Font.PLAIN, 11));
-        sub.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        panel.add(name);
+        panel.add(title);
         panel.add(Box.createVerticalStrut(2));
-        panel.add(sub);
+        panel.add(subtitle);
         panel.add(Box.createVerticalGlue());
+
+        attachClickHandler(panel, asset);
         return panel;
     }
 
-    private JPanel buildListItem(LibraryAssetData item) {
+    private JPanel buildListItem(ILibraryAsset asset) {
         JPanel panel = new JPanel(new BorderLayout(12, 0));
         panel.setBackground(BG);
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 64));
         panel.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
         panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        JLabel img = buildImagePlaceholder(item, 48);
-        panel.add(img, BorderLayout.WEST);
+        JLabel image = buildImagePlaceholder(asset, 48);
+        panel.add(image, BorderLayout.WEST);
 
         JPanel text = new JPanel();
         text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
         text.setBackground(BG);
 
-        JLabel name = new JLabel(item.title());
-        name.setForeground(Color.WHITE);
-        name.setFont(new Font("Arial", Font.BOLD, 14));
+        JLabel title = new JLabel(asset.getTitle());
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Arial", Font.BOLD, 14));
 
-        JLabel sub = new JLabel(item.subtitle());
-        sub.setForeground(new Color(160, 160, 160));
-        sub.setFont(new Font("Arial", Font.PLAIN, 12));
+        JLabel subtitle = new JLabel(asset.getSubtitle());
+        subtitle.setForeground(new Color(160, 160, 160));
+        subtitle.setFont(new Font("Arial", Font.PLAIN, 12));
 
         text.add(Box.createVerticalGlue());
-        text.add(name);
-        text.add(sub);
+        text.add(title);
+        text.add(subtitle);
         text.add(Box.createVerticalGlue());
+
         panel.add(text, BorderLayout.CENTER);
+        panel.setToolTipText(asset.getType() + ": " + asset.getTitle());
+        attachClickHandler(panel, asset);
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
@@ -560,7 +503,20 @@ public class LibraryView extends JPanel {
         return panel;
     }
 
-    private JLabel buildImagePlaceholder(LibraryAssetData item, int size) {
+    private void attachClickHandler(JPanel panel, ILibraryAsset asset) {
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handleAssetClick(asset);
+            }
+        });
+    }
+
+    private void handleAssetClick(ILibraryAsset asset) {
+        asset.onClick();
+    }
+
+    private JLabel buildImagePlaceholder(ILibraryAsset asset, int size) {
         return new JLabel() {
             {
                 setPreferredSize(new Dimension(size, size));
@@ -569,11 +525,11 @@ public class LibraryView extends JPanel {
             }
 
             @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
+            protected void paintComponent(Graphics graphics) {
+                Graphics2D g2 = (Graphics2D) graphics.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(item.color());
-                if (item.circle()) {
+                g2.setColor(asset.getDisplayColor());
+                if (asset.isCircularAvatar()) {
                     g2.fillOval(0, 0, size, size);
                 } else {
                     g2.fillRoundRect(0, 0, size, size, 12, 12);
@@ -581,11 +537,11 @@ public class LibraryView extends JPanel {
 
                 g2.setColor(new Color(255, 255, 255, 100));
                 g2.setFont(new Font("Arial", Font.BOLD, size / 3));
-                FontMetrics fm = g2.getFontMetrics();
-                String ch = String.valueOf(item.title().charAt(0));
-                g2.drawString(ch,
-                        (size - fm.stringWidth(ch)) / 2,
-                        (size - fm.getHeight()) / 2 + fm.getAscent());
+                FontMetrics metrics = g2.getFontMetrics();
+                String initial = String.valueOf(asset.getTitle().charAt(0));
+                g2.drawString(initial,
+                        (size - metrics.stringWidth(initial)) / 2,
+                        (size - metrics.getHeight()) / 2 + metrics.getAscent());
                 g2.dispose();
             }
         };
@@ -597,58 +553,58 @@ public class LibraryView extends JPanel {
         panel.setBackground(BG);
         panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 12, 0));
 
-        JButton uncollapseBtn = new JButton(">>");
-        uncollapseBtn.setForeground(Color.WHITE);
-        uncollapseBtn.setBackground(BG);
-        uncollapseBtn.setBorderPainted(false);
-        uncollapseBtn.setFocusPainted(false);
-        uncollapseBtn.setContentAreaFilled(false);
-        uncollapseBtn.setFont(new Font("Arial", Font.PLAIN, 14));
-        uncollapseBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        uncollapseBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        uncollapseBtn.addActionListener(e -> toggleCollapsed());
+        JButton uncollapseButton = new JButton(">>");
+        uncollapseButton.setForeground(Color.WHITE);
+        uncollapseButton.setBackground(BG);
+        uncollapseButton.setBorderPainted(false);
+        uncollapseButton.setFocusPainted(false);
+        uncollapseButton.setContentAreaFilled(false);
+        uncollapseButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        uncollapseButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        uncollapseButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        uncollapseButton.addActionListener(e -> toggleCollapsed());
 
-        JButton createBtn = new JButton() {
+        JButton createButton = new JButton() {
             @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
+            protected void paintComponent(Graphics graphics) {
+                Graphics2D g2 = (Graphics2D) graphics.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(new Color(40, 40, 40));
                 g2.fillOval(0, 0, getWidth(), getHeight());
                 g2.setColor(Color.WHITE);
                 g2.setFont(new Font("Arial", Font.BOLD, 18));
-                FontMetrics fm = g2.getFontMetrics();
+                FontMetrics metrics = g2.getFontMetrics();
                 String plus = "+";
                 g2.drawString(plus,
-                        (getWidth() - fm.stringWidth(plus)) / 2,
-                        (getHeight() - fm.getHeight()) / 2 + fm.getAscent());
+                        (getWidth() - metrics.stringWidth(plus)) / 2,
+                        (getHeight() - metrics.getHeight()) / 2 + metrics.getAscent());
                 g2.dispose();
             }
         };
-        createBtn.setPreferredSize(new Dimension(36, 36));
-        createBtn.setMinimumSize(new Dimension(36, 36));
-        createBtn.setMaximumSize(new Dimension(36, 36));
-        createBtn.setContentAreaFilled(false);
-        createBtn.setBorderPainted(false);
-        createBtn.setFocusPainted(false);
-        createBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        createBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        createBtn.addActionListener(e -> onCreatePlaylistClicked());
+        createButton.setPreferredSize(new Dimension(36, 36));
+        createButton.setMinimumSize(new Dimension(36, 36));
+        createButton.setMaximumSize(new Dimension(36, 36));
+        createButton.setContentAreaFilled(false);
+        createButton.setBorderPainted(false);
+        createButton.setFocusPainted(false);
+        createButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        createButton.addActionListener(e -> onCreatePlaylistClicked());
 
-        panel.add(uncollapseBtn);
+        panel.add(uncollapseButton);
         panel.add(Box.createVerticalStrut(16));
-        panel.add(createBtn);
+        panel.add(createButton);
         panel.add(Box.createVerticalStrut(20));
 
         JPanel iconsPanel = new JPanel();
         iconsPanel.setLayout(new BoxLayout(iconsPanel, BoxLayout.Y_AXIS));
         iconsPanel.setBackground(BG);
 
-        for (LibraryAssetData item : getVisibleAssets()) {
-            JLabel icon = buildImagePlaceholder(item, 40);
+        for (ILibraryAsset asset : getVisibleAssets()) {
+            JLabel icon = buildImagePlaceholder(asset, 40);
             icon.setAlignmentX(Component.CENTER_ALIGNMENT);
             icon.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            icon.setToolTipText(item.title());
+            icon.setToolTipText(asset.getTitle());
 
             JPanel row = new JPanel();
             row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
@@ -687,6 +643,7 @@ public class LibraryView extends JPanel {
 
         revalidate();
         repaint();
+
         Container parent = getParent();
         if (parent != null) {
             parent.revalidate();
@@ -735,8 +692,5 @@ public class LibraryView extends JPanel {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
-    }
-
-    private record LibraryAssetData(String title, String subtitle, String type, Color color, boolean circle, int sortPosition) {
     }
 }

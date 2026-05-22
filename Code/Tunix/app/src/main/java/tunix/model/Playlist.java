@@ -51,6 +51,16 @@ public class Playlist implements ILibraryAsset {
         return id;
     }
 
+    @Override
+    public String getType() {
+        return "Playlist";
+    }
+
+    @Override
+    public String getSubtitle() {
+        return "Playlist • " + playlistItems.size() + " songs";
+    }
+
     public List<PlaylistItem> getPlaylistItems() {
         return playlistItems;
     }

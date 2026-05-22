@@ -22,6 +22,21 @@ public class Artist extends Account implements ILibraryAsset {
         return super.getId();
     }
 
+    @Override
+    public String getType() {
+        return "Artist";
+    }
+
+    @Override
+    public String getSubtitle() {
+        return followersCount + " followers";
+    }
+
+    @Override
+    public boolean isCircularAvatar() {
+        return true;
+    }
+
     public Long getIdLong() {
         return super.getLongId();
     }
