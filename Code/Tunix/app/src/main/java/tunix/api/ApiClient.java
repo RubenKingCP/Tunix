@@ -24,6 +24,7 @@ public class ApiClient {
 
     // POST
     public <T> ApiResponse<T> post(String path, Object body, Class<T> dataType) {
+        System.err.println("Request post reached\n");
         try {
             String jsonRequest = objectMapper.writeValueAsString(body);
             HttpRequest request = HttpRequest.newBuilder()
@@ -39,6 +40,7 @@ public class ApiClient {
 
     // GET
     public <T> ApiResponse<T> get(String path, Class<T> dataType) {
+        System.err.println("Request get reached\n");
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(baseUrl + path))

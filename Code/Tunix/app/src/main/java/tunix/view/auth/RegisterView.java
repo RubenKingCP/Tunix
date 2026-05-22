@@ -65,7 +65,20 @@ public class RegisterView extends JPanel {
         });
     }
 
+
     public void setController(RegisterController controller) {
         this.controller = controller;
+    }
+
+    public String getUsername() {
+        return usernameField.getText();
+    }
+
+    public String getEmail() {
+        return emailField.getName();
+    }
+
+    public String getPassword(){
+        return new String(passwordField.getPassword());
     }
 }

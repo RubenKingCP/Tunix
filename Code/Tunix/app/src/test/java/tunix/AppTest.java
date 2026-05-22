@@ -5,13 +5,13 @@ package tunix;
 
 import org.junit.jupiter.api.Test;
 
-import tunix.app.TunixApp;
+import tunix.app.AppLauncher;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {
     @Test void appHasAGreeting() {
-        TunixApp classUnderTest = new TunixApp();
+        AppLauncher classUnderTest = new AppLauncher();
         assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
     }
 }
