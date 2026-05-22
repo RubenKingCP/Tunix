@@ -77,13 +77,14 @@ public class AppLauncher {
 
         LoginService loginService =
                 new LoginService(
-                        new LoginApiClient(apiClient)
+                        new LoginApiClient(apiClient), eventBus
                 );
 
         LoginController loginController =
                 new LoginController(
                         loginView,
                         loginService,
+                        sessionService,
                         eventBus
                 );
 

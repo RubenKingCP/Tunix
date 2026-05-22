@@ -6,6 +6,7 @@ import tunix.dto.response.AccountResponse;
 
 @Setter
 public class Account {
+
     private Long id;
     private String username;
     private String email;
@@ -18,10 +19,12 @@ public class Account {
         this.accountStatus = accountStatus;
     }
 
-    public Account toAccount(AccountResponse accountResponse) {
-       this.setId(accountResponse.getAccountId()); 
-       this.setEmail(accountResponse.getEmail());
-       this.setAccountStatus(accountResponse.getRole());
-       return this;
+    public static Account from(AccountResponse response) {
+        return new Account(
+            response.getAccountId(),
+            response.getUsername(),
+            response.getEmail(),
+            response.getRole()
+        );
     }
 }

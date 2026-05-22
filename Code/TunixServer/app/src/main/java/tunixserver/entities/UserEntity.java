@@ -1,15 +1,21 @@
 package tunixserver.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "user")
 public class UserEntity {
 
     @Id
-    private Long userId;
+    private Long id;
 
     @OneToOne
     @MapsId

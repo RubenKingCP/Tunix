@@ -23,7 +23,6 @@ public class RegisterController {
     }
 
     public void onRegisterButtonClicked() {
-        System.err.println("Request controller ereached \n");
         String username = registerView.getUsername();
         String email = registerView.getEmail();
         String password = registerView.getPassword();

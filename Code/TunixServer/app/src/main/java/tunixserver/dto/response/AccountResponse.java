@@ -13,10 +13,15 @@ public class AccountResponse {
     private String email;
     private Role role;
 
-    public AccountResponse(Long accountId, String username, String email, Role role) {
+    private UserResponse userResponse;     
+    private ArtistResponse artistResponse;
+
+    public AccountResponse(Long accountId, String username, String email, Role role, UserResponse userResponse, ArtistResponse artistResponse) {
         this.accountId = accountId;
         this.username = username;
         this.email = email;
         this.role = role;
-    }
+        this.userResponse = userResponse;
+        this.artistResponse = artistResponse;
+    } 
 }

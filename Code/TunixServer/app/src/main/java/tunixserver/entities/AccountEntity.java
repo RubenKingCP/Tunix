@@ -24,11 +24,17 @@ public class AccountEntity {
     private Long accountId;
 
     private String username;
+
     private String email;
+
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private LocalDateTime createdAt;
+    @OneToOne(mappedBy = "account")
+    private UserEntity user;
+
+    @OneToOne(mappedBy = "account")
+    private ArtistEntity artist;
 }
