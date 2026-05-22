@@ -29,6 +29,12 @@ dependencies {
 
     // Add Jackson for JSON serialization/deserialization.
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
+
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.32")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

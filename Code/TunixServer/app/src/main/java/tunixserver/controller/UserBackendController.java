@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tunixserver.dto.request.RegisterRequest;
+import tunixserver.dto.response.AccountResponse;
 import tunixserver.dto.response.ApiResponse;
-import tunixserver.dto.response.RegisterResponse;
 import tunixserver.service.UserBackendService;
 
 @RestController
@@ -21,8 +21,17 @@ public class UserBackendController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<RegisterResponse>> register(@RequestBody RegisterRequest registerRequest) {
-        userBackendService.registerUser(registerRequest);
-        return null;
+    public ResponseEntity<ApiResponse<AccountResponse>> register(@RequestBody RegisterRequest registerRequest) {
+        try {
+            System.out.println("\nReached Backend" +
+                                "\nUsername: " + registerRequest.getUsername() +
+                                "\nEmail: " + registerRequest.getEmail() +
+                                "\nPassword: " + registerRequest.getPassword()
+            );
+            AccountResponse accountResponse = userBackendService.registerUser(registerRequest);
+            return ResponseEntity.ok(new ApiResponse<>(true, "User Registered successcfully!", accountResponse));
+        } catch(Exception exception) {
+            return ResponseEntity.ok(new ApiResponse<>(false, "Failed to register User" + exception, null));
+        }
     }
 }

@@ -1,12 +1,12 @@
 package tunix.model;
 
-import tunix.enums.AccountStatus;
+import tunix.dto.enums.Role;
 
 public class Artist extends Account {
     private String biography;
     private int followersCount;
 
-    public Artist(int id, String username, String email, AccountStatus accountStatus, String biography, int followersCount) {
+    public Artist(int id, String username, String email, Role accountStatus, String biography, int followersCount) {
         super(id, username, email, accountStatus);
         this.biography = biography;
         this.followersCount = followersCount;

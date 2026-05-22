@@ -1,14 +1,14 @@
 package tunix.model;
 
-import tunix.enums.AccountStatus;
+import tunix.dto.enums.Role;
 
 public abstract class Account {
     private int id;
     private String username;
     private String email;
-    private AccountStatus accountStatus;
+    private Role accountStatus;
 
-    public Account(int id, String username, String email, AccountStatus accountStatus) {
+    public Account(int id, String username, String email, Role accountStatus) {
         this.id = id;
         this.username = username;
         this.email = email;

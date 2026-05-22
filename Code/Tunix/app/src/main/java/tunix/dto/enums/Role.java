@@ -1,6 +1,6 @@
-package tunix.enums;
+package tunix.dto.enums;
 
-public enum AccountStatus {
+public enum Role {
     User,
     Premium_User,
     Artist,
