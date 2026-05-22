@@ -6,11 +6,9 @@ import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.ILibraryAsset;
 import tunix.service.LibraryService;
 import tunix.service.PlaylistService;
-import tunix.view.library.*;
 import tunix.view.main.LibraryView;
 
 public class LibraryController {
-    private final LibraryView libraryView;
     private final LibraryService libraryService;
     private final PlaylistService playlistService;
 
@@ -18,9 +16,10 @@ public class LibraryController {
                             LibraryService libraryService,
                             PlaylistService playlistService) {
 
-        this.libraryView = libraryView;
         this.libraryService = libraryService;
         this.playlistService = playlistService;
+
+        libraryView.setLibraryAssets(libraryService.getLibraryAssets());
     }
 
     public void createPlaylist(PlaylistCreateRequest playlistRequest) {

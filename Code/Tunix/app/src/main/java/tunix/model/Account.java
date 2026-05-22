@@ -19,6 +19,26 @@ public class Account {
         this.accountStatus = accountStatus;
     }
 
+    public int getId() {
+        return Math.toIntExact(id);
+    }
+
+    public Long getLongId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Role getAccountStatus() {
+        return accountStatus;
+    }
+
     public static Account from(AccountResponse response) {
         return new Account(
             response.getAccountId(),

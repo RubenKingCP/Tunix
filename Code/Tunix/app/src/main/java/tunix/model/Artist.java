@@ -2,7 +2,7 @@ package tunix.model;
 
 import tunix.dto.enums.Role;
 
-public class Artist extends Account {
+public class Artist extends Account implements ILibraryAsset {
     private String biography;
     private int followersCount;
 
@@ -11,7 +11,21 @@ public class Artist extends Account {
         this.biography = biography;
         this.followersCount = followersCount;
     }
-    
+
+    @Override
+    public String getTitle() {
+        return getUsername();
+    }
+
+    @Override
+    public int getId() {
+        return super.getId();
+    }
+
+    public Long getIdLong() {
+        return super.getLongId();
+    }
+
     public String getBiography() {
         return biography;
     }
