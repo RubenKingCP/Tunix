@@ -73,8 +73,8 @@ public class HomeView extends JPanel {
         // Right-side icon buttons
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         right.setBackground(BG);
-        right.add(iconButton("\uD83D\uDD0D", "Search"));   // 🔍
-        right.add(iconButton("\uD83D\uDC64", "Profile"));  // 👤
+        //right.add(iconButton("\uD83D\uDD0D", "Search"));   // 🔍
+        //right.add(iconButton("\uD83D\uDC64", "Profile"));  // 👤
 
         bar.add(greet, BorderLayout.WEST);
         bar.add(right, BorderLayout.EAST);
