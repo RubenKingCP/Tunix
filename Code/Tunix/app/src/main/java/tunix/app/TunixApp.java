@@ -97,7 +97,7 @@ public class TunixApp {
 
         // Home
         HomeView homeView = new HomeView();
-        HomeController homeController = new HomeController();
+        HomeController homeController = new HomeController(homeView);
 
         // Setup Main Panel
         MainPanel mainPanel = new MainPanel(topBarView, libraryView, homeView, musicPlayerView);

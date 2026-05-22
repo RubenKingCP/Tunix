@@ -14,4 +14,24 @@ public class MusicPlayerController {
         this.musicPlayerView = musicPlayerView;
         this.eventBus = eventBus;
     }
+
+    public void onNextButtonClicked() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'onNextButtonClicked'");
+    }
+
+    public void onPlayPauseButtonClicked() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'onPlayPauseButtonClicked'");
+    }
+
+    public void onPreviousButtonClicked() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'onPreviousButtonClicked'");
+    }
+
+    public void onShuffleButtonClicked() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'onShuffleButtonClicked'");
+    }
 }
