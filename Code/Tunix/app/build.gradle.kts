@@ -46,7 +46,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "tunix.app.TunixApp"
+    mainClass = "tunix.app.AppLauncher"
 }
 
 tasks.named<Test>("test") {

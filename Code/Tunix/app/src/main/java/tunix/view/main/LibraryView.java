@@ -23,9 +23,12 @@ public class LibraryView extends JPanel {
     private JPanel contentPanel;
 
     // --- Constants ---
-    private static final int SIDEBAR_WIDTH   = 280;
-    private static final int COLLAPSED_WIDTH = 60;
-    private static final Color BG = new Color(18, 18, 18);
+    // Percentage of the parent container's width (0.0 – 1.0)
+    private static final double SIDEBAR_PCT   = 0.22;   // ~22 % of the window
+    private static final double COLLAPSED_PCT = 0.05;   // ~5  % of the window
+    private static final int    MIN_SIDEBAR   = 200;    // never narrower than 200 px
+    private static final int    MIN_COLLAPSED = 50;     // never narrower than 50  px
+    private static final Color  BG = new Color(18, 18, 18);
 
     // Controllers and stuff
     private LibraryController libraryController;
@@ -38,7 +41,7 @@ public class LibraryView extends JPanel {
     public LibraryView() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(BG);
-        setPreferredSize(new Dimension(SIDEBAR_WIDTH, 0));
+        // Don't set a hard-coded preferred size here — getPreferredSize() handles it.
 
         headerPanel  = buildHeader();
         filterPanel  = buildFilterRow();
@@ -47,6 +50,54 @@ public class LibraryView extends JPanel {
         add(headerPanel);
         add(filterPanel);
         add(contentPanel);
+
+        // Re-evaluate preferred width whenever our parent is resized
+        addHierarchyListener(e -> {
+            if ((e.getChangeFlags() & HierarchyEvent.PARENT_CHANGED) != 0) {
+                Container parent = getParent();
+                if (parent != null) {
+                    parent.addComponentListener(new ComponentAdapter() {
+                        @Override public void componentResized(ComponentEvent ce) {
+                            revalidate();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    // =========================================================
+    //  Percentage-based preferred width
+    // =========================================================
+    @Override
+    public Dimension getPreferredSize() {
+        int parentWidth = getParentWidth();
+        int w = isCollapsed
+                ? Math.max(MIN_COLLAPSED, (int)(parentWidth * COLLAPSED_PCT))
+                : Math.max(MIN_SIDEBAR,   (int)(parentWidth * SIDEBAR_PCT));
+        // Height: let the layout manager decide (return 0 so BorderLayout fills it)
+        return new Dimension(w, 0);
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        return new Dimension(isCollapsed ? MIN_COLLAPSED : MIN_SIDEBAR, 0);
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return new Dimension(getPreferredSize().width, Integer.MAX_VALUE);
+    }
+
+    /** Returns the width of the nearest non-null parent, or a sensible fallback. */
+    private int getParentWidth() {
+        Container p = getParent();
+        while (p != null) {
+            int w = p.getWidth();
+            if (w > 0) return w;
+            p = p.getParent();
+        }
+        return 1280; // design-time fallback
     }
 
     // =========================================================
@@ -59,7 +110,7 @@ public class LibraryView extends JPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(12, 16, 8, 16));
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // --- Left: icon + title + hover-reveal collapse button ---
+        // --- Left: collapse button + title ---
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         leftPanel.setBackground(BG);
 
@@ -78,11 +129,11 @@ public class LibraryView extends JPanel {
         collapseButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         collapseButton.setVisible(true);
         collapseButton.addActionListener(e -> toggleCollapsed());
-        
+
         leftPanel.add(collapseButton);
         leftPanel.add(titleLabel);
 
-        // --- Right: "+ Create" + expand button ---
+        // --- Right: "+" create button ---
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
         rightPanel.setBackground(BG);
 
@@ -94,25 +145,10 @@ public class LibraryView extends JPanel {
         createButton.setFont(new Font("Arial", Font.BOLD, 18));
         createButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         createButton.setPreferredSize(new Dimension(32, 32));
-        createButton.setBorder(BorderFactory.createLineBorder(new Color(80,80,80), 1, true));
-        // Paint rounded background manually so fill shows
+        createButton.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80), 1, true));
         createButton.setOpaque(false);
 
-        JButton expandButton = new JButton("→");
-        expandButton.setForeground(Color.WHITE);
-        expandButton.setBackground(BG);
-        expandButton.setBorderPainted(false);
-        expandButton.setFocusPainted(false);
-        expandButton.setContentAreaFilled(false);
-        expandButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        expandButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        expandButton.addActionListener(e -> {
-            toggleExpanded();
-            expandButton.setText(isExpanded ? "←" : "→");
-        });
-
         rightPanel.add(createButton);
-        rightPanel.add(expandButton);
 
         panel.add(leftPanel,  BorderLayout.WEST);
         panel.add(rightPanel, BorderLayout.EAST);
@@ -224,7 +260,7 @@ public class LibraryView extends JPanel {
         addMenuSectionLabel(menu, "Sort by");
         for (String opt : new String[]{"Recently Added", "Alphabetical (A–Z)", "Alphabetical (Z–A)", "Creator"}) {
             JMenuItem item = styledMenuItem(opt);
-            item.addActionListener(ev -> anchor.setText("<<" + opt.split(" ")[0]));
+            item.addActionListener(ev -> anchor.setText("↕ " + opt.split(" ")[0]));
             menu.add(item);
         }
         menu.show(anchor, 0, anchor.getHeight());
@@ -275,7 +311,7 @@ public class LibraryView extends JPanel {
 
         List<LibraryItem> items = getDummyItems().stream()
             .filter(item -> activeFilter.equals("All") ||
-                item.type.equals(activeFilter.substring(0, activeFilter.length() - 1)))
+                item.type().equals(activeFilter.substring(0, activeFilter.length() - 1)))
             .toList();
 
         if (isGridView()) {
@@ -298,26 +334,25 @@ public class LibraryView extends JPanel {
     private JPanel buildGridItem(LibraryItem item) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(BG);  // ← match sidebar bg, no card bg in grid
+        panel.setBackground(BG);
         panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        // Fix height so GridLayout doesn't stretch cells unevenly
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
         panel.setPreferredSize(new Dimension(140, 160));
 
         int imgSize = 100;
-        JLabel img = buildImagePlaceholder(item, imgSize, item.type.equals("Artist"));
+        JLabel img = buildImagePlaceholder(item, imgSize, item.type().equals("Artist"));
         img.setAlignmentX(Component.CENTER_ALIGNMENT);
         img.setMaximumSize(new Dimension(imgSize, imgSize));
         panel.add(img);
         panel.add(Box.createVerticalStrut(8));
 
-        JLabel name = new JLabel(item.name);
+        JLabel name = new JLabel(item.name());
         name.setForeground(Color.WHITE);
         name.setFont(new Font("SansSerif", Font.BOLD, 12));
         name.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel sub = new JLabel(item.subtitle);
+        JLabel sub = new JLabel(item.subtitle());
         sub.setForeground(new Color(160, 160, 160));
         sub.setFont(new Font("SansSerif", Font.PLAIN, 11));
         sub.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -325,7 +360,7 @@ public class LibraryView extends JPanel {
         panel.add(name);
         panel.add(Box.createVerticalStrut(2));
         panel.add(sub);
-        panel.add(Box.createVerticalGlue());  // ← push content to top, don't stretch
+        panel.add(Box.createVerticalGlue());
         return panel;
     }
 
@@ -336,18 +371,18 @@ public class LibraryView extends JPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
         panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        JLabel img = buildImagePlaceholder(item, 48, item.type.equals("Artist"));
+        JLabel img = buildImagePlaceholder(item, 48, item.type().equals("Artist"));
         panel.add(img, BorderLayout.WEST);
 
         JPanel text = new JPanel();
         text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
         text.setBackground(BG);
 
-        JLabel name = new JLabel(item.name);
+        JLabel name = new JLabel(item.name());
         name.setForeground(Color.WHITE);
         name.setFont(new Font("Arial", Font.BOLD, 14));
 
-        JLabel sub = new JLabel(item.subtitle);
+        JLabel sub = new JLabel(item.subtitle());
         sub.setForeground(new Color(160, 160, 160));
         sub.setFont(new Font("Arial", Font.PLAIN, 12));
 
@@ -380,14 +415,14 @@ public class LibraryView extends JPanel {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(item.color);
+                g2.setColor(item.color());
                 if (circle) g2.fillOval(0, 0, size, size);
                 else        g2.fillRoundRect(0, 0, size, size, 12, 12);
 
                 g2.setColor(new Color(255, 255, 255, 100));
                 g2.setFont(new Font("Arial", Font.BOLD, size / 3));
                 FontMetrics fm = g2.getFontMetrics();
-                String ch = String.valueOf(item.name.charAt(0));
+                String ch = String.valueOf(item.name().charAt(0));
                 g2.drawString(ch,
                     (size - fm.stringWidth(ch)) / 2,
                     (size - fm.getHeight()) / 2 + fm.getAscent());
@@ -403,10 +438,9 @@ public class LibraryView extends JPanel {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(BG);
-        panel.setPreferredSize(new Dimension(COLLAPSED_WIDTH, 0));
+        // Width comes from getPreferredSize() — no hard-coded size here
         panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 12, 0));
 
-        // Un-collapse arrow
         JButton uncollapseBtn = new JButton(">>");
         uncollapseBtn.setForeground(Color.WHITE);
         uncollapseBtn.setBackground(BG);
@@ -418,7 +452,6 @@ public class LibraryView extends JPanel {
         uncollapseBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         uncollapseBtn.addActionListener(e -> toggleCollapsed());
 
-        // Circle "+" button
         JButton createBtn = new JButton() {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -449,24 +482,23 @@ public class LibraryView extends JPanel {
         panel.add(createBtn);
         panel.add(Box.createVerticalStrut(20));
 
-        // Icon-only items
         JPanel iconsPanel = new JPanel();
         iconsPanel.setLayout(new BoxLayout(iconsPanel, BoxLayout.Y_AXIS));
         iconsPanel.setBackground(BG);
 
         for (LibraryItem item : getDummyItems()) {
             if (!activeFilter.equals("All") &&
-                !item.type.equals(activeFilter.substring(0, activeFilter.length() - 1))) continue;
+                !item.type().equals(activeFilter.substring(0, activeFilter.length() - 1))) continue;
 
-            JLabel icon = buildImagePlaceholder(item, 40, item.type.equals("Artist"));
+            JLabel icon = buildImagePlaceholder(item, 40, item.type().equals("Artist"));
             icon.setAlignmentX(Component.CENTER_ALIGNMENT);
             icon.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            icon.setToolTipText(item.name);
+            icon.setToolTipText(item.name());
 
             JPanel row = new JPanel();
             row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
             row.setBackground(BG);
-            row.setMaximumSize(new Dimension(COLLAPSED_WIDTH, 52));
+            row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 52));
             row.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
             row.add(Box.createHorizontalGlue());
             row.add(icon);
@@ -493,43 +525,21 @@ public class LibraryView extends JPanel {
         removeAll();
 
         if (isCollapsed) {
-            setPreferredSize(new Dimension(COLLAPSED_WIDTH, 0));
-            setMaximumSize(new Dimension(COLLAPSED_WIDTH, Integer.MAX_VALUE));
             add(buildCollapsedStrip());
         } else {
-            setPreferredSize(new Dimension(SIDEBAR_WIDTH, 0));
-            setMaximumSize(new Dimension(SIDEBAR_WIDTH, Integer.MAX_VALUE));
             add(headerPanel);
             add(filterPanel);
             add(contentPanel);
         }
 
+        // Invalidate size caches and ask the parent BorderLayout to redistribute space
         revalidate();
         repaint();
         Container parent = getParent();
-        if (parent != null) { parent.revalidate(); parent.repaint(); }
-    }
-
-    private void toggleExpanded() {
-        isExpanded = !isExpanded;
-        isCollapsed = false;  // ← add this line; expanded always un-collapses
-
-        if (isExpanded) {
-            setPreferredSize(new Dimension(Short.MAX_VALUE, 0));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        } else {
-            setPreferredSize(new Dimension(SIDEBAR_WIDTH, 0));
-            setMaximumSize(new Dimension(SIDEBAR_WIDTH, Integer.MAX_VALUE));
+        if (parent != null) {
+            parent.revalidate();
+            parent.repaint();
         }
-        // rebuild the full UI so header buttons reflect new state
-        removeAll();
-        add(headerPanel);
-        add(filterPanel);
-        add(contentPanel);
-        refreshContent();
-        revalidate(); repaint();
-        Container parent = getParent();
-        if (parent != null) { parent.revalidate(); parent.repaint(); }
     }
 
     // =========================================================
@@ -554,17 +564,13 @@ public class LibraryView extends JPanel {
         this.showLibraryOptions();
     }
 
-    public void showLibraryOptions() {
-
-    }
+    public void showLibraryOptions() {}
 
     public void onCreatePlaylistClicked() {
-        this.onCreatePlaylistClicked();
+        this.showPlaylistCreationMenu();
     }
 
-    public void showPlaylistCreationMenu() {
-
-    }
+    public void showPlaylistCreationMenu() {}
 
     public void onPlaylistCreateConfirmClicked(PlaylistCreateRequest playlistRequest) {
         libraryController.createPlaylist(playlistRequest);
