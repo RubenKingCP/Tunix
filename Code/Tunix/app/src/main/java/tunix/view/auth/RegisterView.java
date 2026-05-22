@@ -75,7 +75,7 @@ public class RegisterView extends JPanel {
     }
 
     public String getEmail() {
-        return emailField.getName();
+        return emailField.getText();
     }
 
     public String getPassword(){

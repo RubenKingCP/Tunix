@@ -1,13 +1,13 @@
 package tunix.model;
 
-import tunix.enums.AccountStatus;
+import tunix.dto.enums.Role;
 
 public class User extends Account {
 
     private String displayName;
     private String profilePictureUrl;
     
-    public User(int id, String username, String email, AccountStatus accountStatus) {
+    public User(int id, String username, String email, Role accountStatus) {
         super(id, username, email, accountStatus);
     }
     

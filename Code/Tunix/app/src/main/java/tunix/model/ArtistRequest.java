@@ -1,6 +1,6 @@
 package tunix.model;
 
-import tunix.enums.ArtistRequestStatus;
+import tunix.dto.enums.ArtistRequestStatus;
 
 public class ArtistRequest {
     private int applicantId;
