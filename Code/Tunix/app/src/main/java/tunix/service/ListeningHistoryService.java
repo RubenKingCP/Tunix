@@ -4,6 +4,8 @@ import tunix.model.Song;
 import tunix.model.Playlist;
 import tunix.model.Album;
 import tunix.model.ILibraryAsset;
+
+import java.util.LinkedList;
 import java.util.List;
 
 public class ListeningHistoryService {
@@ -21,6 +23,6 @@ public class ListeningHistoryService {
     }
 
     public List<ILibraryAsset> getHistory(int userId){
-
+        return new LinkedList<ILibraryAsset>();
     }
 }

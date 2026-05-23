@@ -10,6 +10,7 @@ import tunix.event.SwitchMainScreen;
 public class MainPanel extends JPanel {
 
     private JPanel currentCenterPanel;
+    private final JPanel defaultCenterPanel;
 
     public MainPanel(JPanel topBar,
                      JPanel libraryPanel,
@@ -19,6 +20,7 @@ public class MainPanel extends JPanel {
 
         setLayout(new BorderLayout());
 
+        this.defaultCenterPanel = centerPanel;
         this.currentCenterPanel = centerPanel;
 
         add(topBar, BorderLayout.NORTH);
@@ -31,6 +33,10 @@ public class MainPanel extends JPanel {
 
     private void subscribe(EventBus eventBus) {
         eventBus.subscribe(SwitchMainScreen.class, e -> switchCenter(e.getNewScreen()));
+    }
+
+    public void showHome() {
+        switchCenter(defaultCenterPanel);
     }
 
     private void switchCenter(JPanel newCenterPanel) {

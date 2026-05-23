@@ -1,5 +1,6 @@
 package tunix.service;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import tunix.api.AdminApi;
@@ -32,14 +33,14 @@ public class AdminService {
     }
 
     public String postRejectResponse(int applicationId){
-
+        return " ";
     }
 
     public String postApproveResponse(int applicationId){
-
-    }
+        return "";
+    }   
 
     public List<String> getSongWarnings(int songId){
-        
+        return new LinkedList<String>();
     }
 }

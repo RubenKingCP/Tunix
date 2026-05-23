@@ -1,9 +1,12 @@
 package tunix.model;
 
 import java.awt.Color;
+import tunix.event.EventBus;
+import tunix.service.auth.SessionService;
 
 public interface ILibraryAsset {
-
+    public EventBus eventBus = SessionService.Instance.getEventBus();
+    
     String getTitle();
 
     int getId();

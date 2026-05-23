@@ -3,6 +3,7 @@ package tunix.controller.main;
 import javax.swing.JPanel;
 
 import tunix.event.EventBus;
+import tunix.event.LogoutEvent;
 import tunix.event.SwitchMainScreen;
 import tunix.service.SearchService;
 import tunix.view.main.HomeView;
@@ -28,5 +29,9 @@ public class TopBarController {
     }
     public void onProfileButtonClicked() {
         eventBus.publish(new SwitchMainScreen(new tunix.view.center.UserProfileView()));
+    }
+
+    public void onLogoutButtonClicked() {
+        eventBus.publish(new LogoutEvent());
     }
 }

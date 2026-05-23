@@ -30,6 +30,10 @@ public class SessionService {
         this.currentUser = event.getAccount();
     }
 
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
     public Account getUser() {
         return currentUser;
     }

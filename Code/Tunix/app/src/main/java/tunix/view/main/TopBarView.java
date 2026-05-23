@@ -74,6 +74,11 @@ public class TopBarView extends JPanel {
         JButton profileButton = createFlatButton("Profile", false);
         profileButton.addActionListener(e -> onProfileButtonClicked());
         add(profileButton);
+
+        // ── Logout button ─────────────────────────────────────────────────────
+        JButton logoutButton = createFlatButton("Logout", false);
+        logoutButton.addActionListener(e -> onLogoutButtonClicked());
+        add(logoutButton);
     }
 
     // ── Component factories ──────────────────────────────────────────────────
@@ -225,5 +230,9 @@ public class TopBarView extends JPanel {
 
     public void onProfileButtonClicked() {
         topBarController.onProfileButtonClicked();
+    }
+
+    public void onLogoutButtonClicked() {
+        topBarController.onLogoutButtonClicked();
     }
 }
