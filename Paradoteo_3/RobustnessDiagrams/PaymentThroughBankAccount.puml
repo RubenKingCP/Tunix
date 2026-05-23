@@ -1,0 +1,32 @@
+@startuml name 
+
+left to right direction
+skinparam linetype ortho
+
+title Πληρωμή μέσω τραπεζικού λογαριασμού
+
+control "Υπάρχουν στοιχεία?" as checkCredent
+entity "Βάση Δεδομένων" as db 
+control "Εμφάνισε οθόνη πληρωμής" as disPayScr
+actor "Χρήστης" as user
+boundary "Οθόνη Πληρωμής" as payScr 
+control "Αποθηκεύουμε;" as saveControl
+entity "Τραπεζικό Σύστημα" as bank
+control "Στείλε αίτημα μεταφοράς" as sendReq
+control "Αποθήκευσε τα στοιχεία" as saveCred
+
+checkCredent -> db
+checkCredent -> disPayScr : Όχι
+disPayScr -> payScr
+user -> payScr
+payScr -> saveControl
+saveControl -> payScr
+payScr -> sendReq : "       Όχι"
+sendReq -> bank
+
+disPayScr -> sendReq : "   Ναι"
+
+payScr -> saveCred : Ναι
+saveCred -> payScr
+
+@enduml

@@ -1,0 +1,46 @@
+@startuml name
+
+title Request for Artist Account
+
+actor User
+participant HomeView
+participant HomeController
+participant ArtistRequestService
+participant ArtistRequestAPI
+participant ArtistRequestBackendController
+participant ArtistRequestBackendService
+participant ArtistRequestRepository
+database Database
+
+activate HomeView
+User -> HomeView : Click on profile
+HomeView -> HomeView : showProfileSettings()
+User -> HomeView : Click "Apply for artist"
+HomeView -> HomeController : applyForArtist()
+activate HomeController
+HomeController -> ArtistRequestService : applyForArtist()
+activate ArtistRequestService
+ArtistRequestService -> ArtistRequestAPI : applyForArtist()
+activate ArtistRequestAPI
+ArtistRequestAPI -> ArtistRequestBackendController : applyForArtist()
+activate ArtistRequestBackendController
+ArtistRequestBackendController -> ArtistRequestBackendService : applyForArtist()
+activate ArtistRequestBackendService
+ArtistRequestBackendService -> ArtistRequestRepository : save()
+activate ArtistRequestRepository
+ArtistRequestRepository -> Database : Execute SQL to save artist request
+Database --> ArtistRequestRepository : Success/Failure
+ArtistRequestRepository --> ArtistRequestBackendService : Success/Failure
+deactivate ArtistRequestRepository
+ArtistRequestBackendService --> ArtistRequestBackendController : Success/Failure
+deactivate ArtistRequestBackendService
+ArtistRequestBackendController --> ArtistRequestAPI : Success/Failure
+deactivate ArtistRequestBackendController
+ArtistRequestAPI --> ArtistRequestService : Success/Failure
+deactivate ArtistRequestAPI
+ArtistRequestService --> HomeController : Success/Failure
+deactivate ArtistRequestService
+HomeController --> HomeView : Show success/failure message
+deactivate HomeController
+
+@enduml

@@ -1,0 +1,482 @@
+@startuml name
+
+title Class Diagram v0.4
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+' =====================
+' DOMAIN LAYER (ENTITIES)
+' =====================
+
+package "Model (Entities)" {
+
+    ' -------- ACCOUNT HIERARCHY --------
+    abstract class Account {
+        # id : String
+        # status : Boolean
+    }
+    class User {
+        + fetchUserProfile(userId : int) : User
+        + postArtistRequest() : void
+        + getUserStatus() : Boolean
+        + followArtist(artistId : String) : void
+    }
+    class Artist {
+        + fetchArtist(searchName : String) : List<Artist>
+        + fetchSongWarnings(songId : int) : List<String>
+        + postIssueWarning() : Boolean
+        + postBan() : Boolean
+        + checkDuplicateSong() : Boolean
+    }
+    class Admin {
+        + fetchArtistApplications() : List<ArtistRequest>
+        + postRejectResponse(applicationId : int) : String
+        + postApproveResponse(applicationId : int) : String
+    }
+    class ArtistRequest{
+        - userId : String
+        - status : String
+        --
+        + ArtistRequest(userId : String)
+        + getUserId() : String
+        + getStatus() : String
+    }
+
+    User "1"-->"0...1" ArtistRequest : files
+    Admin --> ArtistRequest : inspects
+
+    Account <|-- User
+    Account <|-- Artist
+    Account <|-- Admin
+
+    interface ILibraryAsset<T extends ILibraryAsset<T>> {
+        # title : String
+        # id : int
+        --
+        + fetch(searchName : String) : List<T>
+    }
+
+    Song ..|> ILibraryAsset
+    Album ..|> ILibraryAsset
+    Playlist ..|> ILibraryAsset
+
+    ' -------- MUSIC CORE --------
+    class Song {
+        - artist : List<Artist> 
+        - genre : List<String>
+        --
+        + Song(title : String, artist : List<Artist>, genres : List<String>)
+        + getTitle() : String
+        + getArtist() : Artist
+        + getGenres() : List<String>
+        + postRemoveSong(songId : int) : Boolean
+        + fetchSongByPlId(plId : int) : List<Song>
+        + fetchSong() : Boolean
+        + postSong() : Boolean
+    }
+
+    class Album
+
+    Artist "1" --> "0..*" Song : creates
+    Artist "1" --> "0..*" Album : creates
+
+    Album "1" *-- "1..*" Song
+
+    ' -------- PLAYLIST SYSTEM --------
+    class Playlist {
+        # songs : List<Song>
+        # creator : User
+        - coauthors : List<User>
+        --
+        + Playlist(creator : User)
+        + Playlist(creator : User, coauthors : List<User>)
+        + getSongs() : List<Song>
+        + getCreator() : User
+        + getCoauthors() : List<User>
+        # sendHTTPRequest() : Boolean
+        # postRemoveSongById(songId : int, playlistId : int) : void
+        # checkSongExists(songId : int) : Boolean
+        + findByUserId(userId : int) : List<Playlist>
+        + getSongsByPlaylistId(playlistId : int) : List<Song>
+        + addSong(plId : int, songId : int) : Boolean
+        + addToFavorites(songId : int, userId : int) : Boolean
+    }
+
+    User "1" --> "0..*" Playlist : owns
+    Playlist "0..*" o-- "0..*" Song
+    'Album --|> Playlist
+
+    ' -------- LIBRARY --------
+    class Library {
+        - assets : List<ILibraryAsset>
+        + getAssets() : List<ILibraryAsset>
+    }
+
+    User "1" *-- "1" Library
+
+    Library "0..*" --> Song
+    Library "0..*" --> Album
+    Library "0..*" --> Playlist
+
+    ' -------- LISTENING HISTORY --------
+    class ListeningHistory { 
+        - songs : Song[]
+        - Playlists : Playlist[]
+        - Albums : Album[]
+        --
+        + getSongs() : Song[]
+        + addSong(song : Song) : void
+        + getPlaylists() : Playlist[]
+        + addPlaylist(pl : Playlist) : void
+        + getAlbums() : Album[]
+        + addAlbum(al : Album) : void
+    }
+
+    User "1" --> "0..*" ListeningHistory
+    ListeningHistory o-- Song
+    ListeningHistory o-- Playlist
+    ListeningHistory o-- Album
+
+    ' -------- PLAYER --------
+    class MusicPlayer {
+        - q : Queue<Song>
+        --
+        + getQueue() : Queue<Song>
+        + playMusic(song : Song) : void
+        + predictNext() : void 
+    }
+    MusicPlayer --> Song
+
+    class Favorites 
+
+    Favorites --|> Playlist
+    Favorites --* User
+}
+
+' =====================
+' PRESENTATION LAYER
+' =====================
+
+package "Controllers (UI)" {
+
+    interface IController {
+        + draw() : void
+    }
+
+    class TunixApp {
+        - {static} current : IController
+
+        + {static} main(args : String[]) : void
+        + {static} initialize() : void
+
+        - {static} drawPersistentElements() : void
+        - {static} drawCenter() : void
+
+        + onPlaylistClicked() : void
+        + onAlbumClicked() : void
+        + onSongClicked() : void
+        + onHomeClicked() : void
+        + onSearchClicked() : void
+        + onProfileClicked() : void
+    }
+
+    class MusicPlayerController {
+        - main : TunixApp
+        - player : MusicPlayer
+        + MusicPlayerController(main : TunixApp, player : MusicPlayer)
+        + draw() : void
+        + onPlayClicked() : void
+        + onPauseClicked() : void
+        + onNextClicked() : void
+        + onPreviousClicked() : void
+        + onVolumeChanged() : void
+        + onShuffleClicked() : void
+        + onRepeatClicked() : void
+
+        'WIP'
+        + onQueueClicked() : void
+    }
+
+    class HomeController {
+        - main : TunixApp
+        + HomeController(main : TunixApp)
+        + draw() : void
+        
+    }
+
+    class LibraryController {
+        - main : TunixApp
+        - library : Library
+        + LibraryController(main : TunixApp, library : Library)
+        + draw() : void
+        - fetchLibraryAssets() : List<ILibraryAsset>
+        + getLibraryAssets() : List<ILibraryAsset>
+        + onAssetClicked(asset : ILibraryAsset) : void
+        + onAssetRightClicked(asset : ILibraryAsset) : void
+    }
+
+    class TopBarController {
+        - main : TunixApp
+        + TopBarController(main : TunixApp)
+        + draw() : void
+        + onHomeClicked() : void
+        + onSearchClicked() : void
+        + onProfileClicked() : void
+    }
+
+    class PlaylistController {
+        - main : TunixApp
+        - playlist : Playlist
+        + PlaylistController(main : TunixApp, playlist : Playlist)
+        + draw() : void
+        + onSongClicked(song : Song) : void
+        + onRemoveSongClicked(song : Song) : void
+        + addSong(song : Song) : void
+    }
+
+    class ProfileController {
+        - main : TunixApp
+        - user : User
+        + ProfileController(main : TunixApp, user : User)
+        + OnSettingsClicked() : void
+        + OnLogoutClicked() : void
+        + draw() : void
+    }
+}
+
+package "Views" {
+
+    interface View
+    interface ILibraryAssetView
+
+    class LibraryPlaylistView
+    class LibraryAlbumView
+    class LibrarySongView
+
+    class MusicPlayerView{
+        + onPlayClicked() : void
+        + onPauseClicked() : void
+        + onNextClicked() : void
+        + onPreviousClicked() : void
+        + onVolumeChanged() : void
+        + onShuffleClicked() : void
+        + onRepeatClicked() : void
+
+        'WIP'
+        + onQueueClicked() : void
+    }
+    class HomeView
+    class LibraryView{
+        + onAssetClicked(asset : ILibraryAsset) : void
+        + onAssetRightClicked(asset : ILibraryAsset) : void
+    }
+    class TopBarView{
+        + onHomeClicked() : void
+        + onSearchClicked() : void
+        + onProfileClicked() : void
+    }
+    class PlaylistView{
+        + onSongClicked(song : Song) : void
+        + onRemoveSongClicked(song : Song) : void
+        + addSong(song : Song) : void
+    }
+    class ProfileView{
+        + OnSettingsClicked() : void
+        + OnLogoutClicked() : void
+    }
+}
+
+' =====================
+' VIEW RELATIONS
+' =====================
+
+LibraryPlaylistView ..|> ILibraryAssetView
+LibraryAlbumView ..|> ILibraryAssetView
+LibrarySongView ..|> ILibraryAssetView
+
+LibraryView *-- ILibraryAssetView
+
+' =====================
+' UI LINKS
+' =====================
+
+MusicPlayerController ..|> IController
+HomeController ..|> IController
+LibraryController ..|> IController
+TopBarController ..|> IController
+PlaylistController ..|> IController
+ProfileController ..|> IController
+
+View <|.. MusicPlayerView
+View <|.. HomeView
+View <|.. LibraryView
+View <|.. TopBarView
+View <|.. PlaylistView
+View <|.. ProfileView
+
+MusicPlayerController -- MusicPlayer
+MusicPlayerView -- MusicPlayerController
+
+TunixApp -- MusicPlayerController
+TunixApp -- ProfileController
+TunixApp -- HomeController
+TunixApp -- LibraryController
+
+ProfileView -- ProfileController
+ProfileController -- User
+
+HomeView -- HomeController
+
+LibraryView -- LibraryController
+
+PlaylistView -- PlaylistController
+PlaylistController -- TunixApp
+
+TopBarView -- TopBarController
+TopBarController -- TunixApp
+
+TunixApp -- Account
+
+' =====================
+' SPRING BACKEND
+' =====================
+
+package "Spring Backend" {
+
+    ' -------- CONTROLLERS (REST) --------
+    interface API
+
+    class AccountControllerAPI
+    class UserControllerAPI
+    class ArtistControllerAPI
+    class AdminControllerAPI
+    class SongControllerAPI
+    class AlbumControllerAPI
+    class PlaylistControllerAPI
+    class LibraryControllerAPI
+    class ListeningHistoryControllerAPI
+    class ArtistRequestControllerAPI
+
+    ' -------- SERVICES --------
+    interface Service
+
+    class AccountService
+    class UserService
+    class ArtistService
+    class AdminService
+    class SongService
+    class AlbumService
+    class PlaylistService
+    class LibraryService
+    class ListeningHistoryService
+    class ArtistRequestService
+
+    ' -------- REPOSITORIES --------
+    interface JpaRepository
+
+    class AccountRepository
+    class UserRepository
+    class ArtistRepository
+    class AdminRepository
+    class SongRepository
+    class AlbumRepository
+    class PlaylistRepository
+    class LibraryRepository
+    class ListeningHistoryRepository
+    class ArtistRequestRepository
+}
+
+' =====================
+' IMPLEMENTATIONS
+' =====================
+
+API <|.. AccountControllerAPI
+API <|.. UserControllerAPI
+API <|.. ArtistControllerAPI
+API <|.. AdminControllerAPI
+API <|.. SongControllerAPI
+API <|.. AlbumControllerAPI
+API <|.. PlaylistControllerAPI
+API <|.. LibraryControllerAPI
+API <|.. ListeningHistoryControllerAPI
+API <|.. ArtistRequestControllerAPI
+
+Service <|.. AccountService
+Service <|.. UserService
+Service <|.. ArtistService
+Service <|.. AdminService
+Service <|.. SongService
+Service <|.. AlbumService
+Service <|.. PlaylistService
+Service <|.. LibraryService
+Service <|.. ListeningHistoryService
+Service <|.. ArtistRequestService
+
+JpaRepository <|.. AccountRepository
+JpaRepository <|.. UserRepository
+JpaRepository <|.. ArtistRepository
+JpaRepository <|.. AdminRepository
+JpaRepository <|.. SongRepository
+JpaRepository <|.. AlbumRepository
+JpaRepository <|.. PlaylistRepository
+JpaRepository <|.. LibraryRepository
+JpaRepository <|.. ListeningHistoryRepository
+JpaRepository <|.. ArtistRequestRepository
+
+' =====================
+' CONTROLLER → ENTITY/SERVICE
+' =====================
+
+AccountControllerAPI -- Account
+UserControllerAPI -- User
+ArtistControllerAPI -- Artist
+AdminControllerAPI -- Admin
+
+SongControllerAPI -- Song
+AlbumControllerAPI -- Album
+ListeningHistoryControllerAPI -- ListeningHistory
+PlaylistControllerAPI -- Playlist
+LibraryControllerAPI -- Library
+ArtistRequestControllerAPI -- ArtistRequest
+
+AccountControllerAPI -- AccountService
+UserControllerAPI -- UserService
+ArtistControllerAPI -- ArtistService
+AdminControllerAPI -- AdminService
+SongControllerAPI -- SongService
+AlbumControllerAPI -- AlbumService
+PlaylistControllerAPI -- PlaylistService
+LibraryControllerAPI -- LibraryService
+ListeningHistoryControllerAPI -- ListeningHistoryService
+ArtistRequestControllerAPI -- ArtistRequestService
+
+' =====================
+' SERVICE → REPOSITORY
+' =====================
+
+AccountService -- AccountRepository
+UserService -- UserRepository
+ArtistService -- ArtistRepository
+AdminService -- AdminRepository
+SongService -- SongRepository
+AlbumService -- AlbumRepository
+PlaylistService -- PlaylistRepository
+LibraryService -- LibraryRepository
+ListeningHistoryService -- ListeningHistoryRepository
+ArtistRequestService -- ArtistRequestRepository
+
+' =====================
+' EXTRA LINKS
+' =====================
+
+PlaylistController -- Playlist
+LibraryController -- Library
+
+Library -- LibraryControllerAPI
+Playlist -- PlaylistControllerAPI
+
+User -- ArtistRequestControllerAPI
+
+@enduml

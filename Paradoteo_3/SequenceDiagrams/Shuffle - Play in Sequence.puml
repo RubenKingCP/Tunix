@@ -1,0 +1,32 @@
+@startuml ShuffleOrPlayInSequence
+actor User as user
+participant PlaylistView as playlistView
+participant PlaylistController as playlistController
+participant MusicPlayerView as musicPlayerView
+participant MusicPlayerController as musicPlayerController
+participant MusicPlayerService as musicPlayerService
+participant PlaybackQueue as playbackQueue
+participant EventBus as eventBus
+
+user -> playlistView : Press shuffle button
+activate playlistView 
+playlistView -> playlistController : shufflePlaylistToggle(playlistId)
+activate playlistController
+playlistController -> eventBus : publish ShufflePlaylistToggleEvent(playlistId)
+deactivate playlistController
+eventBus -> musicPlayerController : onShufflePlaylistToggle(playlistId)
+activate musicPlayerController
+musicPlayerController -> musicPlayerService : toggleShuffle(playlistId
+activate musicPlayerService
+musicPlayerService -> playbackQueue : shuffle(playlistId)
+activate playbackQueue
+playbackQueue -> playbackQueue : shuffleQueue(playlistId)
+playbackQueue --> musicPlayerService : return ShuffledQueue
+deactivate playbackQueue
+musicPlayerService --> musicPlayerController : return ShuffledQueue
+deactivate musicPlayerService
+musicPlayerController -> musicPlayerView : updateQueueDisplay(ShuffledQueue)
+deactivate musicPlayerController
+'musicPlayerView --> user : Display shuffled playlist
+deactivate musicPlayerView
+@enduml

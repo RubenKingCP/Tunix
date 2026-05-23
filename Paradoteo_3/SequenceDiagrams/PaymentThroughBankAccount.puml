@@ -1,0 +1,75 @@
+@startuml name 
+
+title Πληρωμή μέσω τραπεζικού λογαριασμού
+
+actor User as u
+participant PaymentView as PV
+participant PaymentController as PC
+participant PaymentService as PS
+participant PaymentApi as papi 
+participant PaymentBackendController as pbc 
+participant PaymentRepository as PR
+participant BankApi as BA 
+database Database as db 
+
+activate PV
+PV -> PC : fetchCredentials(userId)
+activate PC
+PC -> PS : fetchCredentials(userId)
+activate PS
+PS -> papi : fetchCredentials(userId)
+activate papi
+papi -> pbc : fetchCredentials(userId)
+activate pbc
+pbc -> PR : fetchCredentials(userId)
+activate PR
+PR -> db : SELECT bankCred FROM user WHERE user.userId = userId;
+activate db
+db --> PR : results : set
+deactivate db
+PR --> pbc
+deactivate PR
+pbc --> papi
+deactivate pbc
+papi --> PS
+deactivate papi
+PS --> PC
+deactivate PS
+PC --> PV
+deactivate PC
+opt results == NULL
+    PV -> PV : drawPaymentScreen()
+    u -> PV : fills out payment form
+    PV -> PV : popSave()
+    u -> PV : presses option
+    opt option == true
+        PV -> PC : saveCred(userId, bankCred)
+        activate PC
+        PC -> PS : saveCred(userId, bankCred)
+        deactivate PC
+        activate PS
+        PS -> papi : saveCred(userId, bankCred)
+        deactivate PS
+        activate papi
+        papi -> pbc : saveCred(userId, bankCred)
+        deactivate papi
+        activate pbc
+        pbc -> PR : saveCred(userId, bankCred)
+        deactivate pbc
+        activate PR
+        PR -> db : ALTER user.bankCred = bankCred WHERE user.userId = userId
+        deactivate PR
+        activate db
+        db -> db : ALTER user.bankCred = bankCred WHERE user.userId = userId
+    end
+    deactivate db
+    PV -> PC : getPaid(bankCred)
+    activate PC
+    PC -> PS : getPaid(bankCred)
+    deactivate PC
+    activate PS
+    PS -> BA : getPaid(bankCred)
+    deactivate PS
+    activate BA
+end
+@enduml

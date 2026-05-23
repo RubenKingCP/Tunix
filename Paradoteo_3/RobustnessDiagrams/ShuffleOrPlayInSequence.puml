@@ -1,0 +1,20 @@
+@startuml name 
+
+title "Shuffle/Play in Sequence"
+
+usecase "Επιλογή Λίστας Αναπαραγωγής" as sp 
+actor "Χρήστης" as u 
+boundary "Playlist" as p 
+control "Παίξε σε σειρά" as seqp 
+control "Ανακάτεψε" as shufp
+control "Εμφάνισε τρέχον τραγούδι" as dissong
+ 
+sp -> p 
+u -> p : Επιλογή τρόπου αναπαραγωγής
+p -> seqp : Επέλεξε σε σειρά
+seqp -> dissong
+
+p --> shufp : Επέλεξε ανακατεμμένα
+shufp --> dissong
+
+@enduml

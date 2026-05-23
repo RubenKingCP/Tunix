@@ -1,0 +1,28 @@
+@startuml Login
+
+title Login
+
+actor "Χρήστης" as User
+
+boundary "Οθόνη Login" as LoginScreen
+control "Έλεγξε στοιχεία" as Auth
+entity "Βάση Δεδομένων" as DB
+control "Αρχικοποίησε εφαρμογή" as InitApp
+control "Ενημέρωσηε πως ο κωδικός είναι λανθασμένος" as WrongPass
+control "Ο λογαριασμός δεν υπάρχει, δημιουύργησε έναν" as CreateAccount
+usecase "Register" as Register
+
+User -> LoginScreen : Εισαγωγή στοιχείων
+
+LoginScreen -> Auth : Έλεγχος login
+Auth -> DB : Αναζήτηση χρήστη
+
+Auth --> InitApp : Σωστά στοιχεία
+
+Auth --> WrongPass : Λάθος κωδικός
+WrongPass --> LoginScreen : Εμφάνιση μηνύματος
+
+Auth --> CreateAccount : Ο χρήστης δεν υπάρχει
+CreateAccount --> Register
+
+@enduml

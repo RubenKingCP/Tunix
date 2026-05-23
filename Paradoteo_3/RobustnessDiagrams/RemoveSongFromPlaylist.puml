@@ -1,0 +1,21 @@
+@startuml name 
+
+title Αφαίρεση Τραγουδιού Από Λίστα Αναπαραγωγής
+
+usecase "Επιλογή Λίστας Αναπαραγωγής" as selectPl
+actor "Χρήστης" as user 
+boundary "Οθόνη Playlist" as PlScreen
+control "Εμφάνισε μενού επιλογών" as disMenu
+boundary "Μενού επιλογών" as menu
+control "Αφαίρεσε τραγούδι και ενημέρωσε βάση" as rm
+entity "Βάση Δεδομένων" as db
+
+selectPl -> PlScreen
+user -> PlScreen : Επιλεγμένο τραγούδι
+PlScreen -> disMenu
+menu <- disMenu
+user -> menu : "Remove from Playlist"
+menu -> rm
+rm -> db
+
+@enduml

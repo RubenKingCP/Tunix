@@ -1,0 +1,259 @@
+DROP DATABASE IF EXISTS Tunix;
+CREATE DATABASE Tunix;
+USE Tunix;
+
+-- =====================
+-- ACCOUNT
+-- =====================
+
+CREATE TABLE account (
+  account_id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role ENUM('USER', 'ARTIST', 'ADMIN') NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =====================
+-- USER & ARTIST
+-- =====================
+
+CREATE TABLE user (
+  user_id INT PRIMARY KEY,
+  display_name VARCHAR(100),
+  FOREIGN KEY (user_id) REFERENCES account(account_id) ON DELETE CASCADE
+);
+
+CREATE TABLE artist (
+  artist_id INT PRIMARY KEY,
+  name VARCHAR(100),
+  bio TEXT,
+  is_banned TINYINT DEFAULT 0,
+  FOREIGN KEY (artist_id) REFERENCES account(account_id) ON DELETE CASCADE
+);
+
+-- =====================
+-- ADMIN
+-- =====================
+CREATE TABLE admin (
+	admin_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    FOREIGN KEY (admin_id) REFERENCES account(account_id) ON DELETE CASCADE
+);
+
+-- =====================
+-- MUSIC
+-- =====================
+
+CREATE TABLE album (
+  album_id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(100),
+  artist_id INT,
+  release_date DATETIME,
+  FOREIGN KEY (artist_id) REFERENCES artist(artist_id) ON DELETE CASCADE
+);
+
+CREATE TABLE song (
+  song_id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(100),
+  duration INT,
+  artist_id INT,
+  album_id INT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  play_count INT DEFAULT 0,
+  strike_count INT DEFAULT 0,
+  FOREIGN KEY (artist_id) REFERENCES artist(artist_id) ON DELETE CASCADE,
+  FOREIGN KEY (album_id) REFERENCES album(album_id) ON DELETE SET NULL
+);
+
+CREATE TABLE genre (
+  genre_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50)
+);
+
+-- =====================
+-- PLAYLISTS
+-- =====================
+
+CREATE TABLE playlist (
+  playlist_id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(100),
+  creator_id INT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  is_public BOOLEAN,
+  FOREIGN KEY (creator_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
+
+-- =====================
+-- LIBRARY
+-- =====================
+
+CREATE TABLE library (
+  library_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNIQUE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE libraryContent (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  library_id INT,
+  content_id INT,
+  content_type ENUM('Song', 'Album', 'Playlist'),
+  added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  UNIQUE (library_id, content_id, content_type),
+
+  FOREIGN KEY (library_id) REFERENCES library(library_id) ON DELETE CASCADE
+);
+
+-- =====================
+-- LIKES
+-- =====================
+
+CREATE TABLE userLike (
+  user_id INT,
+  content_id INT,
+  content_type ENUM('Song', 'Album', 'Playlist'),
+  liked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (user_id, content_id, content_type),
+
+  FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
+
+-- =====================
+-- FOLLOWS
+-- =====================
+
+CREATE TABLE followArtist (
+  user_id INT,
+  artist_id INT,
+  followed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (user_id, artist_id),
+
+  FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
+  FOREIGN KEY (artist_id) REFERENCES artist(artist_id) ON DELETE CASCADE
+);
+
+CREATE TABLE followUser (
+  follower_id INT,
+  following_id INT,
+  followed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (follower_id, following_id),
+
+  FOREIGN KEY (follower_id) REFERENCES user(user_id) ON DELETE CASCADE,
+  FOREIGN KEY (following_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
+
+-- =====================
+-- LISTENING HISTORY
+-- =====================
+
+CREATE TABLE listeningHistory (
+  history_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  song_id INT,
+  played_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  duration_played INT,
+
+  FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
+  FOREIGN KEY (song_id) REFERENCES song(song_id) ON DELETE CASCADE,
+
+  INDEX (user_id, played_at)
+);
+
+-- =====================
+-- RELATION TABLES
+-- =====================
+
+CREATE TABLE songGenre (
+  song_id INT,
+  genre_id INT,
+
+  PRIMARY KEY (song_id, genre_id),
+
+  FOREIGN KEY (song_id) REFERENCES song(song_id) ON DELETE CASCADE,
+  FOREIGN KEY (genre_id) REFERENCES genre(genre_id) ON DELETE CASCADE
+);
+
+CREATE TABLE playlistSong (
+  playlist_id INT,
+  song_id INT,
+  added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  position INT,
+
+  PRIMARY KEY (playlist_id, song_id),
+
+  FOREIGN KEY (playlist_id) REFERENCES playlist(playlist_id) ON DELETE CASCADE,
+  FOREIGN KEY (song_id) REFERENCES song(song_id) ON DELETE CASCADE
+);
+
+-- =====================
+-- PROCEDURES
+-- =====================
+
+DELIMITER $
+
+DROP PROCEDURE IF EXISTS getUserPlaylists$
+CREATE PROCEDURE getUserPlaylists(IN userId INT)
+BEGIN
+SELECT playlist.playlist_id, playlist.title, playlist.creator_id, playlist.created_at, playlist.is_public FROM playlist
+join libraryContent on playlist.playlist_id = libraryContent.content_id
+join library on libraryContent.library_id = library.library_id
+where library.user_id = userId;
+END$
+
+DROP PROCEDURE IF EXISTS getSongByPlaylistId$
+CREATE PROCEDURE getSongByPlaylistId(IN plId INT)
+BEGIN
+SELECT * FROM song
+join playlistSong on song.song_id = playlistSong.song_id
+where playlistSong.playlist_id = plId;
+END$
+
+DROP PROCEDURE IF EXISTS findUserById$
+CREATE PROCEDURE findUserById(IN userId INT)
+BEGIN
+SELECT * FROM user where user_id = userId;
+END$
+
+DROP PROCEDURE IF EXISTS searchSongName$
+CREATE PROCEDURE searchSongName(IN songName varchar(100))
+BEGIN
+SELECT * FROM song where song.title = songName;
+END$
+
+
+-- =====================
+-- TRIGGERS
+-- =====================
+
+DROP TRIGGER IF EXISTS autoBanArtist$
+CREATE TRIGGER autoBanArtist
+BEFORE UPDATE ON song
+FOR EACH ROW
+BEGIN
+DECLARE banned_artist INT;
+IF ((NEW.strike_count != OLD.strike_count) AND (NEW.strike_count >= 3))
+THEN
+SELECT NEW.artist_id into banned_artist;
+UPDATE artist SET is_banned = 1 WHERE artist_id = banned_artist;
+END IF;
+END$
+
+DELIMITER ;
+
+-- THE CODE BELLOW IS NOT REALLY GOOD
+-- BECAUSE WE HAVE OVERLAPPING IDENTITY SETS FOR ALL CONTENT
+-- SO THERE CAN BE A SONG WITH ID 1 AND AN ALBUM WITH ID 1,
+-- SO WHEN WE CROSS-REFERENCE THE IDS, WE WILL FIND A MATCH IN BOTH TABLES
+-- AND BOTH COLUMNS WILL BE FILLED WITH ID=1, BUT THE USER MAY ONLY HAVE ALBUM_ID=1 SAVED
+-- SELECT library.library_id, library.user_id, library.created_at, song.song_id, album.album_id, playlist.playlist_id FROM library
+-- join libraryContent on library.library_id = libraryContent.library_id
+-- join song on libraryContent.content_id = song.song_id
+-- join album on libraryContent.content_id = album.album_id
+-- join playlist on libraryContent.content_id = playlist.playlist_id;

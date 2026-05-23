@@ -1,0 +1,17 @@
+@startuml name
+
+title Remove Songs from System Recommendations
+
+left to right direction
+
+actor "Χρήστης" as User
+
+boundary "Μενού Επιλογών" as Menu
+control "Διαχείριση Ανεπιθύμητων" as RemoveSong
+entity "Βάση Δεδομένων" as DB
+
+User --> Menu : Remove recommendation
+Menu --> RemoveSong
+RemoveSong --> DB : Ενημέρωση λίστας
+
+@enduml

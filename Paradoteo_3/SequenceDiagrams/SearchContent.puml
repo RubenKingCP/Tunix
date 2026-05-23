@@ -1,0 +1,125 @@
+@startuml name 
+
+title Search Content
+
+actor User
+participant TopBarView
+participant TopBarController
+participant SearchService
+participant SongAPI
+participant SongBackendController
+participant SongBackendService
+participant SongRepository
+participant AlbumAPI
+participant AlbumBackendController
+participant AlbumBackendService
+participant AlbumRepository
+participant ArtistAPI
+participant ArtistBackendController
+participant ArtistBackendService
+participant ArtistRepository
+participant PlaylistAPI
+participant PlaylistBackendController
+participant PlaylistBackendService
+participant PlaylistRepository
+database Database
+participant EventBus
+
+activate TopBarView
+User -> TopBarView : "Search content title"
+User -> TopBarView : "Select search content type"
+TopBarView -> TopBarController : "searchContentTypeSelected(type,title)"
+deactivate TopBarView
+activate TopBarController
+TopBarController -> SearchService : "searchContent(type,title)"
+activate SearchService
+alt "Search for songs"
+    SearchService -> SongAPI : "searchSongsByTitle(title)"
+    activate SongAPI
+    SongAPI -> SongBackendController : "searchSongsByTitle(title)"
+    activate SongBackendController
+    SongBackendController -> SongBackendService : "searchSongsByTitle(title)"
+    activate SongBackendService
+    SongBackendService -> SongRepository : "searchSongsByTitle(title)"
+    activate SongRepository
+    SongRepository -> Database : "Execute SQL to find songs by title"
+    Database --> SongRepository : "Return list of songs"
+    SongRepository --> SongBackendService : "Return list of songs"
+    deactivate SongRepository
+    SongBackendService --> SongBackendController : "Return list of songs"
+    deactivate SongBackendService
+    SongBackendController --> SongAPI : "Return list of songs"
+    deactivate SongBackendController
+    SongAPI --> SearchService : "Return list of songs"
+    deactivate SongAPI
+    SearchService --> TopBarController : "Return list of songs"
+else "Search for albums"
+    activate SearchService
+    SearchService -> AlbumAPI : "searchAlbumsByTitle(title)"
+    activate AlbumAPI
+    AlbumAPI -> AlbumBackendController : "searchAlbumsByTitle(title)"
+    activate AlbumBackendController
+    AlbumBackendController -> AlbumBackendService : "searchAlbumsByTitle(title)"
+    activate AlbumBackendService
+    AlbumBackendService -> AlbumRepository : "searchAlbumsByTitle(title)"
+    activate AlbumRepository
+    AlbumRepository -> Database : "Execute SQL to find albums by title"
+    Database --> AlbumRepository : "Return list of albums"
+    AlbumRepository --> AlbumBackendService : "Return list of albums"
+    deactivate AlbumRepository
+    AlbumBackendService --> AlbumBackendController : "Return list of albums"
+    deactivate AlbumBackendService
+    AlbumBackendController --> AlbumAPI : "Return list of albums"
+    deactivate AlbumBackendController
+    AlbumAPI --> SearchService : "Return list of albums"
+    deactivate AlbumAPI
+    SearchService --> TopBarController : "Return list of albums"
+else "Search for artists"
+    SearchService -> ArtistAPI : "searchArtistsByTitle(title)"
+    activate ArtistAPI
+    ArtistAPI -> ArtistBackendController : "searchArtistsByTitle(title)"
+    activate ArtistBackendController
+    ArtistBackendController -> ArtistBackendService : "searchArtistsByTitle(title)"
+    activate ArtistBackendService
+    ArtistBackendService -> ArtistRepository : "searchArtistsByTitle(title)"
+    activate ArtistRepository
+    ArtistRepository -> Database : "Execute SQL to find artists by title"
+    Database --> ArtistRepository : "Return list of artists"
+    ArtistRepository --> ArtistBackendService : "Return list of artists"
+    deactivate ArtistRepository
+    ArtistBackendService --> ArtistBackendController : "Return list of artists"
+    deactivate ArtistBackendService
+    ArtistBackendController --> ArtistAPI : "Return list of artists"
+    deactivate ArtistBackendController
+    ArtistAPI --> SearchService : "Return list of artists"
+    deactivate ArtistAPI
+    SearchService --> TopBarController : "Return list of artists"
+    
+else "Search for playlists"
+    SearchService -> PlaylistAPI : "searchPlaylistsByTitle(title)"
+    activate PlaylistAPI
+    PlaylistAPI -> PlaylistBackendController : "searchPlaylistsByTitle(title)"
+    activate PlaylistBackendController
+    PlaylistBackendController -> PlaylistBackendService : "searchPlaylistsByTitle(title)"
+    activate PlaylistBackendService
+    PlaylistBackendService -> PlaylistRepository : "searchPlaylistsByTitle(title)"
+    activate PlaylistRepository
+    PlaylistRepository -> Database : "Execute SQL to find playlists by title"
+    Database --> PlaylistRepository : "Return list of playlists"
+    PlaylistRepository --> PlaylistBackendService : "Return list of playlists"
+    deactivate PlaylistRepository
+    PlaylistBackendService --> PlaylistBackendController : "Return list of playlists"
+    deactivate PlaylistBackendService
+    PlaylistBackendController --> PlaylistAPI : "Return list of playlists"
+    deactivate PlaylistBackendController
+    PlaylistAPI --> SearchService : "Return list of playlists"
+    deactivate PlaylistAPI
+    SearchService --> TopBarController : "Return list of playlists"
+    deactivate SearchService
+end
+TopBarController -> EventBus : ChangeToSearchView()
+deactivate TopBarController
+
+
+
+@enduml

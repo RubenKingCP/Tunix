@@ -1,0 +1,73 @@
+@startuml Follow_Unfollow_Artist
+
+title Follow / Unfollow Artist
+
+left to right direction
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam packageStyle rectangle
+skinparam monochrome true
+
+' =====================================================
+' ACTOR
+' =====================================================
+
+actor "Γενικός Χρήστης" as User
+
+' =====================================================
+' BOUNDARY
+' =====================================================
+
+boundary "Μενού Πληροφοριών\nΚαλλιτέχνη" as ArtistMenu
+boundary "Popup Επιτυχίας\nΕγγραφής" as FollowPopup
+boundary "Popup Επιτυχίας\nΑπεγγραφής" as UnfollowPopup
+boundary "Popup Σφάλματος" as ErrorPopup
+
+' =====================================================
+' CONTROL
+' =====================================================
+
+control "Έλεγχος\nΑκολούθησης" as CheckFollow
+control "Εγγραφή σε\nΚαλλιτέχνη" as FollowArtist
+control "Απεγγραφή από\nΚαλλιτέχνη" as UnfollowArtist
+
+' =====================================================
+' ENTITY
+' =====================================================
+
+entity "Βάση Δεδομένων" as DB
+
+' =====================================================
+' USE CASE
+' =====================================================
+
+usecase "Αναζήτηση Καλλιτέχνη" as SearchArtist
+
+' =====================================================
+' FLOW
+' =====================================================
+
+User --> SearchArtist
+SearchArtist --> ArtistMenu : εμφάνιση καλλιτέχνη
+
+User --> ArtistMenu : Follow / Unfollow
+
+ArtistMenu --> CheckFollow : έλεγχος κατάστασης
+
+CheckFollow --> FollowArtist : δεν ακολουθεί
+CheckFollow --> UnfollowArtist : ήδη ακολουθεί
+
+FollowArtist --> DB : update
+UnfollowArtist --> DB : update
+
+FollowArtist --> FollowPopup : επιτυχία
+UnfollowArtist --> UnfollowPopup : επιτυχία
+
+FollowArtist --> ErrorPopup : αποτυχία
+UnfollowArtist --> ErrorPopup : αποτυχία
+
+FollowPopup --> User
+UnfollowPopup --> User
+ErrorPopup --> User
+
+@enduml

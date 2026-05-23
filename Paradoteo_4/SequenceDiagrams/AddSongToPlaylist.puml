@@ -1,0 +1,68 @@
+@startuml Add Song To Playlist
+
+title Add Song To Playlist
+
+actor User
+participant SongView
+participant SongController
+participant PlaylistService
+participant PlaylistApi
+participant ApiClient
+participant PlaylistBackendController
+participant PlaylistBackendService
+participant PlaylistBackendRepository
+database Database
+
+activate SongView
+User -> SongView : Right click on song
+SongView -> SongView : onSongRightClick()
+SongView -> SongView : showOptionsMenu()
+User -> SongView : Click "Add to Playlist"
+SongView -> SongView : onAddToPlaylistClicked()
+SongView -> SongView : showPlaylistSelectionDialog()
+User -> SongView : Select playlist or "Favourites"
+User -> SongView : Click "Confirm" in dialog
+SongView -> SongView : onConfirmAddToPlaylistClicked(playlistId, songId)
+SongView -> SongController : addSongToPlaylist(songId, playlistId)
+activate SongController
+SongController -> PlaylistService : addSongToPlaylist(songId, playlistId)
+activate PlaylistService
+PlaylistService -> PlaylistApi : addSongToPlaylist(songId, playlistId)
+activate PlaylistApi
+PlaylistApi -> ApiClient : post("/playlists/" + playlistId + "/add", new AddSongRequest(songId), AddSongResponse.class)
+activate ApiClient
+ApiClient -> PlaylistBackendController : POST /playlists/{playlistId}/add
+activate PlaylistBackendController
+PlaylistBackendController -> PlaylistBackendService : addSongToPlaylist(playlistId, songId)
+activate PlaylistBackendService
+PlaylistBackendService -> PlaylistBackendService :checkDuplicate(playlistId, songId)
+PlaylistBackendService -> PlaylistBackendRepository : findByPlaylistIdAndSongId(playlistId, songId)
+activate PlaylistBackendRepository
+PlaylistBackendRepository -> Database : Execute SQL to check if song is already in playlist
+Database --> PlaylistBackendRepository : Return true/false
+PlaylistBackendRepository --> PlaylistBackendService : Return true/false
+deactivate PlaylistBackendRepository
+alt Song already in playlist
+    PlaylistBackendService -> PlaylistBackendController : return false
+    PlaylistBackendController -> ApiClient : return HTTP 409 Conflict with error message
+    ApiClient -> PlaylistApi : return error 
+    PlaylistApi -> PlaylistService : return error
+    PlaylistService -> SongController : showError("Song already exists in playlist")
+    SongController -> SongView : showErrorDialog("Song already exists in playlist")
+    'SongView -> User : Show error dialog
+else Song not in playlist
+    PlaylistBackendService -> PlaylistBackendRepository : Insert song into playlist
+    activate PlaylistBackendRepository
+    PlaylistBackendRepository -> Database : Insert record into playlist_songs table
+    Database --> PlaylistBackendRepository : Success
+    PlaylistBackendRepository --> PlaylistBackendService : return success
+    deactivate PlaylistBackendRepository
+    PlaylistBackendService -> PlaylistBackendController : return success response
+    PlaylistBackendController -> ApiClient : return HTTP 200 OK
+    ApiClient -> PlaylistApi : return success
+    PlaylistApi -> PlaylistService : return success
+    PlaylistService -> SongController : showSuccess("Song added to playlist")
+    SongController -> SongView : showSuccessDialog("Song added to playlist")
+    'SongView -> User : Show success dialog
+end
+@enduml

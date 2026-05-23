@@ -1,0 +1,49 @@
+@startuml Remove Song From Playlist
+
+actor User as usr 
+participant PlaylistView as pv
+participant PlaylistController as pc
+participant PlaylistService as ps
+participant PlaylistApi as pa
+participant PlaylistBackendController as pbc
+participant PlaylistBackendService as pbs
+participant PlaylistBackendRepository as pbr
+database Database as db
+
+usr -> pv: Click "Remove" on song
+activate pv
+pv -> pc: sendRemoveSongRequest(songId, playlistId)
+
+activate pc
+pc -> ps: removeSongFromPlaylist(songId, playlistId)
+
+activate ps
+ps -> pa: callRemoveSongApi(songId, playlistId)
+
+activate pa
+pa -> pbc: Delete /playlists/{playlistId}/songs/{songId}
+
+activate pbc
+pbc -> pbs: removeSong(songId, playlistId)
+
+activate pbs
+pbs -> pbr: deleteSongFromPlaylist(songId, playlistId)
+
+activate pbr
+pbr -> db: Execute delete query
+db --> pbr: Return success/failure
+pbr --> pbs: Return result
+deactivate pbr
+pbs --> pbc: Return result
+deactivate pbs
+pbc --> pa: Return result
+deactivate pbc
+pa --> ps: Return result
+deactivate pa
+ps --> ps : removeSongFromPlaylistCache(playlistId, songId)
+ps --> pc: updatePlaylistView(playlistId)
+deactivate ps
+pc --> pv: refreshPlaylistView(playlistId)
+deactivate pc
+deactivate pv
+@enduml

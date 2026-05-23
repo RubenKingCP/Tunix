@@ -1,0 +1,74 @@
+@startuml PremiumTrial
+
+title Premium Trial
+
+actor User as U
+
+participant UserProfileView
+participant UserProfileController
+participant UserService
+participant User
+participant UserApiClient
+participant ApiClient
+participant UserBackendController
+participant UserBackendService
+participant UserBackendRepository
+
+database Database
+
+activate UserProfileView
+U -> UserProfileView : click "Show premium screen"
+UserProfileView -> UserProfileView : onShowPremiumScreenClicked()
+UserProfileView -> UserProfileController : checkTrialEligibility()
+activate UserProfileController
+UserProfileController -> UserService : checkTrialEligibility(user)
+activate UserService
+UserService -> User : checkTrialEligibility()
+activate User
+User --> UserService : isEligible
+deactivate User
+UserService --> UserProfileController : isEligible
+deactivate UserService
+alt isEligible == true
+    UserProfileController -> UserProfileView : showPremiumTrialScreen()
+    U -> UserProfileView : click "Start trial"
+    UserProfileView -> UserProfileController : startTrial()
+    activate UserProfileController
+    UserProfileController -> UserService : startTrial(user)
+    activate UserService
+    UserService -> User : startTrial()
+    activate User
+    User --> UserService : trialStarted
+    deactivate User
+    UserService -> UserApiClient : trialStarted(user)
+    activate UserApiClient
+    UserApiClient -> ApiClient : post("user/startTrial", user, UserResponse)
+    activate ApiClient
+    ApiClient -> UserBackendController : POST user/startTrial
+    activate UserBackendController
+    UserBackendController -> UserBackendService : startTrial(user)
+    activate UserBackendService
+    UserBackendService -> UserBackendRepository : startTrial(user)
+    activate UserBackendRepository
+    UserBackendRepository -> Database : UPDATE user SET trialStartDate = now() WHERE userId = userId
+    Database --> UserBackendRepository : success
+    UserBackendRepository --> UserBackendService : success
+    deactivate UserBackendRepository
+    UserBackendService --> UserBackendController : success
+    deactivate UserBackendService
+    UserBackendController --> ApiClient : 200 OK
+    deactivate UserBackendController
+    ApiClient --> UserApiClient : 200 OK
+    deactivate ApiClient
+    UserApiClient --> UserService : trialStarted
+    deactivate UserApiClient
+    UserService --> UserProfileController : trialStarted
+    deactivate UserService
+    UserProfileController -> UserProfileView : showTrialStartedMessage()
+    deactivate UserProfileController
+else
+    UserProfileController -> UserProfileView : showPremiumPlan()
+end
+
+
+@enduml

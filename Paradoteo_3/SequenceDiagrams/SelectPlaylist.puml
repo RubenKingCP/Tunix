@@ -1,0 +1,303 @@
+@startuml name
+
+title Select Playlist & Add Song Flow
+
+actor User
+
+participant LibraryView
+participant LibraryController
+participant Playlist
+participant PlaylistView
+participant PlaylistController
+participant PlaylistService
+participant PlaylistAPI
+participant PlaylistBackendController
+participant PlaylistBackendService
+participant PlaylistBackendRepository
+
+participant SearchView
+participant SearchController
+participant SearchService
+participant SongController
+participant SongAPI
+participant SongBackendController
+participant SongBackendService
+participant SongBackendRepository
+
+database Database
+participant EventBus
+
+
+activate LibraryView
+
+User -> LibraryView : Select Playlist
+LibraryView -> LibraryController : fetchPlaylistById(playlistId)
+
+activate LibraryController
+
+LibraryController -> PlaylistService : getPlaylistById(playlistId)
+
+activate PlaylistService
+
+PlaylistService -> PlaylistAPI : fetchPlaylistById(playlistId)
+
+activate PlaylistAPI
+
+PlaylistAPI -> PlaylistBackendController : fetchPlaylistById(playlistId)
+
+activate PlaylistBackendController
+
+PlaylistBackendController -> PlaylistBackendService : fetchPlaylistById(playlistId)
+
+activate PlaylistBackendService
+
+PlaylistBackendService -> PlaylistBackendRepository : findPlaylistById(playlistId)
+
+activate PlaylistBackendRepository
+
+PlaylistBackendRepository -> Database : query playlist by id
+Database --> PlaylistBackendRepository : playlist data
+
+PlaylistBackendRepository --> PlaylistBackendService : playlist data
+
+deactivate PlaylistBackendRepository
+
+PlaylistBackendService -> Playlist : create Playlist object
+Playlist --> PlaylistBackendService : Playlist
+
+PlaylistBackendService --> PlaylistBackendController : playlist data
+
+deactivate PlaylistBackendService
+
+PlaylistBackendController --> PlaylistAPI : PlaylistDTO
+
+deactivate PlaylistBackendController
+
+PlaylistAPI --> PlaylistService : PlaylistDTO
+
+deactivate PlaylistAPI
+
+PlaylistService --> LibraryController : Playlist
+
+deactivate PlaylistService
+
+LibraryController --> EventBus : switchToPlaylistView(playlist)
+
+deactivate LibraryController
+
+EventBus -> PlaylistView : displayPlaylist(playlist)
+
+activate PlaylistView
+
+PlaylistView -> PlaylistController : loadPlaylistSongs()
+
+activate PlaylistController
+
+PlaylistController -> PlaylistService : getSongsByPlaylistId(playlistId)
+
+activate PlaylistService
+
+PlaylistService -> PlaylistAPI : getSongsByPlaylistId(playlistId)
+
+activate PlaylistAPI
+
+PlaylistAPI -> PlaylistBackendController : getSongsByPlaylistId(playlistId)
+
+activate PlaylistBackendController
+
+PlaylistBackendController -> PlaylistBackendService : getSongsByPlaylistId(playlistId)
+
+activate PlaylistBackendService
+
+PlaylistBackendService -> PlaylistBackendRepository : findSongsByPlaylistId(playlistId)
+
+activate PlaylistBackendRepository
+
+PlaylistBackendRepository -> Database : query songs
+Database --> PlaylistBackendRepository : songs data
+
+PlaylistBackendRepository --> PlaylistBackendService : songs list
+
+deactivate PlaylistBackendRepository
+
+PlaylistBackendService --> PlaylistBackendController : songs list
+
+deactivate PlaylistBackendService
+
+PlaylistBackendController --> PlaylistAPI : SongDTO[]
+
+deactivate PlaylistBackendController
+
+PlaylistAPI --> PlaylistService : SongDTO[]
+
+deactivate PlaylistAPI
+
+PlaylistService --> PlaylistController : List<Song>
+
+deactivate PlaylistService
+
+PlaylistController --> PlaylistView : renderSongs(song list)
+
+deactivate PlaylistController
+
+'PlaylistView --> User : Display playlist songs
+
+
+User -> SearchView : Search Song
+activate SearchView
+
+SearchView -> SearchController : onSearchButtonClicked(query)
+
+activate SearchController
+
+SearchController -> SearchService : searchSongs(query)
+
+activate SearchService
+
+SearchService -> SongAPI : searchSongs(query)
+
+activate SongAPI
+
+SongAPI -> SongBackendController : searchSongs(query)
+
+activate SongBackendController
+
+SongBackendController -> SongBackendService : searchSongs(query)
+
+activate SongBackendService
+
+SongBackendService -> SongBackendRepository : findSongs(query)
+
+activate SongBackendRepository
+
+SongBackendRepository -> Database : query songs by keyword
+Database --> SongBackendRepository : matching songs
+
+SongBackendRepository --> SongBackendService : songs list
+
+deactivate SongBackendRepository
+
+SongBackendService --> SongBackendController : songs list
+
+deactivate SongBackendService
+
+SongBackendController --> SongAPI : SongDTO[]
+
+deactivate SongBackendController
+
+SongAPI --> SearchService : SongDTO[]
+
+deactivate SongAPI
+
+SearchService --> SearchController : List<Song>
+
+deactivate SearchService
+
+alt Songs Found
+
+    SearchController --> SearchView : displaySongs(results)
+
+    'SearchView --> User : Show matching songs
+
+    User -> PlaylistView : Click "Add Song"
+
+    PlaylistView -> SongController : addSongToPlaylist(playlistId,songId)
+
+    activate SongController
+
+    SongController -> PlaylistService : checkIfSongInPlaylist()
+
+    activate PlaylistService
+
+    PlaylistService -> PlaylistBackendRepository : check duplicate song
+
+    activate PlaylistBackendRepository
+
+    PlaylistBackendRepository -> Database : query existing song
+    Database --> PlaylistBackendRepository : result
+
+    PlaylistBackendRepository --> PlaylistService : true/false
+
+    deactivate PlaylistBackendRepository
+
+    alt Song Already Exists
+
+        PlaylistService --> SongController : true
+
+        deactivate PlaylistService
+
+        SongController --> PlaylistView : showSongAlreadyExistsMessage()
+
+        'PlaylistView --> User : "Song already exists"
+
+    else Song Does Not Exist
+
+        PlaylistService --> SongController : false
+
+        deactivate PlaylistService
+
+        SongController -> PlaylistService : addSongToPlaylist(playlistId,songId)
+
+        activate PlaylistService
+
+        PlaylistService -> PlaylistAPI : postAddSongToPlaylist()
+
+        activate PlaylistAPI
+
+        PlaylistAPI -> PlaylistBackendController : addSong(playlistId,songId)
+
+        activate PlaylistBackendController
+
+        PlaylistBackendController -> PlaylistBackendService : addSong(playlistId,songId)
+
+        activate PlaylistBackendService
+
+        PlaylistBackendService -> PlaylistBackendRepository : addSongQuery()
+
+        activate PlaylistBackendRepository
+
+        PlaylistBackendRepository -> Database : insert song into playlist
+        Database --> PlaylistBackendRepository : success
+
+        PlaylistBackendRepository --> PlaylistBackendService : true
+
+        deactivate PlaylistBackendRepository
+
+        PlaylistBackendService --> PlaylistBackendController : true
+
+        deactivate PlaylistBackendService
+
+        PlaylistBackendController --> PlaylistAPI : true
+
+        deactivate PlaylistBackendController
+
+        PlaylistAPI --> PlaylistService : true
+
+        deactivate PlaylistAPI
+
+        PlaylistService --> SongController : success
+
+        deactivate PlaylistService
+
+        SongController --> PlaylistView : refreshPlaylist()
+
+        'PlaylistView --> User : Updated playlist displayed
+
+    end
+
+    deactivate SongController
+
+else No Songs Found
+
+    SearchController --> SearchView : showNoSongsFound()
+
+    'SearchView --> User : "No songs found"
+
+end
+
+deactivate SearchController
+deactivate SearchView
+deactivate PlaylistView
+deactivate LibraryView
+
+@enduml

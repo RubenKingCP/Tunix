@@ -1,0 +1,206 @@
+@startuml Supervise Content
+
+title Supervise Content
+
+actor AppAdmin
+
+participant AdminView
+participant AdminController
+participant Admin
+participant AdminService
+participant AdminApi
+participant AdminBackendController
+participant AdminBackendService
+participant AdminBackendRepository
+participant Song
+participant SongService
+participant SongClientApi
+participant SongBackendController
+participant SongBackendService
+participant SongBackendRepository
+participant Album
+participant AlbumService
+participant AlbumApi
+participant AlbumBackendController
+participant AlbumBackendService
+participant AlbumBackendRepository
+database Database
+
+activate AdminView
+AppAdmin -> AdminView : select content to supervise
+AdminView -> AdminView : showContextMenu()
+AppAdmin -> AdminView : select Remove
+AdminView -> AdminView : showRemovePopup()
+AppAdmin -> AdminView : confirm removal
+AdminView -> AdminController : onRemoveSelected()
+activate AdminController
+AdminController -> Admin : getArtistStrikes()
+activate Admin
+Admin -> AdminService : getArtistStrikes(artistID)
+activate AdminService
+AdminService -> AdminApi : fetchArtistStrikes(artistID)
+activate AdminApi
+AdminApi -> AdminBackendController : fetchArtistStrikes(artistID)
+activate AdminBackendController
+AdminBackendController -> AdminBackendService : fetchArtistStrikes(artistID)
+activate AdminBackendService
+AdminBackendService -> AdminBackendRepository : findStrikesByArtistId(artistID)
+activate AdminBackendRepository
+AdminBackendRepository -> Database : query strikes by artist id
+Database --> AdminBackendRepository : strikes data
+AdminBackendRepository --> AdminBackendService : strikes data
+deactivate AdminBackendRepository
+AdminBackendService --> AdminBackendController : strikes data
+deactivate AdminBackendService
+AdminBackendController --> AdminApi : strikes data
+deactivate AdminBackendController
+AdminApi --> AdminService : strikes data
+deactivate AdminApi
+AdminService --> Admin : strikes data
+deactivate AdminService
+Admin --> AdminController : strikes data
+deactivate Admin
+AdminController -> AdminController : evaluate strikes
+AdminController -> AdminView : showPunshmentOptions(strikes)
+AppAdmin -> AdminView : select punishment
+alt No additional punishment
+    AdminView -> AdminController : onPunishmentSelected(punishment)
+    'activate AdminController
+    AdminController -> Admin : applyPunishment(punishment)
+    activate Admin
+    Admin -> AdminService : applyPunishment(punishment)
+    activate AdminService
+    AdminService -> AdminApi : applyPunishment(punishment)
+    activate AdminApi
+    AdminApi -> AdminBackendController : applyPunishment(punishment)
+    activate AdminBackendController
+    AdminBackendController -> AdminBackendService : applyPunishment(punishment)
+    activate AdminBackendService
+    AdminBackendService -> AdminBackendRepository : updateStrikes(artistID, punishment)
+    activate AdminBackendRepository
+    AdminBackendRepository -> Database : update strikes in database
+    Database --> AdminBackendRepository : update confirmation
+    deactivate AdminBackendRepository
+    deactivate AdminBackendService
+    deactivate AdminBackendController
+    deactivate AdminApi
+    deactivate AdminService
+    deactivate Admin
+
+else Issue Warning
+    AdminView -> AdminController : onPunishmentSelected("Warning")
+    'activate AdminController
+    AdminController -> Admin : issueWarning()
+    activate Admin
+    Admin -> AdminService : issueWarning(artistID)
+    activate AdminService
+    AdminService -> AdminApi : issueWarning(artistID)
+    activate AdminApi
+    AdminApi -> AdminBackendController : issueWarning(artistID)
+    activate AdminBackendController
+    AdminBackendController -> AdminBackendService : issueWarning(artistID)
+    activate AdminBackendService
+    AdminBackendService -> AdminBackendRepository : incrementStrikes(artistID)
+    activate AdminBackendRepository
+    AdminBackendRepository -> Database : increment strikes in database
+    Database --> AdminBackendRepository : update confirmation
+    AdminBackendRepository -> AdminBackendService : warning confirmation
+    deactivate AdminBackendRepository
+    AdminBackendService -> AdminBackendController : warning confirmation
+    deactivate AdminBackendService
+    AdminBackendController -> AdminApi : warning confirmation
+    deactivate AdminBackendController
+    AdminApi -> AdminService : warning confirmation
+    deactivate AdminApi
+    AdminService -> Admin : warning confirmation
+    deactivate AdminService
+    Admin -> AdminController : warning confirmation
+    deactivate Admin
+else Issue Ban
+    AdminView -> AdminController : onPunishmentSelected("Ban")
+    'activate AdminController
+    AdminController -> Admin : issueBan()
+    activate Admin
+    Admin -> AdminService : issueBan(artistID)
+    activate AdminService
+    AdminService -> AdminApi : issueBan(artistID)
+    activate AdminApi
+    AdminApi -> AdminBackendController : issueBan(artistID)
+    activate AdminBackendController
+    AdminBackendController -> AdminBackendService : issueBan(artistID)
+    activate AdminBackendService
+    AdminBackendService -> AdminBackendRepository : banArtist(artistID)
+    activate AdminBackendRepository
+    AdminBackendRepository -> Database : update artist status to banned in database
+    Database --> AdminBackendRepository : update confirmation
+    AdminBackendRepository -> AdminBackendService : ban confirmation
+    deactivate AdminBackendRepository
+    AdminBackendService -> AdminBackendController : ban confirmation
+    deactivate AdminBackendService
+    AdminBackendController -> AdminApi : ban confirmation
+    deactivate AdminBackendController
+    AdminApi -> AdminService : ban confirmation
+    deactivate AdminApi
+    AdminService -> Admin : ban confirmation
+    deactivate AdminService
+    Admin -> AdminController : ban confirmation
+    deactivate Admin
+end
+alt Remove Song
+    AdminView -> AdminController : onRemoveSelected(songID)
+    activate AdminController
+    AdminController -> SongService : removeSong(songID)
+    activate SongService
+    SongService -> SongClientApi : deleteSong(songID)
+    activate SongClientApi
+    SongClientApi -> SongBackendController : DELETE /songs/{id}
+    activate SongBackendController
+    SongBackendController -> SongBackendService : deleteSong(songID)
+    activate SongBackendService
+    SongBackendService -> SongBackendRepository : deleteById(songID)
+    activate SongBackendRepository
+    SongBackendRepository -> Database : delete song from database
+    Database --> SongBackendRepository : delete confirmation
+    SongBackendRepository -> SongBackendService : delete confirmation
+    deactivate SongBackendRepository
+    SongBackendService -> SongBackendController : delete confirmation
+    deactivate SongBackendService
+    SongBackendController -> SongClientApi : delete confirmation
+    deactivate SongBackendController
+    SongClientApi -> SongService : delete confirmation
+    deactivate SongClientApi
+    SongService -> AdminController : delete confirmation
+    deactivate SongService
+    AdminController -> AdminView : showRemoveSuccessMessage()
+    deactivate AdminController
+else Remove Album
+    AdminView -> AdminController : onRemoveSelected(albumID)
+    activate AdminController
+    AdminController -> AlbumService : removeAlbum(albumID)
+    activate AlbumService
+    AlbumService -> AlbumApi : deleteAlbum(albumID)
+    activate AlbumApi
+    AlbumApi -> AlbumBackendController : DELETE /albums/{id}
+    activate AlbumBackendController
+    AlbumBackendController -> AlbumBackendService : deleteAlbum(albumID)
+    activate AlbumBackendService
+    AlbumBackendService -> AlbumBackendRepository : deleteById(albumID)
+    activate AlbumBackendRepository
+    AlbumBackendRepository -> Database : delete album from database
+    Database --> AlbumBackendRepository : delete confirmation
+    AlbumBackendRepository -> AlbumBackendService : delete confirmation
+    deactivate AlbumBackendRepository
+    AlbumBackendService -> AlbumBackendController : delete confirmation
+    deactivate AlbumBackendService
+    AlbumBackendController -> AlbumApi : delete confirmation
+    deactivate AlbumBackendController
+    AlbumApi -> AlbumService : delete confirmation
+    deactivate AlbumApi
+    AlbumService -> AdminController : delete confirmation
+    deactivate AlbumService
+    AdminController -> AdminView : showRemoveSuccessMessage()
+    deactivate AdminController
+end
+
+
+@enduml

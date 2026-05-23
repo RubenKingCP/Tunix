@@ -1,0 +1,17 @@
+package tunix.api;
+
+import tunix.dto.request.SongRequest;
+import tunix.dto.response.ApiResponse;
+import tunix.dto.response.SongResponse;
+
+public class SongApiClient {
+    private final ApiClient apiClient;
+
+    public SongApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
+    }
+
+    public ApiResponse<SongResponse> uploadSong(SongRequest songRequest) {
+        return apiClient.post("/songs/upload", songRequest, SongResponse.class);
+    }
+}

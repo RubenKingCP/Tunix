@@ -1,0 +1,162 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+TABLE account {
+  account_id INT [PRIMARY KEY]
+  username VARCHAR(50) UNIQUE [NOT NULL]
+  email VARCHAR(100) UNIQUE [NOT NULL]
+  password VARCHAR(255) [NOT NULL]
+  role ENUM('USER', 'ARTIST', 'ADMIN') [NOT NULL]
+  created_at DATETIME
+}
+
+// =====================
+// USER & ARTIST
+// =====================
+
+TABLE user {
+  user_id INT [PRIMARY KEY]
+  display_name VARCHAR(100)
+}
+Ref: user.user_id < account.account_id
+
+TABLE artist {
+  artist_id INT [PRIMARY KEY]
+  name VARCHAR(100)
+  bio TEXT
+}
+Ref: artist.artist_id < account.account_id
+
+// =====================
+// MUSIC
+// =====================
+
+TABLE album {
+  album_id INT [PRIMARY KEY]
+  title VARCHAR(100)
+  artist_id INT
+  release_date DATETIME
+}
+Ref: album.artist_id < artist.artist_id
+
+TABLE song {
+  song_id INT [PRIMARY KEY]
+  title VARCHAR(100)
+  duration INT
+  artist_id INT
+  album_id INT
+  created_at DATETIME
+  play_count INT
+}
+Ref: song.artist_id < artist.artist_id
+Ref: song.album_id < album.album_id
+
+TABLE genre {
+  genre_id INT [PRIMARY KEY]
+  name VARCHAR(50)
+}
+
+// =====================
+// PLAYLISTS
+// =====================
+
+TABLE playlist {
+  playlist_id INT [PRIMARY KEY]
+  title VARCHAR(100)
+  creator_id INT
+  created_at DATETIME
+  is_public BOOLEAN
+}
+Ref: playlist.creator_id < user.user_id
+
+// =====================
+// LIBRARY
+// =====================
+
+TABLE library {
+  library_id INT [PRIMARY KEY]
+  user_id INT UNIQUE
+  created_at datetime
+}
+Ref: library.user_id < user.user_id
+
+TABLE libraryContent {
+  id INT [PRIMARY KEY]
+  library_id INT [UNIQUE]
+  content_id INT [UNIQUE]
+  content_type ENUM('Song', 'Album', 'Playlist') [UNIQUE]
+  added_at DATETIME
+}
+Ref: libraryContent.library_id < library.library_id
+
+// =====================
+// LIKES
+// =====================
+
+TABLE userLike {
+  user_id INT [PRIMARY KEY]
+  content_id INT [PRIMARY KEY]
+  content_type ENUM('Song', 'Album', 'Playlist') [PRIMARY KEY]
+  liked_at DATETIME
+}
+Ref: userLike.user_id < user.user_id
+
+// =====================
+// FOLLOWS
+// =====================
+
+TABLE followArtist {
+  user_id INT [PRIMARY KEY]
+  artist_id INT [PRIMARY KEY]
+  followed_at datetime
+}
+Ref: followArtist.user_id < user.user_id
+Ref: followArtist.artist_id < artist.artist_id
+
+TABLE followUser {
+  follower_id INT [PRIMARY KEY]
+  following_id INT [PRIMARY KEY]
+  followed_at DATETIME
+}
+Ref: followUser.follower_id < user.user_id
+Ref: followUser.following_id < user.user_id
+
+// =====================
+// LISTENING HISTORY
+// =====================
+
+TABLE listeningHistory {
+  history_id INT [PRIMARY KEY]
+  user_id INT
+  song_id INT
+  played_at DATETIME
+  duration_played INT
+
+  //INDEX {user_id, played_at}
+}
+Ref: listeningHistory.user_id < user.user_id
+Ref: listeningHistory.song_id < song.song_id
+
+// =====================
+// RELATION TABLES
+// =====================
+
+TABLE songGenre {
+  song_id INT [PRIMARY KEY]
+  genre_id INT [PRIMARY KEY]
+}
+Ref: songGenre.song_id < song.song_id
+Ref: songGenre.genre_id < genre.genre_id
+
+TABLE playlistSong {
+  playlist_id INT [PRIMARY KEY]
+  song_id INT [PRIMARY KEY]
+  added_at DATETIME
+  position INT
+
+
+ // FOREIGN KEY {playlist_id} REFERENCES playlist{playlist_id} ON DELETE CASCADE,
+  //FOREIGN KEY {song_id} REFERENCES song{song_id} ON DELETE CASCADE
+}
+Ref: playlistSong.playlist_id < playlist.playlist_id
+Ref: playlistSong.song_id < song.song_id

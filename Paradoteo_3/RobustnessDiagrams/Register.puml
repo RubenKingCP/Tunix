@@ -1,0 +1,26 @@
+@startuml name 
+
+title Register
+
+actor "Χρήστης" as u 
+boundary "Φόρμα εγγραφής" as ap
+control "Έλεγξε για ψευδόνυμο ή email" as nickmail
+entity "Βάση Δεδομένων" as db 
+usecase "Login" as log
+control "Ενημέρωσε τον χρήστη 'οτι το ψευδόνυμο υπάρχει και ξεκίνα από την αρχή" as exname
+control "Ενημέρωσε τον χρήστη ότι λογαριασμός με αυτό το mail υπάρχει ήδη" as exmail
+
+u -> ap : Στοιχεία
+
+ap -> nickmail : Έλεγχος στοιχείων
+nickmail --> db : Αναζήτηση στη βάση
+
+nickmail --> log : Τα στοιχεία δεν υπήρχαν στη βάση
+
+nickmail --> exname : Το ψευδόνυμο βρέθηκε στη βάση
+exname -> ap
+
+nickmail --> exmail : Το email βρέθηκε στη βάση
+exmail -> log
+
+@enduml

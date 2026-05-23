@@ -22,7 +22,7 @@ class User {
 - String username
 - String password
 - String userId
-+ showPlaylists(): void
++ displayUserPlaylists(): void
 + selectPlaylist(): Playlist pl
 + addSong(): void
 + createPlaylist(): void
@@ -96,8 +96,8 @@ class Playlist {
 - userId: String
 - descr: String
 - isPublic: bool
-+ findById(String userId): List<Playlist> pls
-+ getSongsByPlaylistId(String plId): List<Song> sgs
++ fetchUserPlaylistsById(String userId): JsonObject userPlaylists
++ fetchSongsByPlaylistId(String plId): JsonObject playlistSongs
 + addSongToFavorites(Song sg): void
 + addSong(Song sg): void
 + sendHTTPRequest(String name): bool hasNotDuplicate
@@ -141,7 +141,7 @@ class MainController {
 class MusicPlayerController
 class HomeController {
 + display(): void
-+ getPlaylists(): void
++ displayUserPlaylists(String userId): void
 + flipStatus(String userId): void
 + getProfile(): void
 + showPlaylists(): void
@@ -169,7 +169,7 @@ class TopBarController {
 + downloadSong(Song sg): String status
 }
 class PlaylistController {
-+ fetchPlaylistsById(String userId): List<Playlist> pls
++ fetchUserPlaylistsById(String userId): List<Playlist> pls
 + getPlaylistSongs(Playlist pl): List<Song> sgs
 + showSelectedPlaylist(Playlist pl): void
 + showSelectedEmptyPlaylist(): void
@@ -196,7 +196,7 @@ class HomeView {
 + confirm(): bool yes
 + flipStatus(String userId): void
 + showProfile(): void
-+ showPlaylists(): void
++ displayUserPlaylists(String userId): void
 + getArtistApplications(): void
 + showSelectedRequest(): void
 + saveResponse(): void
@@ -214,7 +214,7 @@ class TopBarView {
 + downloadSong(Song sg): void
 }
 class PlaylistView {
-+ getPlaylistSongs(Playlist pl): List<Song> sgs
++ displayPlaylistSongs(String plId): List<Song> sgs
 + showPlaylistEditor(): void
 + checkForDuplicateName(String name): bool hasDuplicate
 + showDuplicateFoundError(): void
@@ -301,6 +301,9 @@ class AlbumControllerAPI {
 + findAlbumByName(String searchName): List<Album> albs
 }
 class PlaylistControllerAPI {
++ getUserPlaylistsById(String userId): ResultSet playlistRows
++ getSongsWithPlaylistId(String plId): ResultSet songRows
+
 + createQuery(String userId): List<Playlist> pls
 + addSong(String songId, String plId): void
 + processRequest(String name): bool hasNotDuplicate
@@ -318,24 +321,25 @@ class ArtistRequestControllerAPI {
 }
 
 ' Entities
-interface Entity
-class AccountEntity {
+interface Service
+class AccountService {
 + artist(String name): Artist art
 + newStatus(String userId, bool status): bool status
 }
-class UserEntity
-class ArtistEntity
-class AdminEntity
-class SongEntity
-class AlbumEntity
-class PlaylistEntity {
+class UserService
+class ArtistService
+class AdminService
+class SongService
+class AlbumService
+class PlaylistService
+class PlaylistService {
 + addSong(String sgId, String plId): void
 + runQuery(String name): bool hasNotDuplicate
 }
-class LibraryEntity
-class GenreEntity
-class ListeningHistoryEntity
-class ArtistRequestEntity
+class LibraryService
+class GenreService
+class ListeningHistoryService
+class ArtistRequestService
 
 ' Repositories (JPA)
 interface JpaRepository
@@ -369,17 +373,17 @@ API <|.. GenreControllerAPI
 API <|.. ListeningHistoryControllerAPI
 API <|.. ArtistRequestControllerAPI
 
-Entity <|.. AccountEntity
-Entity <|.. UserEntity
-Entity <|.. ArtistEntity
-Entity <|.. AdminEntity
-Entity <|.. SongEntity
-Entity <|.. AlbumEntity
-Entity <|.. PlaylistEntity
-Entity <|.. LibraryEntity
-Entity <|.. GenreEntity
-Entity <|.. ListeningHistoryEntity
-Entity <|.. ArtistRequestEntity
+Service <|.. AccountService
+Service <|.. UserService
+Service <|.. ArtistService
+Service <|.. AdminService
+Service <|.. SongService
+Service <|.. AlbumService
+Service <|.. PlaylistService
+Service <|.. LibraryService
+Service <|.. GenreService
+Service <|.. ListeningHistoryService
+Service <|.. ArtistRequestService
 
 JpaRepository <|.. AccountRepository
 JpaRepository <|.. UserRepository
@@ -393,51 +397,44 @@ JpaRepository <|.. GenreRepository
 JpaRepository <|.. ListeningHistoryRepository
 JpaRepository <|.. ArtistRequestRepository
 
-' Controller → Entity
+' Controller → Service
 AccountControllerAPI -- Account
 UserControllerAPI -- User
 AdminControllerAPI -- Admin
-AccountControllerAPI -- AccountEntity
+AccountControllerAPI -- AccountService
 ArtistControllerAPI -- Artist
 AlbumControllerAPI -- Album
 GenreControllerAPI -- Genre
 SongControllerAPI -- Song
 ListeningHistoryControllerAPI -- ListeningHistory
 
-UserControllerAPI -- UserEntity
-ArtistControllerAPI -- ArtistEntity
-AdminControllerAPI -- AdminEntity
-SongControllerAPI -- SongEntity
-AlbumControllerAPI -- AlbumEntity
-PlaylistControllerAPI -- PlaylistEntity
-LibraryControllerAPI -- LibraryEntity
-GenreControllerAPI -- GenreEntity
-ListeningHistoryControllerAPI -- ListeningHistoryEntity
-ArtistRequestControllerAPI -- ArtistRequestEntity
+UserControllerAPI -- UserService
+ArtistControllerAPI -- ArtistService
+AdminControllerAPI -- AdminService
+SongControllerAPI -- SongService
+AlbumControllerAPI -- AlbumService
+PlaylistControllerAPI -- PlaylistService
+LibraryControllerAPI -- LibraryService
+GenreControllerAPI -- GenreService
+ListeningHistoryControllerAPI -- ListeningHistoryService
+ArtistRequestControllerAPI -- ArtistRequestService
 
-' Entity → Repository
-AccountEntity -- AccountRepository
-UserEntity -- UserRepository
-ArtistEntity -- ArtistRepository
-AdminEntity -- AdminRepository
-SongEntity -- SongRepository
-AlbumEntity -- AlbumRepository
-PlaylistEntity -- PlaylistRepository
-LibraryEntity -- LibraryRepository
-GenreEntity -- GenreRepository
-ListeningHistoryEntity -- ListeningHistoryRepository
-ArtistRequestEntity -- ArtistRequestRepository
+' Service → Repository
+AccountService -- AccountRepository
+UserService -- UserRepository
+ArtistService -- ArtistRepository
+AdminService -- AdminRepository
+SongService -- SongRepository
+AlbumService -- AlbumRepository
+PlaylistService -- PlaylistRepository
+LibraryService -- LibraryRepository
+GenreService -- GenreRepository
+ListeningHistoryService -- ListeningHistoryRepository
+ArtistRequestService -- ArtistRequestRepository
 
 PlaylistController -- Playlist
 LibraryController -- Library
 Library -- LibraryControllerAPI
 Playlist -- PlaylistControllerAPI
 User -- ArtistRequestControllerAPI
-
-' NOtes
-note right of PlaylistController
-If we wanted to add filters we could do
-showPlaylists(List<Playlist> pls)
-(for now I assume we don't)
-end note
 @enduml

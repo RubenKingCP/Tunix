@@ -1,0 +1,37 @@
+@startuml name
+
+title Έγκριση / Απόρριψη Λογαριασμού Καλλιτέχνη
+
+left to right direction
+
+actor "Διαχειριστής" as Admin
+actor "Χρήστης" as User
+
+boundary "Μενού Πλοήγησης" as Menu
+boundary "Artist Account Applications" as AppList
+boundary "Μήνυμα προς χρήστη" as Message
+
+control "Πάρε αιτήσεις" as FetchApps
+control "Εμφάνισε λεπτομέρειες αίτησης" as Details
+control "Πάρε απάντηση" as Response
+control "Ενημέρωσε βάση" as UpdateDB
+
+entity "Βάση Δεδομένων" as DB
+
+Admin --> Menu
+Menu --> FetchApps
+FetchApps -- DB
+FetchApps --> AppList
+
+Admin --> AppList
+AppList --> Details
+Details --> Response
+
+Response --> Message : Reject
+Message --> User
+
+Response --> UpdateDB : Approve
+UpdateDB -- DB
+UpdateDB --> Message
+
+@enduml

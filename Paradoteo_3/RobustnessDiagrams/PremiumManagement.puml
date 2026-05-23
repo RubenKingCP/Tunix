@@ -1,0 +1,84 @@
+@startuml name
+
+title Premium Management
+
+left to right direction
+
+skinparam shadowing false
+skinparam roundcorner 10
+
+' =====================================================
+' ACTORS
+' =====================================================
+
+actor Γενικός_Χρήστης
+
+' =====================================================
+' BOUNDARY OBJECTS
+' =====================================================
+
+boundary Οθόνη_Premium_Πακέτων
+boundary Premium_Expiration_Screen
+boundary Εικόνα_Εφαρμογής
+boundary Premium_Expiration_Screen_Options
+
+' =====================================================
+' CONTROL OBJECTS
+' =====================================================
+
+control Premium_Expiration
+control Check_Premium_State
+control Show_Premium_Expiration_Screen_Options
+control Cancel_Automatic_Subscription
+control Check_Premium_Plan_Expire_Date
+control Revert_To_Free
+control Init_Fetch_Info
+control Premium_Fetch_Info
+
+' =====================================================
+' ENTITY OBJECTS
+' =====================================================
+
+entity Βάση_Δεδομένων
+entity Τοπικό_Σύστημα_Αρχείων
+
+' =====================================================
+' USE CASES
+' =====================================================
+
+usecase Payment_Through_Bank_Account
+usecase Premium_Purchase
+
+' =====================================================
+' INTERACTIONS
+' =====================================================
+
+Γενικός_Χρήστης --> Οθόνη_Premium_Πακέτων
+Οθόνη_Premium_Πακέτων --> Check_Premium_State
+Check_Premium_State --> Premium_Expiration_Screen : If Premium_Plan_Type =/= 0, show
+Γενικός_Χρήστης --> Premium_Expiration_Screen 
+Premium_Expiration_Screen --> Premium_Fetch_Info 
+Premium_Fetch_Info <--> Τοπικό_Σύστημα_Αρχείων: Fetch Premium_Plan_Type, Premium_Plan_Expire_Date from cache
+Premium_Fetch_Info --> Check_Premium_Plan_Expire_Date
+Premium_Expiration_Screen --> Show_Premium_Expiration_Screen_Options
+Show_Premium_Expiration_Screen_Options --> Premium_Expiration_Screen_Options
+Γενικός_Χρήστης --> Premium_Expiration_Screen_Options : Επιλέγει ακύρωση αυτόματης ανανέωσης
+Premium_Expiration_Screen_Options --> Cancel_Automatic_Subscription
+Cancel_Automatic_Subscription --> Βάση_Δεδομένων : Set Premium_Plan_Auto_Renew = 0
+
+
+Γενικός_Χρήστης --> Εικόνα_Εφαρμογής 
+Εικόνα_Εφαρμογής --> Init_Fetch_Info : Εκκίνηση της εφαρμογής
+Init_Fetch_Info <--> Βάση_Δεδομένων : Fetch Premium_Plan_Type , Premium_Plan_Expire_Date 
+Init_Fetch_Info --> Τοπικό_Σύστημα_Αρχείων : Store Premium_Plan_Type, Premium_Plan_Expire_Date in cache
+Init_Fetch_Info --> Check_Premium_Plan_Expire_Date  
+Check_Premium_Plan_Expire_Date --> Premium_Expiration : If Premium_Plan_Type =/= 0 && Premium_Plan_Expire_Date >= Σημερινή Μέρα
+Premium_Expiration <--> Βάση_Δεδομένων : Fetch Premium_Plan_Auto_Renew
+Premium_Expiration --> Revert_To_Free : If Premium_Plan_Auto_Renew == 0
+Premium_Expiration --> Payment_Through_Bank_Account : If Premium_Plan_Auto_Renew =/= 0
+Revert_To_Free --> Βάση_Δεδομένων : Set Premium_Plan_Type = 0
+
+
+
+
+@enduml

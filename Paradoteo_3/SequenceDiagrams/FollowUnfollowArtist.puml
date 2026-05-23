@@ -1,0 +1,78 @@
+@startuml name
+actor User as user 
+participant ArtistView as artistView
+participant ArtistController as artistController
+participant UserService as userService
+participant UserAPI as userApi
+participant UserBackendController as userBackendController
+participant UserBackendService as userBackendService
+participant UserBackendRepository as userBackendRepository
+database Database
+
+user -> artistView : "Select artist to follow/unfollow"
+artistView -> artistController : "followUnfollowArtist(artistId)"
+activate artistController
+artistController -> userService : "followUnfollowArtist(userId, artistId)"
+activate userService
+userService -> userService : "checkIfFollowing(userId, artistId)"
+alt not following
+    userService -> userService : "followArtist(userId, artistId)"
+    alt success
+        userService -> artistController : "Return success message"
+        artistController -> artistView : "updateFollowStatusPopup()"
+        userService -> userApi : "followUnfollowArtist(userId, artistId)"
+        activate userApi
+        userApi -> userBackendController : "POST /users/{userId}/follow/{artistId}"
+        activate userBackendController
+        userBackendController -> userBackendService : "followUnfollowArtist(userId, artistId)"
+        activate userBackendService
+        userBackendService -> userBackendRepository : "checkIfFollowing(userId, artistId)"
+        activate userBackendRepository
+        userBackendRepository -> Database : "Execute SQL to check follow status"
+        Database --> userBackendRepository : "Return follow status"
+        alt not following
+            userBackendRepository -> Database : "Execute SQL to follow artist"
+            Database --> userBackendRepository : "Return success"
+        else already following
+            userBackendRepository -> Database : "Execute SQL to unfollow artist"
+            Database --> userBackendRepository : "Return success"
+        end
+    else failure
+        userService -> artistController : "Return error message"
+        artistController -> artistView : "errorMessage()"
+    end
+else already following
+    userService -> userService : "unfollowArtist(userId, artistId)"
+    
+    alt success
+        
+        userService -> artistController : "Return success message"
+        artistController -> artistView : "updateFollowStatusPopup()"
+        userService -> userApi : "followUnfollowArtist(userId, artistId)"
+        activate userApi
+        userApi -> userBackendController : "POST /users/{userId}/follow/{artistId}"
+        activate userBackendController
+        userBackendController -> userBackendService : "followUnfollowArtist(userId, artistId)"
+        activate userBackendService
+        userBackendService -> userBackendRepository : "checkIfFollowing(userId, artistId)"
+        activate userBackendRepository
+        userBackendRepository -> Database : "Execute SQL to check follow status"
+        Database --> userBackendRepository : "Return follow status"
+        alt not following
+            userBackendRepository -> Database : "Execute SQL to follow artist"
+            Database --> userBackendRepository : "Return success"
+        else already following
+            userBackendRepository -> Database : "Execute SQL to unfollow artist"
+            Database --> userBackendRepository : "Return success"
+        end
+    else failure
+        userService -> artistController : "Return error message"
+        artistController -> artistView : "errorMessage()"
+    end
+end
+
+deactivate artistController
+deactivate artistView
+
+
+@enduml

@@ -1,0 +1,6 @@
+Code/Tunix/app/bin/
+
+/Code/Tunix/app/bin
+*.class
+/Code/TunixServer/app/bin
+*.class

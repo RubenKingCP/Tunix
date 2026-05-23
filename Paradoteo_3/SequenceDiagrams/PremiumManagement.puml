@@ -1,0 +1,202 @@
+@startuml name
+actor User as foo1
+participant UserProfileView as foo2
+participant UserProfileController as foo3
+participant EventBus as foo4
+participant PremiumView as foo5
+participant PremiumController as foo6
+participant PremiumService as foo7
+participant PremiumApi as foo8
+participant PremiumBackendController as foo9
+participant PremiumBackendService as foo10
+participant PremiumBackendRepository as foo11
+database Database as foo12
+
+'== Open Premium & Fetch Status ==
+
+foo1 -> foo2 : User opens premium options
+
+activate foo2
+foo2 -> foo3 : onPremiumOptionsClicked()
+activate foo3
+
+foo3 ->> foo4 : publish premiumOptionsClicked()
+
+deactivate foo3
+deactivate foo2
+
+activate foo4
+foo4 -> foo5 : showPremiumView()
+deactivate foo4
+
+activate foo5
+foo5 -> foo6 : showPremiumStatus()
+
+activate foo6
+foo6 -> foo7 : getPremiumStatus(userId)
+
+activate foo7
+foo7 -> foo8 : getPremiumStatus(userId)
+activate foo8
+
+foo8 -> foo9 : GET /tunix/user/{id}/premium
+activate foo9
+
+foo9 -> foo10 : fetchPremiumByUserId(userId)
+activate foo10
+
+foo10 -> foo11 : findUserById(userId)
+activate foo11
+
+foo11 -> foo12 : SELECT * FROM users WHERE id = ?
+foo12 --> foo11 : user row
+deactivate foo11
+
+foo11 --> foo10 : UserEntity
+foo10 -> foo10 : map UserEntity → PremiumUserDTO
+foo10 --> foo9 : PremiumUserDTO
+deactivate foo10
+
+foo9 --> foo8 : PremiumUserDTO
+deactivate foo9
+
+foo8 --> foo7 : Premium status response
+deactivate foo8
+
+foo7 --> foo6 : Premium status response
+deactivate foo7
+
+foo6 --> foo5 : display status
+deactivate foo6
+deactivate foo5
+
+
+'== User Actions ==
+
+alt Toggle auto-renewal
+    foo1 -> foo5 : Press auto-renewal toggle
+    activate foo5
+    foo5 -> foo6 : onAutoRenewalToggle(newValue)
+    deactivate foo5
+
+    foo6 -> foo7 : updateAutoRenewal(userId, newValue)
+    activate foo7
+    foo7 -> foo8 : updateAutoRenewal(userId, newValue)
+    activate foo8
+
+    foo8 -> foo9 : POST /tunix/user/{id}/premium/auto-renewal
+    activate foo9
+
+    foo9 -> foo10 : updateAutoRenewal(userId, newValue)
+    activate foo10
+
+    foo10 -> foo11 : findUserById(userId)
+    activate foo11
+    foo11 -> foo12 : SELECT * FROM users WHERE id = ?
+    foo12 --> foo11 : user row
+    deactivate foo11
+
+    foo11 --> foo10 : UserEntity
+    foo10 -> foo10 : update autoRenewal flag
+    foo10 --> foo9 : success
+    deactivate foo10
+
+    foo9 --> foo8 : success
+    deactivate foo9
+
+    foo8 --> foo7 : success
+    deactivate foo8
+
+    foo7 --> foo6 : success
+    deactivate foo7
+
+    foo6 --> foo5 : update UI
+    deactivate foo6
+    deactivate foo5
+
+
+else Cancel subscription
+    foo1 -> foo5 : Press cancel subscription
+    activate foo5
+    foo5 -> foo6 : onCancelSubscription()
+    deactivate foo5
+
+    foo6 -> foo7 : cancelSubscription(userId)
+    activate foo7
+    foo7 -> foo8 : cancelSubscription(userId)
+    activate foo8
+
+    foo8 -> foo9 : POST /tunix/user/{id}/premium/cancel
+    activate foo9
+
+    foo9 -> foo10 : cancelSubscription(userId)
+    activate foo10
+
+    foo10 -> foo11 : findUserById(userId)
+    activate foo11
+    foo11 -> foo12 : SELECT * FROM users WHERE id = ?
+    foo12 --> foo11 : user row
+    deactivate foo11
+
+    foo11 --> foo10 : UserEntity
+    foo10 -> foo10 : update subscription status
+    foo10 --> foo9 : success
+    deactivate foo10
+
+    foo9 --> foo8 : success
+    deactivate foo9
+
+    foo8 --> foo7 : success
+    deactivate foo8
+
+    foo7 --> foo6 : success
+    deactivate foo7
+
+    foo6 --> foo5 : update UI
+    deactivate foo6
+    deactivate foo5
+
+
+else Change subscription plan
+    foo1 -> foo5 : Press change plan
+    activate foo5
+    foo5 -> foo6 : onChangeSubscriptionPlan()
+    deactivate foo5
+
+    foo6 -> foo7 : changeSubscriptionPlan(userId)
+    activate foo7
+    foo7 -> foo8 : changeSubscriptionPlan(userId)
+    activate foo8
+
+    foo8 -> foo9 : POST /tunix/user/{id}/premium/change-plan
+    activate foo9
+
+    foo9 -> foo10 : changeSubscriptionPlan(userId)
+    activate foo10
+
+    foo10 -> foo11 : findUserById(userId)
+    activate foo11
+    foo11 -> foo12 : SELECT * FROM users WHERE id = ?
+    foo12 --> foo11 : user row
+    deactivate foo11
+
+    foo11 --> foo10 : UserEntity
+    foo10 -> foo10 : update subscription plan
+    foo10 --> foo9 : success
+    deactivate foo10
+
+    foo9 --> foo8 : success
+    deactivate foo9
+
+    foo8 --> foo7 : success
+    deactivate foo8
+
+    foo7 --> foo6 : success
+    deactivate foo7
+
+    foo6 --> foo5 : update UI
+    deactivate foo6
+    deactivate foo5
+end
+
+@enduml

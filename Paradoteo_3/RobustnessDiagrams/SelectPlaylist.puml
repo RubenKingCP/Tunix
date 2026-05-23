@@ -1,0 +1,30 @@
+@startuml name 
+
+title Επιλογή Λίστας Αναπαραγωγής
+
+actor "Χρήστης" as u 
+boundary "Μενού Πλοήγησης" as lib 
+entity "Βάση Δεδομένων" as db
+control "Αναζήτησε τραγούδια" as search 
+control "Εμφάνισε τραγούδια" as ss
+boundary "Playlist Options" as ps
+control "Ενημέρωσε πως δεν υπάρχουν τραγούδια" as ins
+control "Πρόσθεσε τραγούδι" as addsong
+usecase "Προσθήκη Τραγουδιού σε Λίστα Αναπαραγωγής" as addSong
+
+u -> lib : Επιλογή playlist: Default Favorites
+lib -> search
+search <-> db 
+search -> ss
+ss -> ps
+ps <-> u
+
+
+
+
+search --> ins : Δεν βρέθηκαν αποτελέσματα
+ins --> ps : Μήνυμα προς χρήστη
+ps --> addsong
+addsong --> addSong
+addSong --> search
+@enduml 

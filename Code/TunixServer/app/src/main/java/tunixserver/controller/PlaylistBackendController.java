@@ -1,0 +1,42 @@
+package tunixserver.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import tunixserver.dto.request.PlaylistCreateRequest;
+import tunixserver.dto.response.ApiResponse;
+import tunixserver.service.PlaylistBackendService;
+
+@RestController
+@RequestMapping("/playlists")
+public class PlaylistBackendController {
+    private final PlaylistBackendService playlistBackendService;
+
+    public PlaylistBackendController(PlaylistBackendService playlistBackendService) {
+        this.playlistBackendService = playlistBackendService;
+    }
+
+    @PostMapping("/{playlistId}/add/{songId}")
+    public ResponseEntity<ApiResponse<Void>> addSongToPlaylist(int playlistId, int songId) {
+        if (playlistBackendService.addSongToPlaylist(playlistId, songId)) {
+            // Return a success response (e.g., HTTP 200 OK)
+            return ResponseEntity.ok(ApiResponse.success());
+        } else {
+            return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(
+                ApiResponse.error("Song already exists")
+            );
+        }
+    } 
+
+    @PostMapping("/upload")
+    public ResponseEntity<ApiResponse<Void>> createPlaylist(PlaylistCreateRequest playlistCreateRequest) {
+        playlistBackendService.createPlaylist(playlistCreateRequest);
+        return null;
+    }
+
+}

@@ -1,0 +1,68 @@
+@startuml name
+
+title Premium Trial
+
+left to right direction
+
+skinparam shadowing false
+skinparam roundcorner 10
+
+' =====================================================
+' ACTORS
+' =====================================================
+
+actor Γενικός_Χρήστης
+
+' =====================================================
+' BOUNDARY OBJECTS
+' =====================================================
+
+boundary Μενού_Πλοήγησης
+boundary Οθόνη_Premium
+boundary Free_Trial_Button
+boundary Οθόνη_Επιτυχίας_Trial
+boundary Error_Trial_Popup
+
+
+
+' =====================================================
+' CONTROL OBJECTS
+' =====================================================
+
+control Επιλογή_Στοιχεία_Πλοήγησης
+control Ερώτηση_Αυτόματης_Ανανέωσης
+control Check_Free_Trial
+
+' =====================================================
+' ENTITY OBJECTS
+' =====================================================
+
+entity Βάση_Δεδομένων
+
+' =====================================================
+' USE CASES
+' =====================================================
+
+usecase Payment_Through_Bank_Account
+
+' =====================================================
+' INTERACTIONS
+' =====================================================
+Γενικός_Χρήστης --> Μενού_Πλοήγησης 
+Μενού_Πλοήγησης --> Επιλογή_Στοιχεία_Πλοήγησης
+Επιλογή_Στοιχεία_Πλοήγησης --> Οθόνη_Premium
+Γενικός_Χρήστης --> Οθόνη_Premium : Επιλέγει Premium Πακέτο
+Οθόνη_Premium --> Check_Free_Trial
+Check_Free_Trial --> Free_Trial_Button : If Free_Trial = 0 ,show
+Γενικός_Χρήστης --> Free_Trial_Button
+Free_Trial_Button --> Payment_Through_Bank_Account 
+Payment_Through_Bank_Account --> Οθόνη_Επιτυχίας_Trial : Επιτυχής
+Οθόνη_Επιτυχίας_Trial --> Βάση_Δεδομένων : Set Premium_Plan_Type, Set Free_Trial =1 , Set Premium_Plan_Auto_Renew = 0
+Payment_Through_Bank_Account --> Error_Trial_Popup : Ανεπιτυχής
+Error_Trial_Popup --> Γενικός_Χρήστης
+Error_Trial_Popup --> Οθόνη_Premium
+' Δε ξέρω τι να βάλω για control εδώ, 150 render δεν έχουν νόημα
+Οθόνη_Επιτυχίας_Trial --> Ερώτηση_Αυτόματης_Ανανέωσης 
+Ερώτηση_Αυτόματης_Ανανέωσης -->  Βάση_Δεδομένων : Set Premium_Plan_Auto_Renew = 0 ή όχι 0
+
+@enduml

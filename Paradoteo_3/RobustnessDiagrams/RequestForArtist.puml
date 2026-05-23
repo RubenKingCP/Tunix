@@ -1,0 +1,24 @@
+@startuml name 
+
+title Αίτηση για Λογαριασμό Καλλιτέχνη
+
+actor "Χρήστης" as user 
+boundary "Αρχική Οθόνη" as mainScreen
+control "Εμφάνισε ρυθμίσεις προφίλ" as disPrSett
+boundary "Ρυθμίσεις Προφίλ" as PrSett
+control "Εμφάνισε ερωτηματολόγιο" as disQue
+boundary "Ερωτηματολόγιο" as que
+entity "Βάση Δεδομένων" as db
+control "Αποθήκευσε Αίτηση" as saveApplication
+usecase "Έγκριση/Απόρριψη Λογαριασμού Καλλιτέχνη" as appOrRej
+user -> mainScreen : Προφίλ
+disPrSett -> PrSett
+user -> PrSett : "Apply for artist"
+PrSett -> disQue
+disQue -> que
+user -> que : "Submit application"
+que -> saveApplication
+saveApplication -> db
+saveApplication -> appOrRej
+
+@enduml

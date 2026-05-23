@@ -1,0 +1,133 @@
+@startuml Upload Song
+
+title Upload Song
+
+actor Artist as artist 
+participant ArtistProfileView as profileView
+participant ArtistProfileController as profileController
+participant ArtistProfileService as profileService
+participant UploadSongView as uploadView
+participant UploadSongController as uploadController
+participant SongService as songService
+participant SongApiClient as songApi
+participant ApiClient as apiClient
+participant SongBackendController as songBackendController
+participant SongBackendService as songBackendService
+participant SongBackendRepository as songBackendRepository
+database Database as database
+participant EventBus as eventBus
+
+artist -> profileView: Click "Upload Song"
+activate profileView
+profileView -> profileController: onUploadSongClicked()
+activate profileController
+profileController -> profileController : onUploadSongClicked()
+profileController -> eventBus : publish(OpenSongUploadViewEvent) to subscribers
+activate eventBus
+deactivate profileController
+deactivate profileView
+eventBus -> uploadController: onOpenSongUploadViewEvent()
+activate uploadController
+uploadController -> uploadView: showUploadView()
+activate uploadView
+uploadView -> uploadView: display()
+
+deactivate eventBus
+deactivate uploadController
+
+'uploadView -> artist : Display upload view
+artist -> uploadView: Fill details
+artist -> uploadView: Select file
+
+artist -> uploadView: Click "Select File"
+uploadView -> uploadController: onSelectSongFileClicked()
+
+activate uploadController
+uploadController -> uploadController: onSelectSongFileClicked()
+uploadController -> JFileChooser: showOpenDialog()
+activate JFileChooser
+JFileChooser --> uploadController: File selected
+deactivate JFileChooser
+
+uploadController -> uploadView: displaySelectedSongFile(filePath)
+deactivate uploadController
+
+artist -> uploadView: Click select Image Cover
+uploadView -> uploadController: onSelectImageCoverClicked()
+activate uploadController
+uploadController -> uploadController: onSelectImageCoverClicked()
+uploadController -> JFileChooser: showOpenDialog()
+activate JFileChooser
+JFileChooser --> uploadController: Image file selected
+deactivate JFileChooser
+uploadController -> uploadView: displaySelectedImageCover(imageFilePath)
+deactivate uploadController
+
+artist -> uploadView: Click "Submit"
+uploadView -> uploadController: onSubmitClicked()
+
+activate uploadController
+uploadController -> uploadController: onSubmitClicked()
+uploadController -> songService: songService.uploadSong(SongFormDTO)
+
+activate songService
+songService -> songApi: songApi.uploadSong(songForm)
+
+activate songApi
+songApi -> songApi: uploadSong(songForm)
+songApi -> apiClient: apiClient.post("/songs/upload", songForm, SongResponse.class)
+
+activate apiClient
+apiClient -> apiClient: post(url, data, responseType)
+apiClient -> songBackendController: Post /songs/upload with songForm
+
+activate songBackendController
+songBackendController -> songBackendService: uploadSong(songFormDTO)
+
+activate songBackendService
+songBackendService -> songBackendService: uploadSong(songFormDTO)
+songBackendService -> songBackendRepository: existsByTitleAndArtistId(songFormDTO.title, songFormDTO.artistId)
+activate songBackendRepository
+songBackendRepository --> songBackendService: boolean exists
+alt song already exists
+    songBackendService -> songBackendController: return error response "Song already exists"
+    deactivate songBackendService
+    songBackendController -> apiClient: return error response to client
+    deactivate songBackendController
+    apiClient -> songApi: return error response to songApi
+    deactivate apiClient
+    songApi -> songService: return error response to songService
+    deactivate songApi
+    songService -> uploadController: return error response to uploadController
+    deactivate songService
+    uploadController -> uploadView: displayError("Song name already exists")
+    deactivate uploadController
+else
+    songBackendService -> songBackendRepository: save new song record
+    songBackendRepository -> database: Insert new song record
+    songBackendRepository --> songBackendService: saved SongEntity
+    deactivate songBackendRepository
+    songBackendService -> songBackendController: return success response with SongResponse
+    deactivate songBackendService
+    songBackendController -> apiClient: return success response to client
+    deactivate songBackendController
+    apiClient -> songApi: return success response to songApi
+    deactivate apiClient
+    songApi -> songService: return success response to songService
+    deactivate songApi
+    songService -> uploadController: return success response to uploadController
+    deactivate songService
+    uploadController -> uploadView: displaySuccess("Song uploaded successfully")
+    uploadController -> eventBus: publish(SongUploadedEvent) to subscribers
+    activate eventBus
+    deactivate uploadController
+    eventBus -> profileController: onSongUploadedEvent()
+    deactivate eventBus
+    activate profileController
+    profileController -> profileView: display()
+    activate profileView
+    deactivate profileController
+    'profileView -> artist: Refresh profile view to show new song
+end
+ 
+@enduml

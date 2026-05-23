@@ -1,0 +1,40 @@
+@startuml name 
+
+title "Προσθήκη Τραγουδιού σε Λίστα Αναπαραγωγής"
+
+usecase "Αναζήτηση Τραγουδιού" as SearchSong
+boundary "Οθόνη Αποτελεσμάτων" as results
+actor "Χρήστης" as user 
+control "Εμφάνισε επιλογές" as showMenu
+boundary "Μενού Επιλογών" as menu
+usecase "Επιλογή Λίστας Αναπαραγωγής" as selectPl
+control "Βρες την Playlist" as cp
+control "Έλεγξε αν υπάρχει ήδη" as checkEx
+control "Πρόσθεσε το τραγολύδι" as addSong
+control "Ενημέρωσε βάση δεδομένων" as idb 
+entity "Βάση Δεδομένων" as db 
+control "Πάρε τα Αγαπημένα" as fetchFav
+control "Ενημέρωσε τον χρήστη ότι το τραγούδι υπάρχει ήδη" as inUser
+boundary "Μύνυμα προς χρήστη" as mess
+
+SearchSong -> results
+user -> results : Επιλεγμένο τραγούδι
+results -> showMenu
+showMenu -> menu
+user -> menu
+menu -> cp : "Add song to Playlist"
+cp -> selectPl
+selectPl -> checkEx
+checkEx -> addSong : Δεν υπάρχει ήδη
+addSong -> idb
+idb -> db
+
+menu --> fetchFav : "Add to Favorites"
+fetchFav --> db
+fetchFav --> checkEx
+
+checkEx --> inUser : Το τραγούδι υπάρχει ήδη
+inUser --> mess
+mess --> user
+
+@enduml 

@@ -1,0 +1,92 @@
+@startuml name
+actor User as user 
+participant SongView as songView
+participant SongController as songController
+
+participant MusicPlayerView as playerView
+participant MusicPlayerController as playerController
+participant MusicPlayerService as playerService
+participant StorageCheck as storageCheck
+participant EventBus as eventBus
+
+participant SongService as songService
+participant SongAPI as songAPI
+participant SongBackendController as songBackendController
+participant SongBackendService as songBackendService
+participant SongBackendRepository as songBackendRepository
+
+database Database 
+
+user -> songView : "Select song to play"
+songView -> songController : "playSong(songId)"
+activate songController
+songController -> eventBus : "publish(SongSelectedEvent(songId))"
+deactivate songController
+activate eventBus
+eventBus -> playerController : "handle(SongSelectedEvent)"
+deactivate eventBus
+activate playerController
+playerController -> songService : "getSongDetails(songId)"
+activate songService
+songService -> songAPI : "getSongDetails(songId)"
+activate songAPI
+songAPI -> songBackendController : "getSongDetails(songId)"
+activate songBackendController
+songBackendController -> songBackendService : "getSongDetails(songId)"
+activate songBackendService
+songBackendService -> songBackendRepository : "getSongDetails(songId)"
+activate songBackendRepository
+songBackendRepository -> Database : "Execute SQL to get song details"
+Database --> songBackendRepository : "Return Song Entity"
+songBackendRepository --> songBackendRepository : "Map Song Entity to Song DTO"
+songBackendRepository --> songBackendService : "Return Song DTO"
+deactivate songBackendRepository
+songBackendService --> songBackendController : "Return Song DTO"
+deactivate songBackendService
+songBackendController --> songAPI : "Return Song DTO"
+deactivate songBackendController
+songAPI --> songService : "Return Song DTO"
+deactivate songAPI
+songService --> songService : "Prepare song for playback"
+songService --> playerController : "Return prepared song details"
+deactivate songService
+playerController -> playerService : "playSong(songDetails)"
+activate playerService
+playerService -> playerController : "Start streaming song"
+deactivate playerService
+playerController -> playerView : "updateUi()"
+deactivate playerController
+activate playerView
+playerView -> playerView : "Display song details and playback controls"
+playerView -> playerView : "If user premium display download button"
+user -> playerView : "Click download button"
+playerView -> playerController : "downloadSong(songId)"
+activate playerController
+playerController -> storageCheck : "checkStorageAvailability(songId)"
+alt Enough space 
+    storageCheck --> playerController : "Storage available"
+    playerController -> songService : "downloadSong(songId)"
+    activate songService
+    songService -> songAPI : "downloadSong(songId)"
+    activate songAPI
+    songAPI -> songBackendController : "downloadSong(songId)"
+    activate songBackendController
+    songBackendController -> songBackendService : "downloadSong(songId)"
+    activate songBackendService
+    songBackendService -> songBackendRepository : "downloadSong(songId)"
+    activate songBackendRepository
+    songBackendRepository -> Database : "Execute SQL to get download link"
+    Database --> songBackendRepository : "Return download link"
+    songBackendRepository --> songBackendService : "Return download link"
+    deactivate songBackendRepository
+    songBackendService --> songBackendController : "Return download link"
+    deactivate songBackendService
+    songBackendController --> songAPI : "Input stream for downloading song"
+    deactivate songBackendController
+    songAPI --> songService : "Download song using input stream"
+    deactivate songAPI
+else Not enough space 
+    storageCheck --> playerController : "Storage not available"
+    playerController -> playerView : "Show error message about insufficient storage"
+end
+@enduml
