@@ -1,0 +1,59 @@
+@startuml UC_Add_Song_to_playlist
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Γενικός Χρήστης" as GX
+
+boundary "Μπάρα Αναζήτησης" as B_SRB
+boundary "Οθόνη Αναζήτησης" as B_SRC
+boundary "Οθόνη Τραγουδιού" as B_SGS
+boundary "Οθόνη Επιλογών Τραγουδιού" as B_SGM
+boundary "Popup" as B_PP
+boundary "Playlist View" as B_PL
+boundary "Error Popup" as B_ERR #red
+
+control "Αναζήτηση Τραγουδιού" as C_SRS
+control "Εμφάνιση οθόνης τραγουδιού" as C_SGS
+control "Εμφάνιση μενού\nεπιλογών τραγουδιού" as C_SGM
+control "Άντληση και εμφάνιση όλων των\nPlaylist του χρήστη" as C_PL
+control "Έλεγχος ύπαρξης\nτραγουδιού σε playlist" as C_SPC
+control "Προσθήκη τραγουδιού στην playlist" as C_ADD
+control "Update database και εμφάνιση playlist" as C_UPD
+control "Εμφάνιση Error Popup" as C_ERR #red
+
+entity "Database" as E_DB
+entity "Song" as E_SG
+entity "Playlist" as E_PL
+
+usecase "Αναζήτηση Τραγουδιού" as UC_SRS
+
+GX --> B_SRB
+B_SRB --> C_SRS
+C_SRS --> UC_SRS
+C_SRS --> E_SG
+C_SRS --> E_DB
+GX --> B_SRC : επιλέγει τραγούδι
+B_SRC --> C_SGS
+C_SGS --> B_SGS
+GX --> B_SGS : δεξί κλικ στο τραγούδι
+B_SGS --> C_SGM
+C_SGM --> B_SGM
+GX --> B_SGM : επιλογή <<Add to Playlist>>
+B_SGM --> C_PL
+C_PL --> E_DB
+C_PL --> E_PL
+C_PL --> B_PP
+GX --> B_PP : επιλογή Playlist
+B_PP --> C_SPC
+C_SPC --> E_DB
+C_SPC --> C_ADD
+C_ADD --> C_UPD
+C_UPD --> E_DB
+C_UPD --> E_PL
+C_UPD --> B_PL
+B_PL --> GX
+C_SPC -[#red]-> C_ERR : <font color="red">υπάρχει ήδη το τραγούδι</font>
+C_ERR -[#red]-> B_ERR
+B_ERR -[#red]-> GX
+
+@enduml
