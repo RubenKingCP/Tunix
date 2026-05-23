@@ -1,0 +1,38 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Διαχειριστής" as GX
+
+boundary "Οθόνη διαχειριστή" as B_ADM
+boundary "Οθόνη Artist Account Applications" as B_REQ
+boundary "Οθόνη Artist Account Application Details" as B_RD
+
+control "Άντληση όλων των αιτήσεων" as C_GTRQ
+control "Εμφάνιση οθόνης Artist Account Applications" as C_SHRQ
+control "Εμφάνιση οθόνης Artist Account Application Details" as C_SHD
+control "Έλεγχος: Εγκρίθηκε η αίτηση?" as C_ISACC
+control "Ενημέρωση Γενικού Χρήστη για την Απάντηση" as C_NOTIFY
+control "Ενημέρωση Βάσης για αλλαγή τύπου λογαριασμού" as C_UPDB
+entity "Database" as E_DB
+entity "UserToArtistRequest" as E_REQ
+entity "User" as E_USR
+
+GX --> B_ADM : Επιλογή <<Artist Account Applications>>
+B_ADM --> C_GTRQ
+C_GTRQ --> E_DB
+C_GTRQ --> E_REQ
+C_GTRQ --> C_SHRQ
+C_SHRQ --> B_REQ
+GX --> B_REQ : Επιλογή αιτήματος
+B_REQ --> C_SHD
+C_SHD --> B_RD : Εμφάνιση πληροφορειών
+GX --> B_RD : Έλεγχος αίτησης και έγκριση/απόρριψη
+B_RD --> C_ISACC
+C_ISACC --> C_UPDB : Η αίτηση εγκρίθηκε
+C_UPDB --> E_USR
+C_UPDB --> E_DB
+C_UPDB --> C_NOTIFY
+C_ISACC -[#red]-> C_NOTIFY : <font color="red">Η άιτηση απορρίφθηκε</font>
+
+@enduml
