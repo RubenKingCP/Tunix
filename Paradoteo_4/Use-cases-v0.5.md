@@ -65,7 +65,6 @@ rectangle "Σύστημα Μουσικής" {
 
   UC_SEL_PL_LIB ..> UC_CREATE_PL : <<extend>>
   UC_ADD_SONG ..> UC_SEARCH_SONG : <<include>>
-  UC_ADD_SONG ..> UC_SEL_PL_LIB : <<extend>>
 
   ' --- Αναπαραγωγή ---
   usecase "Αναπαραγωγή Τραγουδιού\nσε Λίστα/Άλμπουμ" as UC_PLAY
