@@ -1,0 +1,78 @@
+@startuml RequestArtistAccount
+
+title Request Artist Account
+
+actor User
+
+participant MainPanel
+participant TopBarView
+participant TopBarController
+participant UserProfileView
+participant UserProfileController
+participant ArtistRequestService
+participant ArtistRequestApiClient
+participant ApiService
+participant ArtistRequestBackendController
+participant ArtistRequestBackendService
+participant ArtistRequestBackendRepository
+
+database DB
+
+participant EventBus
+
+activate TopBarView
+User -> TopBarView : click on "Profile"
+TopBarView -> TopBarController : onProfileClicked
+activate TopBarController
+deactivate TopBarView
+TopBarController -> EventBus : publish(ChangeMainScreenEvent,homeView)
+deactivate TopBarController
+activate EventBus
+EventBus -> MainPanel
+activate MainPanel
+deactivate EventBus
+create UserProfileController
+MainPanel -->> UserProfileController : new()
+activate UserProfileController
+deactivate MainPanel
+create UserProfileView
+UserProfileController -->> UserProfileView : new()
+activate UserProfileView
+deactivate UserProfileController
+User -> UserProfileView : click on "Request Artist Account"
+UserProfileView -> UserProfileView : showArtistRequestForm()
+activate UserProfileView
+User -> UserProfileView : fills form
+User -> UserProfileView : clicks "Submit"
+UserProfileView -> UserProfileController : submitArtistApplication(formData)
+activate UserProfileController
+UserProfileController -> ArtistRequestService : submitArtistApplication(formData)
+activate ArtistRequestService
+ArtistRequestService -> ArtistRequestApiClient : submitArtistApplication(formData)
+activate ArtistRequestApiClient
+ArtistRequestApiClient -> ApiService : post(artistRequest/submit, formData)
+activate ApiService
+ApiService -> ArtistRequestBackendController : submitArtistApplication(formData)
+activate ArtistRequestBackendController
+ArtistRequestBackendController -> ArtistRequestBackendService : submitArtistApplication(formData)
+activate ArtistRequestBackendService
+ArtistRequestBackendService -> ArtistRequestBackendRepository : submitArtistApplication(formData)
+activate ArtistRequestBackendRepository
+ArtistRequestBackendRepository -> DB : run mySQL query
+DB --> ArtistRequestBackendRepository : return success
+ArtistRequestBackendRepository --> ArtistRequestBackendService : return success
+deactivate ArtistRequestBackendRepository
+ArtistRequestBackendService --> ArtistRequestBackendController : return success
+deactivate ArtistRequestBackendService
+ArtistRequestBackendController --> ApiService : return success
+deactivate ArtistRequestBackendController
+ApiService --> ArtistRequestApiClient : return success
+deactivate ApiService
+ArtistRequestApiClient --> ArtistRequestService : return success
+deactivate ArtistRequestApiClient
+ArtistRequestService --> UserProfileController : return success
+deactivate ArtistRequestService
+UserProfileController -> UserProfileView : showSuccessPopUp()
+
+
+@enduml
