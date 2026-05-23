@@ -1,0 +1,73 @@
+@startuml SelectPlaylistFromLibrary
+
+title Select Playlist from Library
+
+actor User
+participant MainPanel
+participant LibraryView
+participant LibraryController
+participant MusicView
+participant MusicController
+participant PlaylistService
+participant PlaylistApiClient
+participant ApiService
+participant PlaylistBackendController
+participant PlaylistBackendService
+participant PlaylistBackendRepository
+
+database DB
+
+participant EventBus
+
+activate LibraryView
+User -> LibraryView : clicks on playlist in library
+LibraryView -> LibraryController : showPlaylist(libraryAsset)
+deactivate LibraryView
+activate LibraryController
+LibraryController -> EventBus : publish switchToMusicView(MusicView, playlist)
+activate EventBus
+deactivate LibraryController
+EventBus -> MainPanel : switchToMusicView(MusicView, playlist)
+deactivate EventBus
+activate MainPanel
+create MusicController
+MainPanel -->> MusicController : new(playlist)
+deactivate MainPanel
+activate MusicController
+MusicController -> PlaylistService : getPlaylistById(playlistId)
+activate PlaylistService
+PlaylistService -> PlaylistApiClient : getPlaylistById(playlistId)
+activate PlaylistApiClient
+PlaylistApiClient -> ApiService : post("/playlists/getById", playlistId)
+activate ApiService
+ApiService -> PlaylistBackendController : post("/playlists/getById", playlistId)
+activate PlaylistBackendController
+PlaylistBackendController -> PlaylistBackendService : getPlaylistById(playlistId)
+activate PlaylistBackendService
+PlaylistBackendService -> PlaylistBackendRepository : findById(playlistId)
+activate PlaylistBackendRepository
+PlaylistBackendRepository -> DB : query playlist by id
+DB --> PlaylistBackendRepository : return playlist data
+PlaylistBackendRepository --> PlaylistBackendService : return playlist data
+deactivate PlaylistBackendRepository
+PlaylistBackendService --> PlaylistBackendController : return playlist data
+deactivate PlaylistBackendService
+PlaylistBackendController --> ApiService : return playlist data
+deactivate PlaylistBackendController
+ApiService --> PlaylistApiClient : return playlist data
+deactivate ApiService
+PlaylistApiClient --> PlaylistService : return playlist data
+deactivate PlaylistApiClient
+PlaylistService --> MusicController : return playlist data
+deactivate PlaylistService
+create MusicView
+MusicController -->> MusicView : new()
+activate MusicView
+alt playlist has songs
+    MusicController -> MusicView : display(playlistData)
+else playlist is empty
+    MusicController -> MusicView : display()
+end
+
+
+@enduml
