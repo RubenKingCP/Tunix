@@ -1,0 +1,40 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Γενικός Χρήστης" as GX
+
+boundary "Οθόνη Λίστας Αναπαραγωγής" as B_PL
+boundary "Menu Επιλογών Τραγουδιού" as B_SGM
+
+control "Επιλογή Playlist" as C_PSEL
+control "Έλεγχος: Είναι Δημιουργός?" as C_ISC
+control "Εμφάνιση μενού επιλογών τραγουδιού\nμε επιλογή αφαίρεσης" as C_WRM
+control "Αφαίρεση τραγουδιού από την playlist" as C_RM
+control "Ενημέρωση Database" as C_UPDB
+control "Εμφάνιση μενού επιλογών τραγουδιού\nχωρίς επιλογή αφαίρεσης" as C_WORM #red
+
+entity "Database" as E_DB
+entity "Playlist" as E_PL
+entity "User" as E_USR
+
+usecase "Επιλογή Λίστας Αναπαραγωγής" as UC_PSEL
+
+C_PSEL --> UC_PSEL
+C_PSEL --> B_PL
+GX --> B_PL : "Επιλογή Τραγουδιού"
+B_PL --> C_ISC
+C_ISC --> E_DB
+C_ISC --> E_USR
+C_ISC --> C_WRM
+C_WRM --> B_SGM
+GX --> B_SGM : Επιλογή <<Remove from playlist>>
+B_SGM --> C_RM
+C_RM --> E_PL
+C_RM --> C_UPDB
+C_UPDB --> E_DB
+C_ISC -[#red]-> C_WORM : <font color="red">Ο Γενικός Χρήστης</font>\n<font color="red">δεν είναι δημιουργός</font>
+C_WORM -[#red]-> B_SGM
+
+
+@enduml
