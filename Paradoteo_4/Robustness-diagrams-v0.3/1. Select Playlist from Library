@@ -13,20 +13,21 @@ control "Έλεγχος ύπαρξης\nτραγουδιών στην\nPlaylist"
 control "Ανάκτηση τραγουδιών\nαπό την βάση και\nεμφάνιση" as C_GT
 control "Εμφάνιση οθόνης\nάδειας λίστας" as C_EM #red
 control "Προσθήκη τραγουδιών στην playlist" as C_USG #red
+control "Εμφάνιση κενής λίστας playlist" as C_PLEMPTY #red
 
 entity "Database" as E_DB
 entity "Song" as E_SONG
 entity "Playlist" as E_PL
 entity "User" as E_USR
 
-usecase "Δημιουργία Λίστας\nΑναπαραγωγής" as UC_CR #red
 usecase "Προσθήκη Τραγοδιών\nσε Λίστα Αναπαραγωγής" as UC_SG #red
 
 C_PL --> B_LIB
 C_PL --> E_PL
 C_PL --> E_DB
 C_PL --> E_USR
-C_PL -[#red]-> UC_CR : <font color="red">[δεν βρέθηκαν playlist]</font><font color="red">επιλέγει Create Playlist</font>
+C_PL -[#red]-> C_PLEMPTY : <font color="red">[δεν βρέθηκαν playlist]</font>
+C_PLEMPTY -[#red]-> B_MUSIC
 GX --> B_LIB : επιλέγει playlist
 B_LIB --> C_SG
 C_SG --> E_DB
