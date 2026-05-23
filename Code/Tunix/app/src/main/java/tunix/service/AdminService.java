@@ -2,13 +2,33 @@ package tunix.service;
 
 import java.util.List;
 
-public class AdminService {
-    public Boolean postIssueWarning(){
+import tunix.api.AdminApi;
 
+public class AdminService {
+    private AdminApi api;
+
+    public AdminService(AdminApi api){
+        this.api = api;
     }
 
-    public Boolean postBan(){
+    public Boolean postIssueWarning(int artistId){
+        try{
+            Boolean result = api.issueWarning(artistId);
+            return result;
+        }catch(Exception e){
+            //Handle exception
+            return false;
+        }
+    }
 
+    public Boolean postBan(int artistId){
+        try{
+            Boolean result = api.issueBan(artistId);
+            return result;
+        }catch(Exception e){
+            //Handle exception
+            return false;
+        }
     }
 
     public String postRejectResponse(int applicationId){

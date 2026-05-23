@@ -7,6 +7,7 @@ import tunix.model.ILibraryAsset;
 import java.util.List;
 
 public class ListeningHistoryService {
+    
     public void addSong(Song song){
 
     }
