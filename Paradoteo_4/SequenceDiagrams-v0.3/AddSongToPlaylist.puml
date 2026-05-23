@@ -1,0 +1,108 @@
+@startuml AddSongToPlaylist
+
+title Add Song To Playlist
+
+actor User
+
+participant MainPanel
+participant SearchView
+participant SearchController
+participant MusicView
+participant MusicController
+participant PlaylistService
+participant PlaylistApi
+participant ApiService
+participant PlaylistBackendController
+participant PlaylistBackendService
+participant PlaylistBackendRepository
+
+database DB
+
+participant EventBus
+
+ref over SearchView, SearchController
+SearchSong
+end ref
+activate SearchView
+User -> SearchView : right click on song
+SearchView -> SearchView : showSongContextMenu()
+activate SearchView
+User -> SearchView : click on "Add to Playlist"
+SearchView -> SearchView : showPlaylistSelectionPopUp()
+activate SearchView
+User -> SearchView : select playlist
+SearchView -> SearchController : checkForDuplicates(playlistId, songId)
+activate SearchController
+SearchController -> PlaylistService : checkForDuplicateSong(playlistId, songId)
+activate PlaylistService
+PlaylistService -> PlaylistApi : checkForDuplicateSong(playlistId, songId)
+activate PlaylistApi
+PlaylistApi -> ApiService : post(playlist/checkForDuplicate, playlistId, songId)
+'will need to find an alternative to send both ids with one argument
+activate ApiService
+ApiService -> PlaylistBackendController : checkForDuplicateSong(playlistId, songId)
+activate PlaylistBackendController
+PlaylistBackendController -> PlaylistBackendService : checkForDuplicateSong(playlistId, songId)
+activate PlaylistBackendService
+PlaylistBackendService -> PlaylistBackendRepository : checkForDuplicateSong(playlistId, songId)
+activate PlaylistBackendRepository
+PlaylistBackendRepository -> DB : run mySQL query
+DB --> PlaylistBackendRepository : hasDuplicate
+PlaylistBackendRepository --> PlaylistBackendService : hasDuplicate
+deactivate PlaylistBackendRepository
+PlaylistBackendService --> PlaylistBackendController : hasDuplicate
+deactivate PlaylistBackendService
+PlaylistBackendController --> ApiService : hasDuplicate
+deactivate PlaylistBackendController
+ApiService --> PlaylistApi : hasDuplicate
+deactivate ApiService
+PlaylistApi --> PlaylistService : hasDuplicate
+deactivate PlaylistApi
+PlaylistService --> SearchController : hasDuplicate
+alt !hasDuplicate
+SearchController -> PlaylistService : addToPlaylist(playlistId, songId)
+activate PlaylistService
+PlaylistService -> PlaylistApi : addToPlaylist(playlistId, songId)
+activate PlaylistApi
+PlaylistApi -> ApiService : post(playlist/addToPlaylist, playlistId, songId)
+'will need to find an alternative to send both ids with one argument
+activate ApiService
+ApiService -> PlaylistBackendController : addToPlaylist(playlistId, songId)
+activate PlaylistBackendController
+PlaylistBackendController -> PlaylistBackendService : addToPlaylist(playlistId, songId)
+activate PlaylistBackendService
+PlaylistBackendService -> PlaylistBackendRepository : addToPlaylist(playlistId, songId)
+activate PlaylistBackendRepository
+PlaylistBackendRepository -> DB : run mySQL query
+DB --> PlaylistBackendRepository : updated playlist
+PlaylistBackendRepository --> PlaylistBackendService : updated playlist
+deactivate PlaylistBackendRepository
+PlaylistBackendService --> PlaylistBackendController : updated playlist
+deactivate PlaylistBackendService
+PlaylistBackendController --> ApiService : updated playlist
+deactivate PlaylistBackendController
+ApiService --> PlaylistApi : updated playlist
+deactivate ApiService
+PlaylistApi --> PlaylistService : updated playlist
+deactivate PlaylistApi
+PlaylistService --> SearchController : updated playlist
+deactivate PlaylistService
+SearchController -> EventBus : publish switchToMusicView(MusicView, playlist)
+activate EventBus
+EventBus -> MainPanel : switchToMusicView(playlist)
+activate MainPanel
+deactivate EventBus
+create MusicController
+MainPanel -->> MusicController : new(playlist)
+activate MusicController
+deactivate MainPanel
+create MusicView
+MusicController -->> MusicView : new()
+activate MusicView
+MusicController -> MusicView : display(playlistData)
+
+else hasDuplicate
+SearchController -> SearchView : showDuplicateExistsPopUp()
+end
+
+@enduml
