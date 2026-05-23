@@ -13,6 +13,7 @@ control "Εμφάνιση οθόνης\nΑναπαραγωγής Τραγουδ�
 control "Άντληση αρχείου μουσικής" as C_SG
 control "Εμφάνιση δεδομένων τραγουδιού" as C_SGD
 control "Αναπαραγωγή τραγουδιού" as C_PLAY
+control "Αλλαγή σειράς τραγουδιών" as C_SH #red
 
 entity "Playlist" as E_PL
 entity "Album" as E_ALB
@@ -38,5 +39,8 @@ C_SG --> C_PLAY
 C_SG --> C_SGD
 C_SGD --> B_CPLY
 B_CPLY --> GX
+GX -[#red]-> B_PLY : <font color="red">Shuffle Play</font>
+B_PLY -[#red]-> C_SH
+C_SH -[#red]-> B_PLY
 
 @enduml
