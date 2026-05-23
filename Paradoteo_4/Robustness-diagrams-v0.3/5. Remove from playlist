@@ -26,7 +26,7 @@ GX --> B_PL : "Επιλογή Τραγουδιού"
 B_PL --> C_ISC
 C_ISC --> E_DB
 C_ISC --> E_USR
-C_ISC --> C_WRM
+C_ISC --> C_WRM : Ο Γενικός Χρήστης είναι\nδημιουργός της playlist
 C_WRM --> B_SGM
 GX --> B_SGM : Επιλογή <<Remove from playlist>>
 B_SGM --> C_RM
