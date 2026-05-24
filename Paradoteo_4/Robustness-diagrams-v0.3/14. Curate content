@@ -1,0 +1,40 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Διαχειριστής" as GX
+
+boundary "Μενού Επιλογών Τραγουδιού" as B_SGMENU
+boundary "Οθόνη Εποπτείας\nΛογαριασμού Καλλιτέχνη" as B_ARTCUR
+
+control "Άντληση αριθμού προειδοποιήσεων που έχει λάβει ο Καλλιτέχνης" as C_GTWRNINGS
+control "Εμφάνιση οθόνης εποπτείας λογαριασμού καλλιτέχνη" as C_SHARTCUR
+control "Αφαίρεση περιεχομένου από τη Βάση Δεδομένων" as C_RMMEDIA
+control "Καταγραφή νέας προειδοποίησης για τον καλλιτέχνη" as C_ADDWRNING #red
+control "Διαγραφή λογαριασμού καλλιτέχνη και\nαποθήκευση ονόματος στην λίστα καταργημένων καλλιτεχνών" as C_RMACC #orange
+
+entity "Database" as E_DB
+entity "Artist" as E_ART
+entity "Song" as E_SG
+
+GX --> B_SGMENU : "Επιλογή <<Remove Media>>"
+B_SGMENU --> C_GTWRNINGS
+C_GTWRNINGS --> E_DB
+C_GTWRNINGS --> E_ART
+C_GTWRNINGS --> C_SHARTCUR
+C_SHARTCUR --> B_ARTCUR
+GX --> B_ARTCUR : Καμία ενέργεια
+B_ARTCUR --> C_RMMEDIA
+C_RMMEDIA --> E_DB
+C_RMMEDIA --> E_SG
+GX -[#red]-> B_ARTCUR : <font color="red">Επιλογή έκδοσης</font>\n<font color="red">προειδοποίησης στον καλλιτέχνη</font>
+B_ARTCUR -[#red]-> C_ADDWRNING
+C_ADDWRNING -[#red]-> E_ART
+C_ADDWRNING -[#red]-> E_DB
+C_ADDWRNING -[#red]-> C_RMMEDIA
+GX -[#orange]-> B_ARTCUR : <font color="orange"> Επιλογή έκδοσης</font>\n<font color="orange">απαγόρευσης λογαριασμού του καλλιτέχνη</font>
+B_ARTCUR -[#orange]-> C_RMACC
+C_RMACC -[#orange]-> E_ART
+C_RMACC -[#orange]-> E_DB
+C_RMACC -[#orange]-> C_RMMEDIA
+@enduml
