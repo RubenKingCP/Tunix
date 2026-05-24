@@ -1,0 +1,82 @@
+@startuml ApproveOrRejectArtistRequest
+
+title Approve Or Reject Artist Request
+
+actor Admin
+
+participant AdminDashdoardView
+participant AdminDashdoardController
+participant ArtistRequestService
+participant ArtistRequestApiClient
+participant ApiService
+participant ArtistRequestBackendController
+participant ArtistRequestBackendService
+participant ArtistRequestBackendRepository
+
+activate AdminDashdoardView
+Admin -> AdminDashdoardView : clicks on "Artist Account Applications"
+AdminDashdoardView -> AdminDashdoardView : showArtistAccountApplications()
+Admin -> AdminDashdoardView : selects an application
+AdminDashdoardView -> AdminDashdoardController : getApplicationDetails(applicationId)
+activate AdminDashdoardController
+AdminDashdoardController -> ArtistRequestService : getApplicationDetails(applicationId)
+activate ArtistRequestService
+ArtistRequestService -> ArtistRequestApiClient : getApplicationDetails(applicationId)
+activate ArtistRequestApiClient
+ArtistRequestApiClient -> ApiService : post(artistRequest/getRequests, applicationId)
+activate ApiService
+ApiService -> ArtistRequestBackendController : getApplicationDetails(applicationId)
+activate ArtistRequestBackendController
+ArtistRequestBackendController -> ArtistRequestBackendService : getApplicationDetails(applicationId)
+activate ArtistRequestBackendService
+ArtistRequestBackendService -> ArtistRequestBackendRepository : getApplicationDetails(applicationId)
+activate ArtistRequestBackendRepository
+ArtistRequestBackendRepository -> DB : run mySQL query
+DB --> ArtistRequestBackendRepository : return application details
+ArtistRequestBackendRepository --> ArtistRequestBackendService : return application details
+deactivate ArtistRequestBackendRepository
+ArtistRequestBackendService --> ArtistRequestBackendController : return application details
+deactivate ArtistRequestBackendService
+ArtistRequestBackendController --> ApiService : return application details
+deactivate ArtistRequestBackendController
+ApiService --> ArtistRequestApiClient : return application details
+deactivate ApiService
+ArtistRequestApiClient --> AdminDashdoardController : return application details
+deactivate ArtistRequestApiClient
+AdminDashdoardController -> AdminDashdoardView : showApplicationDetails(applicationDetails)
+deactivate AdminDashdoardController
+alt Admin approves Request
+    Admin -> AdminDashdoardView : Approve Request
+else Admin rejects Request
+    Admin -> AdminDashdoardView : Reject Request
+end
+AdminDashdoardView -> AdminDashdoardController : saveResponse(adminRes, applicationId)
+activate AdminDashdoardController
+AdminDashdoardController -> ArtistRequestService : saveResponse(adminRes, applicationId)
+activate ArtistRequestService
+ArtistRequestService -> ArtistRequestApiClient : saveResponse(adminRes, applicationId)
+activate ArtistRequestApiClient
+ArtistRequestApiClient -> ApiService : post(artistRequest/saveRequest, adminRes, applicationId)
+activate ApiService
+ApiService -> ArtistRequestBackendController : getApplicationDetails(applicationId)
+activate ArtistRequestBackendController
+ArtistRequestBackendController -> ArtistRequestBackendService : saveResponse(adminRes, applicationId)
+activate ArtistRequestBackendService
+ArtistRequestBackendService -> ArtistRequestBackendRepository : saveResponse(adminRes, applicationId)
+activate ArtistRequestBackendRepository
+ArtistRequestBackendRepository -> DB : run mySQL query
+DB --> ArtistRequestBackendRepository : return success
+ArtistRequestBackendRepository --> ArtistRequestBackendService : return success
+deactivate ArtistRequestBackendRepository
+ArtistRequestBackendService --> ArtistRequestBackendController : return success
+deactivate ArtistRequestBackendService
+ArtistRequestBackendController --> ApiService : return success
+deactivate ArtistRequestBackendController
+ApiService --> ArtistRequestApiClient : return success
+deactivate ApiService
+ArtistRequestApiClient --> AdminDashdoardController : return success
+deactivate ArtistRequestApiClient
+
+
+
+@enduml
