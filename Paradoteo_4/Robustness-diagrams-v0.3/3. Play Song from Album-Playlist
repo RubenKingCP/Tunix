@@ -10,11 +10,10 @@ boundary "Οθόνη Τρέχοντος Τραγουδιού" as B_CPLY
 
 control "Εμφάνιση\nΛίστας Αναπαραγωγής\nή Άλμπουμ" as  C_DPL
 control "Εμφάνιση οθόνης\nΑναπαραγωγής Τραγουδιού" as C_PLY
-control "Άντληση αρχείου μουσικής" as C_SG
+control "Άντληση όλων των αρχείων μουσικής" as C_SG
 control "Εμφάνιση δεδομένων\nτραγουδιού" as C_SGD
 control "Αναπαραγωγή\nτραγουδιού" as C_PLAY
 control "Αλλαγή σειράς τραγουδιών" as C_SH #red
-control "Άντληση όλων των τραγουδιών της playlist" as C_GTPL #red
 
 entity "Playlist" as E_PL
 entity "Album" as E_ALB
@@ -41,8 +40,8 @@ C_SG --> C_SGD
 C_SGD --> B_CPLY
 B_CPLY --> GX
 GX -[#red]-> B_PLY : <font color="red">Επιλογή <<Shuffle Play>></font>
-B_PLY -[#red]-> C_GTPL
-C_GTPL -[#red]-> C_SH
+B_PLY -[#red]->  C_SG
+C_SG -[#red]-> C_SH
 C_SH -[#red]-> C_PLAY
 C_SH -[#red]-> C_SGD
 
