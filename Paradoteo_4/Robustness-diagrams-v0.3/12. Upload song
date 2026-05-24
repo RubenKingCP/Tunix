@@ -1,0 +1,42 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Καλλιτέχνης" as GX
+
+boundary "Προφίλ Καλλιτέχνη" as B_ARTPRF
+boundary "Οθόνη Πειρήγησης Αρχείων" as B_FILESYS
+boundary "Οθόνη νέου τραγουδιού" as B_NEWSG
+boundary "Popup επιτυχίας" as B_SUCCESS
+
+control "Άνοιγμα Συστήματος Πειρήγησης Αρχείων" as C_OPENFILESYS
+control "Προσωρινή αποθήκευση αρχείου στη Βάση" as C_DBSVTEMP
+control "Εμφάνιση οθόνης νέου τραγουδιού" as C_DISPNEWSG
+control "Έλεγχος: Έχει ανεβάσει ο Καλλιτέχνης\nάλλο τραγούδι με ίδιο όνομα?" as C_NMCHK
+control "Αποθήκευση νέου τραγουδιού και πληροφοριών στην Βάση" as C_SVTODB
+control "Εμφάνιση popup επιτυχίας" as C_SUCCESS
+control "Εμφάνιση popup <<Εισάγετε άλλο όνομα>>" as C_CHNGNM #red
+
+entity "Database" as E_DB
+entity "Local File System" as E_LFS
+entity "Song" as E_SG
+
+GX --> B_ARTPRF : Επιλογή Upload > Τραγούδι
+B_ARTPRF --> C_OPENFILESYS
+C_OPENFILESYS --> E_LFS
+C_OPENFILESYS --> B_FILESYS
+GX --> B_FILESYS : Επιλογή αρχείου μουσικής
+B_FILESYS --> C_DBSVTEMP
+C_DBSVTEMP --> E_DB
+C_DBSVTEMP --> C_DISPNEWSG
+C_DISPNEWSG --> B_NEWSG
+GX --> B_NEWSG : Εισαγωγή τίτλου, άλμπουμ και αριθμό μέσα στο άλμπουμ
+B_NEWSG --> C_NMCHK
+C_NMCHK --> E_DB
+C_NMCHK --> C_SVTODB : οχι
+C_SVTODB --> E_SG
+C_SVTODB --> C_SUCCESS
+C_SUCCESS --> B_SUCCESS
+C_NMCHK -[#red]-> C_CHNGNM : <font color="red">ναι</font>
+C_CHNGNM -[#red]-> B_NEWSG
+@enduml
