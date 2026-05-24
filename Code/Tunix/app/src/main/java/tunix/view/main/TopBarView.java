@@ -26,7 +26,6 @@ public class TopBarView extends JPanel {
     // ── Tunix palette ────────────────────────────────────────────────────────
     private static final Color BG         = new Color(0x0D0D0D);
     private static final Color SURFACE    = new Color(0x1A1A1A);
-    private static final Color SURFACE2   = new Color(0x242424);
     private static final Color BORDER     = new Color(0x2E2E2E);
     private static final Color BORDER_FOC = new Color(0x5A5A5A);  // focused input ring
     private static final Color FG_PRIMARY = new Color(0xF0F0F0);

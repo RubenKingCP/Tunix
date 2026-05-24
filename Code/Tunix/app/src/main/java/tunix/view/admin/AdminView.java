@@ -1,4 +1,4 @@
-package tunix.view.center;
+package tunix.view.admin;
 
 import tunix.controller.AdminController;
 import tunix.model.ArtistRequest;

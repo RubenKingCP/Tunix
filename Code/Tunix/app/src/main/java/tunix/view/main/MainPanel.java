@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 
+import tunix.core.AppContext;
 import tunix.event.EventBus;
 import tunix.event.SwitchMainScreen;
 
@@ -16,7 +17,7 @@ public class MainPanel extends JPanel {
                      JPanel libraryPanel,
                      JPanel centerPanel,
                      JPanel musicPlayer,
-                     EventBus eventBus) {
+                     AppContext context) {
 
         setLayout(new BorderLayout());
 
@@ -28,7 +29,7 @@ public class MainPanel extends JPanel {
         add(musicPlayer, BorderLayout.SOUTH);
         add(libraryPanel, BorderLayout.WEST);
 
-        subscribe(eventBus);
+        subscribe(context.eventBus);
     }
 
     private void subscribe(EventBus eventBus) {

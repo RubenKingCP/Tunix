@@ -29,4 +29,3 @@ public class LoginController {
         eventBus.publish(new GoToRegisterButtonClicked());
     }
 }
- 

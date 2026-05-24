@@ -1,4 +1,4 @@
-package tunix.view.center;
+package tunix.view.profile;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

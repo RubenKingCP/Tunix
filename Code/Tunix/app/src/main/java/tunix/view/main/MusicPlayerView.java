@@ -5,7 +5,6 @@ import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -26,7 +25,6 @@ public class MusicPlayerView extends JPanel {
     private static final Color SURFACE     = new Color(0x1A1A1A);   // slightly lifted surface
     private static final Color BORDER      = new Color(0x2E2E2E);   // subtle divider
     private static final Color FG_PRIMARY  = new Color(0xF0F0F0);   // white-ish text
-    private static final Color FG_MUTED    = new Color(0x9A9A9A);   // dimmed label
     private static final Color ACCENT      = new Color(0xFFFFFF);   // active/hover white
     private static final Color BTN_HOVER   = new Color(0x2A2A2A);   // button hover fill
     private static final Color BTN_PRESS   = new Color(0x383838);   // button press fill

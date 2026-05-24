@@ -1,6 +1,9 @@
 package tunix.dto.request;
 import java.io.File;
 
+import lombok.Getter;
+
+@Getter
 public class SongRequest {
     private String title;
     private int artistId;
@@ -16,4 +19,3 @@ public class SongRequest {
         this.coverImage = coverImage;
     }
 }
- 

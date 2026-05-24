@@ -1,68 +1,43 @@
 package tunix.app;
 import javax.swing.*;
-import java.awt.*;
 
-import tunix.event.EventBus;
-import tunix.event.LoginSuccessEvent;
-import tunix.event.LogoutEvent;
-import tunix.event.RegisterSuccessfulEvent;
-import tunix.service.auth.SessionService;
+import tunix.core.AppContext;
+import tunix.event.SwitchScreenEvent;
+
+import java.awt.CardLayout;
+import java.util.Map;
+import java.util.HashMap;
 
 public class AppWindow extends JFrame {
 
-    private final CardLayout rootLayout = new CardLayout();
-    private final JPanel root = new JPanel(rootLayout);
-    private final EventBus eventBus;
-    private final tunix.view.main.MainPanel mainPanel;
+    private final CardLayout layout = new CardLayout();
+    private final JPanel root = new JPanel(layout);
 
-    public static final String AUTH = "auth";
-    public static final String MAIN = "main";
+    private final Map<Class<?>, JPanel> screens = new HashMap<>();
 
-
-    public AppWindow(JPanel authPanel,
-                     tunix.view.main.MainPanel mainPanel,
-                     EventBus eventBus) {
-        
-        this.eventBus = eventBus;
-        this.mainPanel = mainPanel;
-        
+    public AppWindow(AppContext context) {
         setTitle("Tunix");
-        setSize(900, 600);
+
+        setContentPane(root);
+        
+        setSize(1200, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
-        root.add(authPanel, AUTH);
-        root.add(mainPanel, MAIN);
-
-        add(root);
-
-        subscribe(eventBus);
+        
+        context.eventBus.subscribe(SwitchScreenEvent.class, e -> show(e.getScreen()));
     }
 
-    private void subscribe(EventBus eventBus) {
-        eventBus.subscribe(RegisterSuccessfulEvent.class, e -> {
-            mainPanel.showHome();
-            showMain();
-        });
-
-        eventBus.subscribe(LoginSuccessEvent.class, e -> {
-            mainPanel.showHome();
-            showMain();
-        });
-
-        eventBus.subscribe(LogoutEvent.class, e -> {
-            if (SessionService.Instance != null) {
-                SessionService.Instance.clear();
-            }
-            showAuth();
-        });
+    public void register(Class<?> key, JPanel panel) {
+        System.err.println("Class Registered: " + key.getSimpleName());
+        screens.put(key, panel);
+        root.add(panel, key.getSimpleName());
     }
 
-    public void showAuth() {
-        rootLayout.show(root, AUTH);
-    }
-
-    public void showMain() {
-        rootLayout.show(root, MAIN);
+    public void show(Class<?> key) {
+        if (!screens.containsKey(key)) {
+            throw new IllegalStateException("Screen not found: " + key.getSimpleName());
+        }
+        System.err.println("Current panel showing: " + key.getSimpleName());
+        layout.show(root, key.getSimpleName());
     }
 }

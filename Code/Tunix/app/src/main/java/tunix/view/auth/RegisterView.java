@@ -43,11 +43,18 @@ public class RegisterView extends JPanel {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                     RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(BG_CARD);
-                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 16, 16));
+                g2.fill(new RoundRectangle2D.Float(0, 0,
+                                                    getWidth(),
+                                                    getHeight(),
+                                                    16,
+                                                    16));
                 g2.setColor(BORDER_COLOR);
                 g2.setStroke(new BasicStroke(1f));
                 g2.draw(new RoundRectangle2D.Float(0.5f, 0.5f,
-                                                   getWidth()-1, getHeight()-1, 16, 16));
+                                                   getWidth()-1,
+                                                   getHeight()-1,
+                                                   16,
+                                                    16));
                 g2.dispose();
             }
         };

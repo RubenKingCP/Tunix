@@ -1,5 +1,8 @@
 package tunix.dto.request;
 
+import lombok.Getter;
+
+@Getter
 public class ArtistApplicationRequest {
 
     private String name;
@@ -10,13 +13,5 @@ public class ArtistApplicationRequest {
     public ArtistApplicationRequest(String name, String message) {
         this.name = name;
         this.message = message;
-    }
-
-    public String getStatus() {
-        return null;
-    }
-
-    public String getMessage() {
-        return message;
     }
 } 

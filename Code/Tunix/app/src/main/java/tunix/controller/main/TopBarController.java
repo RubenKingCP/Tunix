@@ -28,7 +28,7 @@ public class TopBarController {
         eventBus.publish(new SwitchMainScreen(homeView));
     }
     public void onProfileButtonClicked() {
-        eventBus.publish(new SwitchMainScreen(new tunix.view.center.UserProfileView()));
+        eventBus.publish(new SwitchMainScreen(new tunix.view.profile.UserProfileView()));
     }
 
     public void onLogoutButtonClicked() {

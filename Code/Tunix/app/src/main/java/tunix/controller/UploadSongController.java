@@ -44,7 +44,7 @@ public class UploadSongController {
     public void onSubmitButtonClicked() {
         SongRequest songRequest = new SongRequest(null, 0, null, 0, null);
 
-        Song song = songService.uploadSong(songRequest);
+        songService.uploadSong(songRequest);
     }
 
     public void displayError(String message) {

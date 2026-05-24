@@ -7,10 +7,9 @@ import tunix.event.GoToLoginButtonClicked;
 import tunix.event.GoToRegisterButtonClicked;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 
 public class AuthPanel extends JPanel {
-
-    private final EventBus eventBus;
     private CardLayout layout = new CardLayout();
     
 
@@ -18,11 +17,9 @@ public class AuthPanel extends JPanel {
     public static final String REGISTER = "register";
 
     public AuthPanel(LoginView loginView, RegisterView registerView, EventBus eventBus) {
-
-        this.eventBus = eventBus;
-
         setLayout(layout);
-
+        setBackground(Color.red);
+        setOpaque(true);
         add(loginView, LOGIN);
         add(registerView, REGISTER);
 

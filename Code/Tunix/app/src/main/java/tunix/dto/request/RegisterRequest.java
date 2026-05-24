@@ -1,5 +1,8 @@
 package tunix.dto.request;
 
+import lombok.Getter;
+
+@Getter
 public class RegisterRequest {
     private final String username;
 
@@ -14,17 +17,4 @@ public class RegisterRequest {
         this.email = email;
         this.password = password;
     }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-    
 }
