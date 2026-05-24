@@ -4,16 +4,17 @@ left to right direction
 
 actor "Γενικός Χρήστης" as GX
 
-boundary "Οθόνη Library" as B_LIB
-boundary "Οθόνη Μουσικής\n(Λίστα Τραγουδιών)" as B_MUSIC
+boundary "Βιβλιοθήκη" as B_LIB
+boundary "Οθόνη Μουσικής" as B_MUSIC
 boundary "Οθόνη Άδειας\nΛίστας" as B_EMPTY #red
 
+control "Υπάρχουν playlist στην βιβλιοθήκη?" as C_ISLIBEMPTY
 control "Ανάκτηση playlist\nτου χρήστη\nκαι εμφάνιση" as C_PL
 control "Έλεγχος ύπαρξης\nτραγουδιών στην\nPlaylist" as C_SG
 control "Ανάκτηση τραγουδιών\nαπό την βάση και\nεμφάνιση" as C_GT
 control "Εμφάνιση οθόνης\nάδειας λίστας" as C_EM #red
 control "Προσθήκη τραγουδιών στην playlist" as C_USG #red
-control "Εμφάνιση κενής λίστας playlist" as C_PLEMPTY #red
+control "Εμφάνιση κενής λίστας playlist" as C_PLEMPTY #orange
 
 entity "Database" as E_DB
 entity "Song" as E_SONG
@@ -22,19 +23,20 @@ entity "User" as E_USR
 
 usecase "Προσθήκη Τραγοδιών\nσε Λίστα Αναπαραγωγής" as UC_SG #red
 
+C_ISLIBEMPTY -->C_PL : βρέθηκαν playlist
 C_PL --> B_LIB
-C_PL --> E_PL
-C_PL --> E_DB
-C_PL --> E_USR
-C_PL -[#red]-> C_PLEMPTY : <font color="red">[δεν βρέθηκαν playlist]</font>
-C_PLEMPTY -[#red]-> B_MUSIC
+C_ISLIBEMPTY --> E_PL
+C_ISLIBEMPTY --> E_DB
+C_ISLIBEMPTY --> E_USR
+C_ISLIBEMPTY -[#orange]-> C_PLEMPTY : <font color="orange">δεν βρέθηκαν playlist</font>
+C_PLEMPTY -[#orange]-> B_MUSIC
 GX --> B_LIB : επιλέγει playlist
 B_LIB --> C_SG
 C_SG --> E_DB
-C_SG --> C_GT
+C_SG --> C_GT : βρέθηκαν τραγούδια
 C_GT --> E_SONG
 C_GT --> E_DB
-C_GT --> B_MUSIC : εμφανίζει τραγούδια
+C_GT --> B_MUSIC
 B_MUSIC --> GX
 C_SG -[#red]-> C_EM : <font color="red">δεν βρέθηκαν</font>\n<font color="red">τραγούδια</font>
 C_EM -[#red]-> B_EMPTY
