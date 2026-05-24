@@ -1,0 +1,71 @@
+@startuml SearchSong
+
+title Search Song
+
+actor User
+
+participant MainPanel
+participant TopBarView
+participant TopBarController
+participant SearchView
+participant SearchController
+participant SongService
+participant SongApi
+participant ApiService
+participant SongBackendController
+participant SongBackendService
+participant SongBackendRepository
+
+database DB
+
+participant EventBus
+
+activate TopBarView
+User -> TopBarView : writes search query
+User -> TopBarView : selects Song
+User -> TopBarView : clicks on "Search"
+TopBarView -> TopBarController : search(query,searchType)
+deactivate TopBarView
+activate TopBarController
+TopBarController -> SongService : searchSongByName(query)
+deactivate TopBarController
+activate SongService
+SongService -> SongApi : searchSongByName(query)
+activate SongApi
+SongApi -> ApiService : post("song/getByName", query)
+activate ApiService
+ApiService -> SongBackendController : searchSongByName(query)
+activate SongBackendController
+SongBackendController -> SongBackendService : searchSongByName(query)
+activate SongBackendService
+SongBackendService -> SongBackendRepository : searchSongByName(query)
+activate SongBackendRepository
+SongBackendRepository -> DB : run mySQL query
+DB --> SongBackendRepository : return results
+SongBackendRepository --> SongBackendService : return results
+deactivate SongBackendRepository
+SongBackendService --> SongBackendController : return results
+deactivate SongBackendService
+SongBackendController --> ApiService : return results
+deactivate SongBackendController
+ApiService --> SongApi : return results
+deactivate ApiService
+SongApi --> SongService : return results
+deactivate SongApi
+SongService --> TopBarController : return results
+deactivate SongService
+TopBarController -> EventBus : publish SwitchMainScreenEvent, SearchController
+activate EventBus
+EventBus -> MainPanel : switchMainScreen(SearchController)
+deactivate EventBus
+activate MainPanel
+create SearchController
+MainPanel -->> SearchController : new(results)
+deactivate MainPanel
+activate SearchController
+create SearchView
+SearchController -->> SearchView : new()
+activate SearchView
+SearchController -> SearchView : showSearchResults(results)
+
+@enduml
