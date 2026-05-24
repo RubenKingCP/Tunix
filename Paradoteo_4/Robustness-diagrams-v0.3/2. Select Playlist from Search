@@ -4,8 +4,7 @@ left to right direction
 
 actor "Γενικός Χρήστης" as GX
 
-boundary "Μπάρα Αναζήτησης" as B_SRB
-boundary "Οθόνη Αναζήτησης" as B_SRC
+boundary "Οθόνη Αποτελεσμάτων\nΑναζήτησης" as B_SRC
 boundary "Οθόνη Μουσικής\n(Λίστα Τραγουδιών)" as B_MUSIC
 boundary "Οθόνη Άδειας\nΛίστας" as B_EMPTY #red
 
@@ -21,18 +20,17 @@ entity "Playlist" as E_PL
 usecase "Αναζήτηση Λίστας\nΑναπαραγωγής" as UC_SRP
 
 
-GX --> B_SRB
-B_SRB --> C_SRP
+B_SRC --> C_SRP
 C_SRP --> UC_SRP
 C_SRP --> E_PL
 C_SRP --> E_DB
 GX --> B_SRC : επιλέγει playlist
 B_SRC --> C_SG
 C_SG --> E_DB
-C_SG --> C_GT
+C_SG --> C_GT : βρέθηκαν τραγούδια
 C_GT --> E_SONG
 C_GT --> E_DB
-C_GT --> B_MUSIC : εμφανίζει τραγούδια
+C_GT --> B_MUSIC
 B_MUSIC --> GX
 C_SG -[#red]-> C_EM : <font color="red">δεν βρέθηκαν</font>\n<font color="red">τραγούδια</font>
 C_EM -[#red]-> B_EMPTY
