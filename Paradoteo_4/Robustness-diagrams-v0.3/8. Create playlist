@@ -7,10 +7,10 @@ actor "Γενικός Χρήστης" as GX
 boundary "Βιβλιοθήκη" as B_LIB
 boundary "Οθόνη Playlist Editor" as B_PE
 
-control "Εμφάνιση οθόνης <<Playlist Editor>>" as C_DPE
-control "(Προεραιτικά) Άντληση εικόνας από τα αρχεία του Γενικού Χρήστη" as C_FS
+control "Εμφάνιση οθόνης\n<<Playlist Editor>>" as C_DPE
+control "(Προεραιτικά) Άντληση εικόνας\nαπό τα αρχεία του Γενικού Χρήστη" as C_FS
 control "Έλεγχος για συνωνυμία playlist\nμε άλλες playlist του Γενικού Χρήστη" as C_SN
-control "Αποθήκευση νέας playlist στη βιβλιοθήκη"  as C_SV
+control "Αποθήκευση νέας playlist\nστη βιβλιοθήκη"  as C_SV
 control "Επιστροφή στη βιβλιοθήκη" as C_CCL #orange
 control "Εμφάνιση popup σφάλματος" as C_ERR #red
 
@@ -21,7 +21,7 @@ entity "Playlist" as E_PL
 GX --> B_LIB : Επιλογή\n"Create New\nPlaylist"
 B_LIB --> C_DPE
 C_DPE --> B_PE
-GX --> B_PE : Εισαγωγή ονόματος, περιγραφής και δημοσιώτητας playlist
+GX --> B_PE : Εισαγωγή ονόματος, περιγραφής\nκαι δημοσιώτητας playlist
 GX --> B_PE : (Προεραιτικά) Επιλογή εικόνας
 B_PE --> C_FS : (Προεραιτικά)
 C_FS --> E_FS
