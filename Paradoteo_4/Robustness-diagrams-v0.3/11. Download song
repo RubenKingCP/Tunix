@@ -1,0 +1,48 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Γενικός Χρήστης" as GX
+
+boundary "Οθόνη Τραγουδιού" as B_SG
+boundary "Οθόνη Επιλογής Τραγουδιού" as B_SGS
+boundary "Οθόνη Επιτυχίας" as B_SUCCESS
+boundary "Popup <<Αγοράστε Premium>>" as B_NOTPRM #red
+boundary "Popup <<Ο χώρος δεν επαρκεί>>" as B_NOTSPC #red
+
+control "Εμφάνιση Μενού Επιλογών Τραγουδιού" as C_SGS
+control "Είναι Premium?" as C_ISPR
+control "Έχει επαρκή χώρο αποθήκευσης?" as C_HFS
+control "Άντληση τραγουδιού και path κατεβάσματος χρήστη,\nκαι κατέβασμα τραγουδιού στο path αυτό" as C_DNLD
+control "Εμφάνιση οθόνης επιτυχίας" as C_SUCCESS
+control "Εμφάνιση ενημέρωσης: <<Αγοράστε Premium>>" as C_NOTPRM #red
+control "Εμφάνιση οθόνης αποτυχίας: <<Ο χώρος δεν επαρκεί>>" as C_NOTSPC #red
+
+entity "Database" as E_DB
+entity "User" as E_USR
+entity "Local File System" as E_LFS
+entity "Song" as E_SG
+
+GX --> B_SG : "Επιλογή Τραγουδιού"
+B_SG --> C_SGS
+C_SGS --> B_SGS
+GX --> B_SGS : "Επιλογή Download"
+B_SGS --> C_ISPR
+C_ISPR --> E_DB
+C_ISPR --> E_USR
+C_ISPR --> C_HFS : "Ο Γενικός Χρήστης είναι Premium Χρήστης"
+C_HFS --> E_LFS
+C_HFS --> C_DNLD : "Το Τοπικό Σύστημα Αρχείων έχει αρκετό χώρο"
+C_DNLD --> E_DB
+C_DNLD --> E_SG
+C_DNLD --> E_LFS
+C_DNLD --> C_SUCCESS
+C_SUCCESS --> B_SUCCESS
+B_SUCCESS --> GX
+C_ISPR -[#red]-> C_NOTPRM : <font color="red">Ο Γενικός Χρήστης δεν είναι Premium Χρήστης</font>
+C_NOTPRM -[#red]-> B_NOTPRM
+B_NOTPRM -[#red]-> GX
+C_HFS -[#red]-> C_NOTSPC : <font color="red">Το Τοπικό Σύστημα Αρχείων δεν έχει αρκετό χώρο</font>
+C_NOTSPC -[#red]-> B_NOTSPC
+B_NOTSPC -[#red]-> GX
+@enduml
