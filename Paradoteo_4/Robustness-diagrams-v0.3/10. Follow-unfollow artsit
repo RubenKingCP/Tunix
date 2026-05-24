@@ -1,0 +1,37 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Γενικός Χρήστης" as GX
+
+boundary "Οθόνη Καλλιτέχνη" as B_ART
+
+control "Έλεγχος: Ακολουθεί ήδη ο Γενικός\nΧρήστης τον Καλλιτέχνη?" as C_CF
+control "Εμφάνιση Οθόνης Καλλιτέχνη με το κουμπί <<Follow>>" as C_FOLL
+control "Εμφάνιση Οθόνης Καλλιτέχνη με το κουμπί <<Unfollow>>" as C_UNF #red
+control "Ενημέρωση του προφίλ του ΓΧ με την αλλαγή" as C_UPD
+control "Εμφάνιση popup επιτυχίας" as C_SUCCSESS
+control "Εμφάνιση popup αποτυχίας" as C_FAIL
+
+entity "Database" as E_DB
+entity "User" as E_USR
+
+usecase "Αναζήτηση Καλλιτέχνη" as UC_SRART
+
+UC_SRART --> C_CF : Επιλογή Καλλιτέχνη
+C_CF --> E_DB
+C_CF --> E_USR
+C_CF --> C_FOLL : Ο Γενικός Χρήστης δεν\nακολουθέι τον Καλλιτέχνη
+C_FOLL --> B_ART
+GX --> B_ART : Επιλογή Follow
+B_ART --> C_UPD
+C_UPD --> E_USR
+C_UPD --> E_DB
+C_UPD --> C_SUCCSESS
+C_SUCCSESS --> B_ART
+C_CF -[#red]-> C_UNF : <font color="red">Ο Γενικός Χρήστης</font>\n<font color="red">ακολουθεί ήδη τον Καλλιτέχνη</font?
+C_UNF -[#red]-> B_ART
+GX -[#red]-> B_ART : <font color="red">Επιλογή Unfollow</font>
+C_UPD -[#red]-> C_FAIL : <font color="red">Η αλλαγή απέτυχε</font>
+C_FAIL -[#red]-> B_ART
+@enduml
