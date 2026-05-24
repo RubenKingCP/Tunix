@@ -4,21 +4,20 @@ left to right direction
 
 actor "Γενικός Χρήστης" as GX
 
-boundary "Μπάρα Αναζήτησης" as B_SRB
-boundary "Οθόνη Αναζήτησης" as B_SRC
-boundary "Οθόνη Τραγουδιού" as B_SGS
-boundary "Οθόνη Επιλογών Τραγουδιού" as B_SGM
+boundary "Οθόνη Αποτελεσμάτων\nΑναζήτησης" as B_SRC
+boundary "Οθόνη\nΤραγουδιού" as B_SGS
+boundary "Μενού Επιλογών\nΤραγουδιού" as B_SGM
 boundary "Popup" as B_PP
 boundary "Playlist View" as B_PL
 boundary "Error Popup" as B_ERR #red
 
-control "Αναζήτηση Τραγουδιού" as C_SRS
-control "Εμφάνιση οθόνης τραγουδιού" as C_SGS
+control "Αναζήτηση\nΤραγουδιού" as C_SRS
+control "Εμφάνιση οθόνης\nτραγουδιού" as C_SGS
 control "Εμφάνιση μενού\nεπιλογών τραγουδιού" as C_SGM
-control "Άντληση και εμφάνιση όλων των\nPlaylist του χρήστη" as C_PL
+control "Άντληση και εμφάνιση\nόλων των Playlist\nτου χρήστη" as C_PL
 control "Έλεγχος ύπαρξης\nτραγουδιού σε playlist" as C_SPC
-control "Προσθήκη τραγουδιού στην playlist" as C_ADD
-control "Update database και εμφάνιση playlist" as C_UPD
+control "Προσθήκη τραγουδιού\nστην playlist" as C_ADD
+control "Ενημέρωση της database\nκαι εμφάνιση playlist" as C_UPD
 control "Εμφάνιση Error Popup" as C_ERR #red
 
 entity "Database" as E_DB
@@ -27,11 +26,9 @@ entity "Playlist" as E_PL
 
 usecase "Αναζήτηση Τραγουδιού" as UC_SRS
 
-GX --> B_SRB
-B_SRB --> C_SRS
 C_SRS --> UC_SRS
 C_SRS --> E_SG
-C_SRS --> E_DB
+C_SRS --> B_SRC
 GX --> B_SRC : επιλέγει τραγούδι
 B_SRC --> C_SGS
 C_SGS --> B_SGS
@@ -46,7 +43,7 @@ C_PL --> B_PP
 GX --> B_PP : επιλογή Playlist
 B_PP --> C_SPC
 C_SPC --> E_DB
-C_SPC --> C_ADD
+C_SPC --> C_ADD : δεν υπάρχει ήδη
 C_ADD --> C_UPD
 C_UPD --> E_DB
 C_UPD --> E_PL
