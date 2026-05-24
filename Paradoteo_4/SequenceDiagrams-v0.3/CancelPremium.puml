@@ -1,6 +1,6 @@
-@startuml TryPremium
+@startuml CancelPremium
 
-title Try Premium
+title Cancel Premium
 
 actor User
 
@@ -16,25 +16,20 @@ participant UserBackendRepository
 database DB
 
 activate UserProfileView
-User -> UserProfileView : clicks on "Try Premium"
-UserProfileView -> UserProfileController : checkIfUserHasTriedPremium()
+User -> UserProfileView : clicks on "Cancel Premium"
+UserProfileView -> UserProfileController : updatePremiumStatus(userId,false)
 activate UserProfileController
-UserProfileController --> UserProfileView : hasTriedPremium
-deactivate UserProfileController
-alt !hasTriedPremium
-UserProfileView -> UserProfileController : tryPremium(userId)
-activate UserProfileController
-UserProfileController -> UserService : tryPremium(userId)
+UserProfileController -> UserService : updatePremiumStatus(userId,false)
 activate UserService
-UserService -> UserApi : tryPremium(userId)
+UserService -> UserApi : updatePremiumStatus(userId,false)
 activate UserApi
-UserApi -> ApiService : post(user/tryPremium,userId)
+UserApi -> ApiService : post(user/updatePremiumStatus,userId,false)
 activate ApiService
-ApiService -> UserBackendController : tryPremium(userId)
+ApiService -> UserBackendController : updatePremiumStatus(userId,false)
 activate UserBackendController
-UserBackendController -> UserBackendService : tryPremium(userId)
+UserBackendController -> UserBackendService : updatePremiumStatus(userId,false)
 activate UserBackendService
-UserBackendService -> UserBackendRepository : tryPremium(userId)
+UserBackendService -> UserBackendRepository : updatePremiumStatus(userId,false)
 activate UserBackendRepository
 UserBackendRepository -> DB : run mySQL query
 DB --> UserBackendRepository : return success
@@ -50,9 +45,6 @@ UserApi --> UserService : return success
 deactivate UserApi
 UserService --> UserProfileController : return success
 deactivate UserService
-UserProfileController -> UserProfileView : showSuccessMessage("Trial started successfully")
-else hasTriedPremium
-UserProfileView -> UserProfileView : showErrorMessage("You have already tried premium")
-end
+UserProfileController -> UserProfileView : showSuccessMessage("Premium Subscription Canceled successfully")
 
 @enduml
