@@ -8,12 +8,12 @@ boundary "Οθόνη Προφίλ" as B_PRF
 boundary "Οθόνη Premium" as B_PRM
 boundary "Οθόνη επιτυχίας" as B_SUCCESS
 
-control "Έλεγχος: έχει ξαναδοκιμάσει ο Βασικός Χρήστης Premium?" as C_HASTRIED
-control "Εμφάνιση οθόνης Premium με την επιλογή για Free Trial" as C_WITHTRIAL
+control "Έλεγχος: έχει ξαναδοκιμάσει ο\nΒασικός Χρήστης Premium?" as C_HASTRIED
+control "Εμφάνιση οθόνης Premium με\nτην επιλογή για Free Trial" as C_WITHTRIAL
 control "Πληρωμή μηδενικού ποσού" as C_PAY
-control "Ενημέρωση βάσης για τον νέο τύπο λογαριασμού χρήστη" as C_UPDB
-control "Εμφάνιση οθόνης επιτυχίας" as C_SUCCESS
-control "Εμφάνιση οθόνης Premium χωρίς την επιλογή για Free Trial" as C_WITHOUTTRIAL #red
+control "Ενημέρωση βάσης για τον\nνέο τύπο λογαριασμού χρήστη" as C_UPDB
+control "Εμφάνιση\nοθόνης\nεπιτυχίας" as C_SUCCESS
+control "Εμφάνιση οθόνης Premium χωρίς\nτην επιλογή για Free Trial" as C_WITHOUTTRIAL #red
 
 entity "Database" as E_DB
 entity "User" as E_USR
@@ -28,13 +28,14 @@ C_HASTRIED --> C_WITHTRIAL : "Ο Βασικός Χρήστης δεν\nέχει 
 C_WITHTRIAL --> B_PRM
 GX --> B_PRM : "Επιλογή <<Free trial>>"
 B_PRM --> C_PAY
-C_PAY --> UC_PAY : "Πληρωμή με μηδενική αρχική χρέωση"
+C_PAY --> UC_PAY : "Πληρωμή με μηδενική\nαρχική χρέωση"
 C_PAY --> C_UPDB
 C_UPDB --> E_DB
 C_UPDB --> E_USR
 C_UPDB --> C_SUCCESS
 C_SUCCESS --> B_SUCCESS
-C_HASTRIED -[#red]-> C_WITHOUTTRIAL : <font color="red">Ο Βασικός χρήστης έχει</font><font color="red">ξαναδοκιμάσει premium</font>
+B_SUCCESS --> GX
+C_HASTRIED -[#red]-> C_WITHOUTTRIAL : <font color="red">Ο Βασικός χρήστης έχει</font>\n<font color="red">ξαναδοκιμάσει premium</font>
 C_WITHOUTTRIAL -[#red]-> B_PRM
 B_PRM -[#red]-> GX : <font color="red">(δεν μπορεί αν επιλέξει Free Trial)</font>
 @enduml
