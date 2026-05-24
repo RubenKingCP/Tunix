@@ -1,9 +1,9 @@
 package tunix.service.auth;
 
-import tunix.event.EventBus;
-import tunix.event.LoginSuccessEvent;
-import tunix.event.RegisterSuccessfulEvent;
 import tunix.model.Account;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.LoginSuccessEvent;
+import tunix.navigation.events.RegisterSuccessfulEvent;
 
 public class SessionService {
     private Account currentUser;

@@ -6,7 +6,7 @@ import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.ILibraryAsset;
 import tunix.service.LibraryService;
 import tunix.service.PlaylistService;
-import tunix.view.main.LibraryView;
+import tunix.ui.views.main.LibraryView;
 
 public class LibraryController {
     private final LibraryService libraryService;

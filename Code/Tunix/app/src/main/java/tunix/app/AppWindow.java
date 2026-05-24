@@ -2,8 +2,8 @@ package tunix.app;
 import javax.swing.*;
 
 import tunix.core.AppContext;
-import tunix.event.EventBus;
-import tunix.event.SwitchScreenEvent;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.SwitchScreenEvent;
 
 import java.awt.CardLayout;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class AppWindow extends JFrame {
     }
 
     public void register(Class<?> key, JPanel panel) {
-        System.err.println("Class Registered: " + key.getSimpleName());
+        System.err.println("Class Registered: " + key.getName());
         screens.put(key, panel);
         root.add(panel, key.getSimpleName());
     }

@@ -1,7 +1,7 @@
 package tunix.controller;
 
-import tunix.event.*;
-import tunix.view.profile.UserProfileView;
+import tunix.navigation.events.*;
+import tunix.ui.views.profile.UserProfileView;
 
 public class UserProfileController {
     UserProfileView view;

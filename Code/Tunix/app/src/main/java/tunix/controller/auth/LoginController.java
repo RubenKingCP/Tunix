@@ -1,11 +1,11 @@
 package tunix.controller.auth;
 
 import tunix.dto.request.LoginRequest;
-import tunix.event.EventBus;
-import tunix.event.GoToRegisterButtonClicked;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.GoToRegisterButtonClicked;
 import tunix.service.auth.LoginService;
 import tunix.service.auth.SessionService;
-import tunix.view.auth.LoginView;
+import tunix.ui.views.auth.LoginView;
 
 public class LoginController {
     private final LoginView loginView;

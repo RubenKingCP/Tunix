@@ -1,10 +1,10 @@
 package tunix.controller;
 
-import tunix.event.EventBus;
 import tunix.service.ArtistProfileService;
-import tunix.view.profile.ArtistProfileView;
-import tunix.event.OpenSongUploadViewEvent;
+import tunix.ui.views.profile.ArtistProfileView;
 import tunix.model.Artist;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.OpenSongUploadViewEvent;
 
 public class ArtistProfileController {
     private ArtistProfileView artistProfileView;

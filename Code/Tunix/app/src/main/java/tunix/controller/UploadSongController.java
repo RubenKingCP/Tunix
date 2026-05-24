@@ -1,11 +1,11 @@
 package tunix.controller;
 
 import tunix.service.SongService;
-import tunix.view.center.UploadSongView;
+import tunix.ui.views.main.center.UploadSongView;
 import tunix.dto.request.SongRequest;
-import tunix.event.EventBus;
 import tunix.model.Song;
-import tunix.event.SongUploadedEvent;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.SongUploadedEvent;
 
 public class UploadSongController {
     private final UploadSongView uploadSongView;

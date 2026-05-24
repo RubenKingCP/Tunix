@@ -1,7 +1,8 @@
 package tunix.model;
 
 import java.awt.Color;
-import tunix.event.EventBus;
+
+import tunix.navigation.events.EventBus;
 import tunix.service.auth.SessionService;
 
 public interface ILibraryAsset {

@@ -2,7 +2,7 @@ package tunix.core;
 
 import tunix.api.ApiClient;
 import tunix.app.AppWindow;
-import tunix.event.EventBus;
+import tunix.navigation.events.EventBus;
 
 public class AppContext {
     public final ApiClient apiClient;

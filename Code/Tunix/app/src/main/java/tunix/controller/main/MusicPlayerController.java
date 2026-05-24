@@ -1,8 +1,8 @@
 package tunix.controller.main;
 
-import tunix.event.EventBus;
+import tunix.navigation.events.EventBus;
 import tunix.service.MusicPlayerService;
-import tunix.view.main.MusicPlayerView;
+import tunix.ui.views.main.MusicPlayerView;
 
 public class MusicPlayerController {
     private final MusicPlayerService musicPlayerService;

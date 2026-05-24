@@ -1,7 +1,7 @@
 package tunix.service;
 
-import tunix.event.EventBus;
 import tunix.model.Song;
+import tunix.navigation.events.EventBus;
 import tunix.api.SongApiClient;
 import tunix.dto.request.SongRequest;
 

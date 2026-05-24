@@ -1,34 +1,31 @@
 package tunix.controller.main;
 
-import javax.swing.JPanel;
-
-import tunix.event.EventBus;
-import tunix.event.LogoutEvent;
-import tunix.event.SwitchMainScreen;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.LogoutEvent;
+import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.service.SearchService;
-import tunix.view.main.HomeView;
-import tunix.view.main.TopBarView;
+import tunix.ui.ProfilePanel;
+import tunix.ui.views.main.TopBarView;
+import tunix.ui.views.main.center.HomeView;
 
 public class TopBarController {
     private final SearchService searchService;
     private final TopBarView topBarView;
     private final EventBus eventBus;
-    private final HomeView homeView;
 
-    public TopBarController(TopBarView topBarView, SearchService searchService, EventBus eventBus, HomeView homeView) {
+    public TopBarController(TopBarView topBarView, SearchService searchService, EventBus eventBus) {
         this.topBarView = topBarView;
         this.searchService = searchService;
         this.eventBus = eventBus;
-        this.homeView = homeView;
     }
     public void onSearch(String query, String searchType) {
         // Handle search logic using searchService
     }
     public void onHomeButtonClicked() {
-        eventBus.publish(new SwitchMainScreen(homeView));
+        eventBus.publish(new SwitchCenterScreenEvent(HomeView.class));
     }
     public void onProfileButtonClicked() {
-        eventBus.publish(new SwitchMainScreen(new tunix.view.profile.UserProfileView()));
+        eventBus.publish(new SwitchCenterScreenEvent(ProfilePanel.class));
     }
 
     public void onLogoutButtonClicked() {

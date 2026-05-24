@@ -4,9 +4,9 @@ package tunix.service.auth;
 import tunix.api.RegisterApiClient;
 import tunix.dto.request.RegisterRequest;
 import tunix.dto.response.ApiResponse;
-import tunix.event.EventBus;
-import tunix.event.RegisterSuccessfulEvent;
 import tunix.model.Account;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.RegisterSuccessfulEvent;
 import tunix.dto.response.AccountResponse;
 
 public class RegisterService {

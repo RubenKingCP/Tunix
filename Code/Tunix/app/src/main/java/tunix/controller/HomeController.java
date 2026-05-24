@@ -1,6 +1,6 @@
 package tunix.controller;
 
-import tunix.view.main.HomeView;
+import tunix.ui.views.main.center.HomeView;
 
 public class HomeController {
     HomeView view;
