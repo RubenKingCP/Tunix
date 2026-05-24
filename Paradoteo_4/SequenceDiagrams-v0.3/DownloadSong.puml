@@ -1,0 +1,66 @@
+@startuml DownloadSong
+
+title Download Song 
+
+actor User
+
+participant MusicView
+participant MusicController
+participant SongService
+participant SongApi
+participant ApiService
+participant SongBackendController
+participant SongBackendService
+participant SongBackendRepository
+participant FileSystemService
+
+database DB
+
+activate MusicView
+User -> MusicView : selects song
+MusicView -> MusicView : showSongMenu()
+User -> MusicView : clicks on "Download"
+MusicView -> MusicController : onDownloadClicked(songId)
+activate MusicController
+MusicController -> MusicController : checkPremium()
+alt User is Premium
+    MainController -> FileSystemService : checkSpace()
+    activate FileSystemService
+    FileSystemService --> MusicController : hasEnoughSpace
+    alt hasEnoughSpace
+    MusicController -> SongService : downloadSong(songId)
+    activate SongService
+    SongService -> SongApi : downloadSong(songId)
+    activate SongApi
+    SongApi -> ApiService : post(song/download, songId)
+    activate ApiService
+    ApiService -> SongBackendController : downloadSong(songId)
+    activate SongBackendController
+    SongBackendController -> SongBackendService : downloadSong(songId)
+    activate SongBackendService
+    SongBackendService -> SongBackendRepository : downloadSong(songId)
+    activate SongBackendRepository
+    SongBackendRepository -> DB : run mySQL query
+    DB --> SongBackendRepository : return song file
+    SongBackendRepository --> SongBackendService : return song file
+    deactivate SongBackendRepository
+    SongBackendService --> SongBackendController : return song file
+    deactivate SongBackendService
+    SongBackendController --> ApiService : return song file
+    deactivate SongBackendController
+    ApiService --> SongService : return song file
+    deactivate ApiService
+    SongService --> MusicController : return song file
+    deactivate SongService
+    MusicController -> FileSystemService : saveSong(path,file)
+    activate FileSystemService
+    FileSystemService --> MusicController : return success
+    MusicController -> MusicView : showSuccessMessage("Song Downloaded Successfully")
+    else !hasEnoughSpace
+    MusicController -> MusicService : showErrorMessage("Insufficient Space")
+    end
+else User is not Premium
+    MusicController -> MusicView : showErrorMessage("Premium is required to download songs")
+end
+
+@enduml

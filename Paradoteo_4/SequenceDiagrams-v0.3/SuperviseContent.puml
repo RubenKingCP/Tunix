@@ -1,0 +1,141 @@
+@startuml SuperviseContent
+
+title Supervise Content
+
+actor Admin
+
+participant AdminDashboardView
+participant AdminDashboardController
+participant SongService
+participant SongApi
+participant ArtistService
+participant ArtistApi
+participant ApiService
+participant SongBackendController
+participant SongBackendService
+participant SongBackendRepository
+participant ArtistBackendController
+participant ArtistBackendService
+participant ArtistBackendRepository
+
+database DB
+
+activate AdminDashboardView
+Admin -> AdminDashboardView : clicks on "Remove Media"
+AdminDashboardView -> AdminDashboardController : getArtistStrikes(artistId)
+activate AdminDashboardController
+AdminDashboardController -> ArtistService : getArtistStrikes(artistId)
+activate ArtistService
+ArtistService -> ArtistApi : getArtistStrikes(artistId)
+activate ArtistApi
+ArtistApi -> ApiService : post(artist/getStrikes,artistId)
+activate ApiService
+ApiService -> ArtistBackendController : getArtistStrikes(artistId)
+activate ArtistBackendController
+ArtistBackendController -> ArtistBackendService : getArtistStrikes(artistId)
+activate ArtistBackendService
+ArtistBackendService -> ArtistBackendRepository : getArtistStrikes(artistId)
+activate ArtistBackendRepository
+ArtistBackendRepository -> DB : run mySQL query
+DB --> ArtistBackendRepository : return strikes
+ArtistBackendRepository --> ArtistBackendService : return strikes
+deactivate ArtistBackendRepository
+ArtistBackendService --> ArtistBackendController : return strikes
+deactivate ArtistBackendService
+ArtistBackendController --> ApiService : return strikes
+deactivate ArtistBackendController
+ApiService --> ArtistApi : return strikes
+deactivate ApiService
+ArtistApi --> ArtistService : return strikes
+deactivate ArtistApi
+ArtistService --> AdminDashboardController : return strikes
+deactivate ArtistService
+AdminDashboardController -> AdminDashboardView : showCurationOptionsForArtist()
+opt 
+Admin -> AdminDashboardView : select strike or ban
+alt admin selects strike
+AdminDashboardView -> AdminDashboardController : giveArtistStrike(artistId,strikeInfo)
+activate AdminDashboardController
+AdminDashboardController -> ArtistService : giveArtistStrike(artistId,strikeInfo)
+activate ArtistService
+ArtistService -> ArtistApi : giveArtistStrike(artistId,strikeInfo)
+activate ArtistApi
+ArtistApi -> ApiService : post(artist/giveStrike,artistId,strikeInfo)
+activate ApiService
+ApiService -> ArtistBackendController : giveArtistStrike(artistId,strikeInfo)
+activate ArtistBackendController
+ArtistBackendController -> ArtistBackendService : giveArtistStrike(artistId,strikeInfo)
+activate ArtistBackendService
+ArtistBackendService -> ArtistBackendRepository : giveArtistStrike(artistId,strikeInfo)
+activate ArtistBackendRepository
+ArtistBackendRepository -> DB : run mySQL query
+DB --> ArtistBackendRepository : return success
+ArtistBackendRepository --> ArtistBackendService : return success
+deactivate ArtistBackendRepository
+ArtistBackendService --> ArtistBackendController : return success
+deactivate ArtistBackendService
+ArtistBackendController --> ApiService : return success
+deactivate ArtistBackendController
+ApiService --> ArtistApi : return success
+deactivate ApiService
+ArtistApi --> ArtistService : return success
+deactivate ArtistApi
+ArtistService --> AdminDashboardController : return success
+deactivate ArtistService
+else admin selects ban
+AdminDashboardView -> AdminDashboardController : banArtist(artistId)
+activate AdminDashboardController
+AdminDashboardController -> ArtistService : banArtist(artistId)
+activate ArtistService
+ArtistService -> ArtistApi : banArtist(artistId)
+activate ArtistApi
+ArtistApi -> ApiService : post(artist/banArtist,artistId)
+activate ApiService
+ApiService -> ArtistBackendController : banArtist(artistId)
+activate ArtistBackendController
+ArtistBackendController -> ArtistBackendService : banArtist(artistId)
+activate ArtistBackendService
+ArtistBackendService -> ArtistBackendRepository : banArtist(artistId)
+activate ArtistBackendRepository
+ArtistBackendRepository -> DB : run mySQL query
+DB --> ArtistBackendRepository : return success
+ArtistBackendRepository --> ArtistBackendService : return success
+deactivate ArtistBackendRepository
+ArtistBackendService --> ArtistBackendController : return success
+deactivate ArtistBackendService
+ArtistBackendController --> ApiService : return success
+deactivate ArtistBackendController
+ApiService --> ArtistApi : return success
+deactivate ApiService
+ArtistApi --> ArtistService : return success
+deactivate ArtistApi
+ArtistService --> AdminDashboardController : return success
+deactivate ArtistService
+end
+AdminDashboardController -> SongService : removeSong(songId)
+activate SongService
+SongService -> SongApi : removeSong(songId)
+activate SongApi
+SongApi -> ApiService : post(song/removeSong,songId)
+activate ApiService
+ApiService -> SongBackendController : removeSong(songId)
+activate SongBackendController
+SongBackendController -> SongBackendService : removeSong(songId)
+activate SongBackendService
+SongBackendService -> SongBackendRepository : removeSong(songId)
+activate SongBackendRepository
+SongBackendRepository -> DB : run mySQL query
+DB --> SongBackendRepository : return success
+SongBackendRepository --> SongBackendService : return success
+deactivate SongBackendRepository
+SongBackendService --> SongBackendController : return success
+deactivate SongBackendService
+SongBackendController --> ApiService : return success
+deactivate SongBackendController
+ApiService --> SongApi : return success
+deactivate ApiService
+SongApi --> SongService : return success
+deactivate SongApi
+SongService --> AdminDashboardController : return success
+
+@enduml
