@@ -1,0 +1,73 @@
+@startuml PaymentThroughBankAccount
+
+title Payment Through Bank Account 
+
+actor User
+
+participant MainPanel
+participant PaymentView
+participant PaymentController
+participant PaymentService
+participant BankApi
+participant UserApi
+participant ApiService
+participant UserBackendController
+participant UserBackendService
+participant UserBackendRepository
+
+database DB
+
+participant EventBus
+
+activate PaymentService
+PaymentService -> PaymentService : checkForSavedBankCredentials()
+'Checks cache from the current session
+opt Doesn't have saved credentials
+PaymentService -> EventBus : publish SwitchMainController, PaymentController
+deactivate PaymentService
+activate EventBus
+EventBus -> MainPanel : switchMainController(PaymentController)
+deactivate EventBus
+activate MainPanel
+create PaymentController
+MainPanel -->> PaymentController : new()
+deactivate MainPanel
+activate PaymentController
+create PaymentView
+PaymentController -->> PaymentView : new()
+activate PaymentView
+User -> PaymentView : inputs bank credentials
+PaymentView -> PaymentController : makePayment(credentials)
+PaymentController -> PaymentService : makePayment(credentials)
+activate PaymentService
+
+PaymentService -> UserApi : saveBankCredentials(credentials)
+activate UserApi
+UserApi -> ApiService : post(user/saveBankCredentials, credentials)
+activate ApiService
+ApiService -> UserBackendController : saveBankCredentials(credentials)
+activate UserBackendController
+UserBackendController -> UserBackendService : saveBankCredentials(credentials)
+activate UserBackendService
+UserBackendService -> UserBackendRepository : saveBankCredentials(credentials)
+activate UserBackendRepository
+UserBackendRepository -> DB : run mySQL query
+DB --> UserBackendRepository : return success
+UserBackendRepository --> UserBackendService : return success
+deactivate UserBackendRepository
+UserBackendService --> UserBackendController : return success
+deactivate UserBackendService
+UserBackendController --> ApiService : return success
+deactivate UserBackendController
+ApiService --> UserApi : return success
+deactivate ApiService
+UserApi --> PaymentService : return success
+deactivate UserApi
+end
+PaymentService -> BankApi : makePayment(credentials)
+activate BankApi
+'we are treating the bank api as a black box
+BankApi --> PaymentService : return payment success
+deactivate BankApi
+
+@enduml

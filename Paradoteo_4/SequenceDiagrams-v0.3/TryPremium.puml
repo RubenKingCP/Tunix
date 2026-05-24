@@ -1,0 +1,21 @@
+@startuml TryPremium
+
+title Try Premium
+
+actor User
+
+participant UserProfileView
+participant UserProfileController
+participant UserService
+participant UserApi
+participant ApiService
+participant UserBackendController
+participant UserBackendService
+participant UserBackendRepository
+
+database DB
+
+activate UserProfileView
+User -> UserProfileView : 
+
+@enduml

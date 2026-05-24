@@ -1,0 +1,66 @@
+@startuml BuyPremium
+
+title Buy Premium
+
+actor User
+
+participant UserProfileView
+participant UserProfileController
+participant PaymentService
+participant BankApi
+participant UserService
+participant UserApi
+participant ApiService
+participant UserBackendController
+participant UserBackendService
+participant UserBackendRepository
+
+database DB
+
+activate UserProfileView
+User -> UserProfileView : clicks on "Buy Premium"
+UserProfileView -> UserProfileController : onBuyPremium()
+activate UserProfileController
+UserProfileController -> PaymentService : purchasePremium()
+activate PaymentService
+ref over PaymentService, BankApi
+PaymentThroughBank
+end ref
+alt Payment Success
+PaymentService --> UserProfileController : return payment success
+deactivate PaymentService
+UserProfileController -> UserService : updateUserSubscription(userId,true)
+activate UserService
+UserService -> UserApi : updateUserSubscription(userId,true)
+activate UserApi
+UserApi -> ApiService : post(user/updateSubscription,userId,true)
+activate ApiService
+ApiService -> UserBackendController : updateUserSubscription(userId,true)
+activate UserBackendController
+UserBackendController -> UserBackendService : updateUserSubscription(userId,true)
+activate UserBackendService
+UserBackendService -> UserBackendRepository : updateUserSubscription(userId,true)
+activate UserBackendRepository
+UserBackendRepository -> DB : run mySQL query
+DB --> UserBackendRepository : return success
+UserBackendRepository --> UserBackendService : return success
+deactivate UserBackendRepository
+UserBackendService --> UserBackendController : return success
+deactivate UserBackendService
+UserBackendController --> ApiService : return success
+deactivate UserBackendController 
+ApiService --> UserApi : return success
+deactivate ApiService
+UserApi --> UserService : return success
+deactivate UserApi
+UserService --> UserProfileController : return success
+deactivate UserService
+UserProfileController -> UserProfileView : displaySuccessMessage("Premium subscription started")
+else Payment Fail
+activate PaymentService
+PaymentService --> UserProfileController : return payment success
+deactivate PaymentService
+UserProfileController -> UserProfileView : showErrorMessage("Payment Failure")
+end
+
+@enduml
