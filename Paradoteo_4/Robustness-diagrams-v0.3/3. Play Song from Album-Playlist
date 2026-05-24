@@ -11,9 +11,10 @@ boundary "Οθόνη Τρέχοντος Τραγουδιού" as B_CPLY
 control "Εμφάνιση\nΛίστας Αναπαραγωγής\nή Άλμπουμ" as  C_DPL
 control "Εμφάνιση οθόνης\nΑναπαραγωγής Τραγουδιού" as C_PLY
 control "Άντληση αρχείου μουσικής" as C_SG
-control "Εμφάνιση δεδομένων τραγουδιού" as C_SGD
-control "Αναπαραγωγή τραγουδιού" as C_PLAY
+control "Εμφάνιση δεδομένων\nτραγουδιού" as C_SGD
+control "Αναπαραγωγή\nτραγουδιού" as C_PLAY
 control "Αλλαγή σειράς τραγουδιών" as C_SH #red
+control "Άντληση όλων των τραγουδιών της playlist" as C_GTPL #red
 
 entity "Playlist" as E_PL
 entity "Album" as E_ALB
@@ -31,7 +32,7 @@ C_DPL --> B_PL
 GX --> B_PL :"Επιλογή Τραγουδιού"
 B_PL --> C_PLY
 C_PLY --> B_PLY
-GX --> B_PLY : "Play"
+GX --> B_PLY : "Επιλογή <<Play>>"
 B_PLY --> C_SG
 C_SG --> E_DB
 C_SG --> E_SG
@@ -39,8 +40,10 @@ C_SG --> C_PLAY
 C_SG --> C_SGD
 C_SGD --> B_CPLY
 B_CPLY --> GX
-GX -[#red]-> B_PLY : <font color="red">Shuffle Play</font>
-B_PLY -[#red]-> C_SH
-C_SH -[#red]-> B_PLY
+GX -[#red]-> B_PLY : <font color="red">Επιλογή <<Shuffle Play>></font>
+B_PLY -[#red]-> C_GTPL
+C_GTPL -[#red]-> C_SH
+C_SH -[#red]-> C_PLAY
+C_SH -[#red]-> C_SGD
 
 @enduml
