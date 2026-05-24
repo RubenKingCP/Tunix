@@ -6,12 +6,12 @@ actor "Γενικός Χρήστης" as GX
 actor "Τραπεζικό Σύστημα" as BNK
 
 boundary "Οθόνη Πληρωμής" as B_PAY
-control "Έλεγχος: υπάρχουν αποθηκευμένα τα τραπεζικά στοιχεία του ΓΧ?" as C_ISSAVED
+control "Έλεγχος: υπάρχουν\nαποθηκευμένα τα τραπεζικά\nστοιχεία του ΓΧ?" as C_ISSAVED
 control "Εμφάνιση Οθόνης Πληρωμής" as C_DSPPAY
-control "Αποστολή αιτήματος μεταφοράς χρημάτων" as C_MONEYREQ
-control "Εκτέλεση μεταφοράς χρημάτων" as C_SENDMONEY
-control "Άντληση τραπεζικών στοιχείων του Γενικού Χρήστη" as C_FETCHBNKDATA #red
-control "Αποθήκευση τραπεζικών στοιχείων του Γενικού Χρήστη" as C_SVBNK #red
+control "Αποστολή αιτήματος\nμεταφοράς χρημάτων" as C_MONEYREQ
+control "Εκτέλεση\nμεταφοράς\nχρημάτων" as C_SENDMONEY
+control "Άντληση τραπεζικών\nστοιχείων του Γενικού Χρήστη" as C_FETCHBNKDATA #red
+control "Αποθήκευση τραπεζικών\nστοιχείων του Γενικού Χρήστη" as C_SVBNK
 
 entity "Database" as E_DB
 
@@ -19,15 +19,12 @@ C_ISSAVED --> E_DB
 C_ISSAVED --> C_DSPPAY : οχι
 C_DSPPAY --> B_PAY
 GX --> B_PAY : Εισαγωγή τραπεζικών στοιχείων
-GX --> B_PAY : Επιλογή <<Να μην αποθηκευτούν τα στοιχεία μου>>
-B_PAY --> C_MONEYREQ
+B_PAY --> C_SVBNK
+C_SVBNK --> E_DB
+C_SVBNK --> C_MONEYREQ
 C_MONEYREQ --> BNK
 BNK --> C_SENDMONEY
 C_ISSAVED -[#red]-> C_FETCHBNKDATA : <font color="red">ναι</font>
 C_FETCHBNKDATA -[#red]-> E_DB
 C_FETCHBNKDATA -[#red]-> C_MONEYREQ
-GX -[#red]-> B_PAY : <font color="red">Επιλογή <<Να αποθηκευτούν τα στοιχεία μου>></font>
-B_PAY -[#red]-> C_SVBNK
-C_SVBNK -[#red]-> E_DB
-C_SVBNK -[#red]-> C_MONEYREQ
 @enduml
