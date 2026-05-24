@@ -2,23 +2,23 @@
 skinparam defaultFontSize 12
 left to right direction
 
-actor "Γενικός Χρήστης" as GX
+actor "Γενικός\nΧρήστης" as GX
 
-boundary "Οθόνη Λίστας Αναπαραγωγής" as B_PL
-boundary "Menu Επιλογών Τραγουδιού" as B_SGM
+boundary "Οθόνη Λίστας\nΑναπαραγωγής" as B_PL
+boundary "Menu Επιλογών\nΤραγουδιού" as B_SGM
 
 control "Επιλογή Playlist" as C_PSEL
-control "Έλεγχος: Είναι Δημιουργός\nτης Playlist?" as C_ISC
-control "Εμφάνιση μενού επιλογών τραγουδιού\nμε επιλογή αφαίρεσης" as C_WRM
-control "Αφαίρεση τραγουδιού από την playlist" as C_RM
-control "Ενημέρωση Database" as C_UPDB
-control "Εμφάνιση μενού επιλογών τραγουδιού\nχωρίς επιλογή αφαίρεσης" as C_WORM #red
+control "Έλεγχος: Είναι\nΔημιουργός\nτης Playlist?" as C_ISC
+control "Εμφάνιση μενού επιλογών\nτραγουδιού με\nεπιλογή αφαίρεσης" as C_WRM
+control "Αφαίρεση τραγουδιού\nαπό την playlist" as C_RM
+control "Ενημέρωση\nDatabase" as C_UPDB
+control "Εμφάνιση μενού επιλογών\nτραγουδιού χωρίς\nεπιλογή αφαίρεσης" as C_WORM #red
 
 entity "Database" as E_DB
 entity "Playlist" as E_PL
 entity "User" as E_USR
 
-usecase "Επιλογή Λίστας Αναπαραγωγής" as UC_PSEL
+usecase "Επιλογή Λίστας\nΑναπαραγωγής" as UC_PSEL
 
 C_PSEL --> UC_PSEL
 C_PSEL --> B_PL
@@ -35,6 +35,7 @@ C_RM --> C_UPDB
 C_UPDB --> E_DB
 C_ISC -[#red]-> C_WORM : <font color="red">Ο Γενικός Χρήστης δεν είναι</font>\n<font color="red">δημιουργός της playlist</font>
 C_WORM -[#red]-> B_SGM
+B_SGM -[#red]-> GX : <font color="red">Ο Γενικός Χρήστης δεν έχει την επιλογή</font>\n<font color="red"><<Remove from playlist>>, άρα δεν μπορεί να την επιλέξει</font>
 
 
 @enduml
