@@ -1,0 +1,91 @@
+@startuml UplaodSong
+
+title Upload Song
+
+actor Artist
+
+participant ArtistProfileView
+participant ArtistProfileController
+participant FilesystemService
+participant SongService
+participant SongApi
+participant ApiService
+participant SongBackendController
+participant SongBackendService
+participant SongBackendRepository
+
+database DB
+
+activate ArtistProfileView
+Artist -> ArtistProfileView : artist clicks on "Upload Song"
+ArtistProfileView -> ArtistProfileController : openFileExplorer()
+activate ArtistProfileController
+ArtistProfileController -> FilesystemService : openFileExplorer()
+activate FilesystemService
+FilesystemService --> ArtistProfileController : return music file
+deactivate FilesystemService
+ArtistProfileController -> ArtistProfileView : showNewSongScreen()
+Artist -> ArtistProfileView : inserts information about the song
+Artist -> ArtistProfileView : clicks "Upload"
+ArtistProfileView -> ArtistProfileController : checkForDuplicateName(songName)
+ArtistProfileController -> SongService : checkForDuplicateName(songName)
+activate SongService
+SongService -> SongApi : checkForDuplicateName(songName)
+activate SongApi
+SongApi -> ApiService : post(song/checkForDuplicateName, songName)
+'will need to find an alternative to send both ids with one argument
+activate ApiService
+ApiService -> SongBackendController : checkForDuplicateName(songName)
+activate SongBackendController
+SongBackendController -> SongBackendService : checkForDuplicateName(songName)
+activate SongBackendService
+SongBackendService -> SongBackendRepository : checkForDuplicateName(songName)
+activate SongBackendRepository
+SongBackendRepository -> DB : run mySQL query
+DB --> SongBackendRepository : hasDuplicate
+SongBackendRepository --> SongBackendService : hasDuplicate
+deactivate SongBackendRepository
+SongBackendService --> SongBackendController : hasDuplicate
+deactivate SongBackendService
+SongBackendController --> ApiService : hasDuplicate
+deactivate SongBackendController
+ApiService --> SongApi : hasDuplicate
+deactivate ApiService
+SongApi --> SongService : hasDuplicate
+deactivate SongApi
+SongService --> ArtistProfileController : hasDuplicate
+deactivate SongService
+alt !hasDuplicate
+ArtistProfileView -> ArtistProfileController : uploadSong(song)
+ArtistProfileController -> SongService : uploadSong(song)
+activate SongService
+SongService -> SongApi : uploadSong(song)
+activate SongApi
+SongApi -> ApiService : post(song/upload, song)
+'will need to find an alternative to send both ids with one argument
+activate ApiService
+ApiService -> SongBackendController : uploadSong(song)
+activate SongBackendController
+SongBackendController -> SongBackendService : uploadSong(song)
+activate SongBackendService
+SongBackendService -> SongBackendRepository : uploadSong(song)
+activate SongBackendRepository
+SongBackendRepository -> DB : run mySQL query
+DB --> SongBackendRepository : success
+SongBackendRepository --> SongBackendService : success
+deactivate SongBackendRepository
+SongBackendService --> SongBackendController : success
+deactivate SongBackendService
+SongBackendController --> ApiService : success
+deactivate SongBackendController
+ApiService --> SongApi : success
+deactivate ApiService
+SongApi --> SongService : success
+deactivate SongApi
+SongService --> ArtistProfileController : success
+deactivate SongService
+else hasDuplicate
+ArtistProfileController -> ArtistProfileView : showErrorMessage("Another song has the same name")
+end
+
+@enduml

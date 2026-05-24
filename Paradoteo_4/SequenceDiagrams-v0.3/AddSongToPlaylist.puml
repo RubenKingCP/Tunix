@@ -59,6 +59,7 @@ deactivate ApiService
 PlaylistApi --> PlaylistService : hasDuplicate
 deactivate PlaylistApi
 PlaylistService --> SearchController : hasDuplicate
+deactivate PlaylistService
 alt !hasDuplicate
 SearchController -> PlaylistService : addToPlaylist(playlistId, songId)
 activate PlaylistService
