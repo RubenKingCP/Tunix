@@ -2,6 +2,7 @@ package tunix.app;
 import javax.swing.*;
 
 import tunix.core.AppContext;
+import tunix.event.EventBus;
 import tunix.event.SwitchScreenEvent;
 
 import java.awt.CardLayout;
@@ -24,7 +25,11 @@ public class AppWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         
-        context.eventBus.subscribe(SwitchScreenEvent.class, e -> show(e.getScreen()));
+        subscriptions(context.eventBus);
+    }
+
+    public void subscriptions(EventBus eventBus) {
+        eventBus.subscribe(SwitchScreenEvent.class, e -> show(e.getScreen()));
     }
 
     public void register(Class<?> key, JPanel panel) {

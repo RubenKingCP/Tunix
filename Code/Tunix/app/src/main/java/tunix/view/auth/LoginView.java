@@ -94,11 +94,7 @@ public class LoginView extends JPanel {
 
         // ── Login button ─────────────────────────────────────────────────────
         loginButton = buildPrimaryButton("Log In");
-        loginButton.addActionListener(e -> {
-            if (controller != null)
-                controller.onLogin(usernameField.getText(),
-                                   new String(passwordField.getPassword()));
-        });
+        loginButton.addActionListener(e -> onLoginButtonClicked());
         gc.gridy  = 5;
         gc.insets = new Insets(0, 40, 12, 40);
         card.add(loginButton, gc);
@@ -298,5 +294,11 @@ public class LoginView extends JPanel {
 
     public void onGoToRegisterButtonClicked() {
         controller.onGoToRegisterButtonClicked();
+    }
+
+    public void onLoginButtonClicked() {
+        if (controller != null)
+            controller.onLogin(usernameField.getText(),
+                                new String(passwordField.getPassword()));
     }
 }

@@ -65,6 +65,8 @@ public class LibraryView extends JPanel {
     private LibraryController libraryController;
     private List<ILibraryAsset> libraryAssets = List.of();
 
+
+    //TODO: Add constrcutr to view
     public LibraryView() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(BG);
@@ -122,6 +124,7 @@ public class LibraryView extends JPanel {
         }
         return 1280;
     }
+    
 
     public void setLibraryAssets(List<ILibraryAsset> assets) {
         this.libraryAssets = assets == null ? List.of() : List.copyOf(assets);
@@ -159,6 +162,8 @@ public class LibraryView extends JPanel {
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
         rightPanel.setBackground(BG);
 
+
+        //THIS IS WHERE TEH CREATE PLAYLIST BUTTON GOES
         JButton createButton = new JButton("+");
         createButton.setForeground(Color.WHITE);
         createButton.setBackground(new Color(40, 40, 40));
