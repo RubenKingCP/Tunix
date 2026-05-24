@@ -17,7 +17,7 @@ entity "Database" as E_DB
 GX --> B_UPBR : "Επιλογή του προφίλ του"
 B_UPBR --> C_SHPF
 C_SHPF --> B_PRPF
-GX --> B_PRPF : "Επιλογή <<Ακύρωση συνδρομής>>
+GX --> B_PRPF : "Επιλογή <<Ακύρωση συνδρομής>>"
 B_PRPF --> C_UPDB
 C_UPDB --> E_DB
 C_UPDB --> C_SUCCESS
