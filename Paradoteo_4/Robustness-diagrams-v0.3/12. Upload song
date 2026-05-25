@@ -25,15 +25,15 @@ GX --> B_ARTPRF : "Επιλογή\nUpload > Τραγούδι"
 B_ARTPRF --> C_OPENFILESYS
 C_OPENFILESYS --> E_LFS
 C_OPENFILESYS --> B_FILESYS
-GX --> B_FILESYS : Επιλογή αρχείου μουσικής
+GX --> B_FILESYS : "Επιλογή αρχείου μουσικής"
 B_FILESYS --> C_DBSVTEMP
 C_DBSVTEMP --> E_DB
 C_DBSVTEMP --> C_DISPNEWSG
 C_DISPNEWSG --> B_NEWSG
-GX --> B_NEWSG : Εισαγωγή τίτλου, άλμπουμ και αριθμό μέσα στο άλμπουμ
+GX --> B_NEWSG : "Εισαγωγή πληροφοριών για το τραγούδι"
 B_NEWSG --> C_NMCHK
 C_NMCHK --> E_DB
-C_NMCHK --> C_SVTODB : οχι
+C_NMCHK --> C_SVTODB : "οχι"
 C_SVTODB --> E_SG
 C_SVTODB --> C_SUCCESS
 C_SUCCESS --> B_SUCCESS
