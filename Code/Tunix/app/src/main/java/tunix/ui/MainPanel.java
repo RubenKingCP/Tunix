@@ -8,13 +8,20 @@ import tunix.model.Account;
 import tunix.model.AppContext;
 import tunix.navigation.ScreenRegistry;
 import tunix.navigation.events.EventBus;
+import tunix.navigation.events.LibraryPlaylistClicked;
 import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.navigation.events.SwitchProfileScreenEvent;
 import tunix.service.auth.SessionService;
+import tunix.ui.views.main.center.MusicView;
 import tunix.ui.views.profile.AdminProfileView;
 import tunix.ui.views.profile.ArtistProfileView;
 import tunix.ui.views.profile.UserProfileView;
+import tunix.controller.main.center.MusicController;
 import tunix.dto.enums.Role;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainPanel extends JPanel {
 
@@ -27,6 +34,7 @@ public class MainPanel extends JPanel {
     private UserProfileView userProfileView;
     private AdminProfileView adminProfileView;
     private ArtistProfileView artistProfileView;
+    private Map<MusicView, MusicController> musicMap = new HashMap<>();
 
     public MainPanel(JPanel topBar,
                      JPanel libraryPanel,
@@ -51,6 +59,8 @@ public class MainPanel extends JPanel {
 
         eventBus.subscribe(SwitchCenterScreenEvent.class,
                 e -> show(e.getScreen()));
+        
+        eventBus.subscribe(LibraryPlaylistClicked.class, e -> createMusicView());
 
         eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {
 
@@ -116,5 +126,15 @@ public class MainPanel extends JPanel {
             register(ArtistProfileView.class, artistProfileView);
         }
         show(ArtistProfileView.class);
+    }
+
+    public void createMusicView() {
+
+        MusicView view = new MusicView();
+        MusicController controller = new MusicController(view, context.eventBus);
+        view.setController(controller);
+        controller.drawView();
+        register(MusicView.class, view);
+        show(MusicView.class);
     }
 }

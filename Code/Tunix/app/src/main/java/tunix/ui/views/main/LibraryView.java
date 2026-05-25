@@ -681,10 +681,13 @@ public class LibraryView extends JPanel {
 
         if(type == "Playlist") {
             System.out.println("Playlist Clicked");
+            libraryController.playlistClicked();
         } else if (type == "Album") {
             System.out.println("Album Clicked");
+            libraryController.albumClicked();
         } else if (type == "Song") {
             System.out.println("Song Clicked");
+            libraryController.songClicked();
         }
     }
 }

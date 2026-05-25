@@ -112,7 +112,7 @@ public class AppLauncher {
                 PlaylistService playlistService = new PlaylistService(new PlaylistApiClient(context.apiClient));
 
                 LibraryController libraryController =
-                        new LibraryController(libraryView, libraryService, playlistService);
+                        new LibraryController(libraryView, libraryService, playlistService, context);
 
                 libraryView.setController(libraryController);
 
@@ -146,11 +146,6 @@ public class AppLauncher {
                 ArtistProfileView artistProfileView = new ArtistProfileView();
                 ArtistProfileService artistProfileService = new ArtistProfileService(context.eventBus);
                 ArtistProfileController artistProfileController = new ArtistProfileController(null, artistProfileView, artistProfileService, context.eventBus);
-                
-
-                // Playlist / Album / Song
-                MusicView musicView = new MusicView();
-                MusicController musicController = new MusicController();
 
 
                 // Create screen registry
@@ -160,9 +155,8 @@ public class AppLauncher {
                 MainPanel mainPanel =
                         new MainPanel(topBarView, libraryView, musicPlayerView, registry, context);
 
-                //Register classes that main panel needs
+                //Register the starting class?
                 mainPanel.register(HomeView.class, homeView);
-                mainPanel.register(MusicView.class, musicView);
 
                 return mainPanel;
         }

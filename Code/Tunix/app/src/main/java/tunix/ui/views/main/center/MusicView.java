@@ -7,10 +7,20 @@ import java.awt.image.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.*;
+import tunix.model.Song;
+import java.util.List;
+
+import tunix.controller.main.center.MusicController;
 
 public class MusicView extends JPanel {
+    private MusicController musicController;
+    private List<Song> songs;
 
     public MusicView() {
+        
+    }
+
+    public void initGui() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.DARK_GRAY);
         setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
@@ -289,5 +299,9 @@ public class MusicView extends JPanel {
 
     public void onOptionsClicked() {
 
+    }
+
+    public void setController(MusicController controller) {
+        this.musicController = controller;
     }
 }
