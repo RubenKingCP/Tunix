@@ -93,32 +93,27 @@ public class MusicView extends JPanel {
         return new JLabel(new ImageIcon(placeholder));
     }
 
-    private JPanel buildPlaylistInfo() { // EVERYTHING HERE WILL BE REPLACED WITH BACKEND DATA
+    private JPanel buildPlaylistInfo() {
         JPanel info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setBackground(Color.DARK_GRAY);
 
         // -------- IM NOT CHANGING THAT, I DONT KNOW HOW WE'LL KNOW IF IT IS PLAYLIST/ALBUM
         // SO I CANT CREATE AN INSTANCE OF A MODEL... (I SUPPOSE ALBUMS ARE )
-        JLabel type = new JLabel("Public Playlist"); // TO-DO: REPLACE WITH ACTUAL PRIVACY SETTING FROM DB
-        type.setForeground(Color.LIGHT_GRAY);
-        type.setFont(new Font("Dialog", Font.PLAIN, 12));
 
-        JLabel playlistName = new JLabel("Playlist Name Placeholder");
+        JLabel playlistName = new JLabel(playlist.getTitle());
         playlistName.setForeground(Color.WHITE);
         playlistName.setFont(new Font("Dialog", Font.BOLD, 28));
 
-        JLabel artist = new JLabel("Creator Username Placeholder");
+        JLabel artist = new JLabel(playlist.getCreator().getUsername());
         artist.setForeground(Color.LIGHT_GRAY);
         artist.setFont(new Font("Dialog", Font.PLAIN, 14));
 
-        JLabel details = new JLabel("10 saves  •  10 songs  •  42 min"); // TO DO: REPLACE WITH OTHER BACKEND DATA
+        JLabel details = new JLabel(playlist.getSubtitle());
         details.setForeground(Color.LIGHT_GRAY);
         details.setFont(new Font("Dialog", Font.PLAIN, 12));
 
         info.add(Box.createVerticalGlue());
-        info.add(type);
-        info.add(Box.createVerticalStrut(8));
         info.add(playlistName);
         info.add(Box.createVerticalStrut(8));
         info.add(artist);
@@ -220,13 +215,14 @@ public class MusicView extends JPanel {
         java.util.List<PlaylistItem> playlistItems = playlist.getPlaylistItems();
 
         // ------------ CHANGED CODE, ADDED MODEL STUFF ------------------
-        Object[][] rows = new Object[playlistItems.size()][3];
+        Object[][] rows = new Object[playlistItems.size()][4];
         for (PlaylistItem item : playlistItems) {
             int pos = item.getPosition();
             Song sg = item.getSong();
             rows[pos][0] = pos;
             rows[pos][1] = sg.getTitle();
-            rows[pos][2] = sg.getDuration();
+            rows[pos][2] = sg.getSubtitle();
+            rows[pos][3] = sg.getDuration();
         }
 
         JTable table = new JTable(rows, columns) {
