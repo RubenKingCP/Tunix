@@ -2,6 +2,8 @@ package tunix.controller.main;
 
 import java.util.List;
 
+import javax.swing.JPanel;
+
 import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.AppContext;
 import tunix.model.ILibraryAsset;
@@ -14,17 +16,22 @@ public class LibraryController {
     private final LibraryService libraryService;
     private final PlaylistService playlistService;
     private final AppContext appContext;
+    private final LibraryView libraryView;
 
-    public LibraryController(LibraryView libraryView,
-                            LibraryService libraryService,
+    public LibraryController(LibraryService libraryService,
                             PlaylistService playlistService,
                             AppContext context) {
 
         this.libraryService = libraryService;
         this.playlistService = playlistService;
         this.appContext = context;
+        this.libraryView = new LibraryView();
+        this.libraryView.setController(this);
+        this.libraryView.setLibraryAssets(libraryService.getLibraryAssets());
+    }
 
-        libraryView.setLibraryAssets(libraryService.getLibraryAssets());
+    public JPanel getView() {
+        return libraryView;
     }
 
     public void createPlaylist(PlaylistCreateRequest playlistRequest) {

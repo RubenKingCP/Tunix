@@ -2,6 +2,8 @@ package tunix.controller;
 
 import java.util.List;
 
+import javax.swing.JPanel;
+
 import tunix.service.AdminService;
 import tunix.service.ArtistRequestService;
 import tunix.ui.views.admin.AdminView;
@@ -12,10 +14,15 @@ public class AdminController {
     private final AdminService adminService;
     private final ArtistRequestService artistRequestService;
 
-    public AdminController(AdminView adminView, AdminService adminService, ArtistRequestService artistRequestService) {
-        this.adminView = adminView;
+    public AdminController(AdminService adminService, ArtistRequestService artistRequestService) {
+        this.adminView = new AdminView();
+        this.adminView.setController(this);
         this.adminService = adminService;
         this.artistRequestService = artistRequestService;
+    }
+
+    public AdminView getView() {
+        return adminView;
     }
 
     public List<ArtistRequest> onArtistRequestsClicked() {

@@ -1,5 +1,7 @@
 package tunix.controller.main;
 
+import javax.swing.JPanel;
+
 import tunix.navigation.events.EventBus;
 import tunix.service.MusicPlayerService;
 import tunix.ui.views.main.MusicPlayerView;
@@ -9,10 +11,15 @@ public class MusicPlayerController {
     private final MusicPlayerView musicPlayerView;
     private final EventBus eventBus;
 
-    public MusicPlayerController(MusicPlayerView musicPlayerView, MusicPlayerService musicPlayerService, EventBus eventBus){
+    public MusicPlayerController(MusicPlayerService musicPlayerService, EventBus eventBus){
         this.musicPlayerService = musicPlayerService;
-        this.musicPlayerView = musicPlayerView;
         this.eventBus = eventBus;
+        this.musicPlayerView = new MusicPlayerView();
+        this.musicPlayerView.setController(this);
+    }
+
+    public JPanel getView() {
+        return musicPlayerView;
     }
 
     public void onNextButtonClicked() {

@@ -1,9 +1,17 @@
 package tunix.ui;
 
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 
+import javax.swing.JPanel;
+
+import tunix.controller.AdminProfileController;
+import tunix.controller.ArtistProfileController;
+import tunix.controller.HomeController;
+import tunix.controller.SearchController;
+import tunix.controller.UserProfileController;
+import tunix.controller.main.center.MusicController;
+import tunix.dto.enums.Role;
 import tunix.model.AppContext;
 import tunix.model.account.Account;
 import tunix.navigation.ScreenRegistry;
@@ -11,17 +19,8 @@ import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LibraryPlaylistClicked;
 import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.navigation.events.SwitchProfileScreenEvent;
+import tunix.service.ArtistProfileService;
 import tunix.service.auth.SessionService;
-import tunix.ui.views.main.center.MusicView;
-import tunix.ui.views.profile.AdminProfileView;
-import tunix.ui.views.profile.ArtistProfileView;
-import tunix.ui.views.profile.UserProfileView;
-import tunix.controller.main.center.MusicController;
-import tunix.dto.enums.Role;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class MainPanel extends JPanel {
 
@@ -30,11 +29,6 @@ public class MainPanel extends JPanel {
 
     private final ScreenRegistry registry;
     private final AppContext context;
-
-    private UserProfileView userProfileView;
-    private AdminProfileView adminProfileView;
-    private ArtistProfileView artistProfileView;
-    private Map<MusicView, MusicController> musicMap = new HashMap<>();
 
     public MainPanel(JPanel topBar,
                      JPanel libraryPanel,
@@ -53,17 +47,17 @@ public class MainPanel extends JPanel {
         add(centerRouter, BorderLayout.CENTER);
 
         subscribe(context.eventBus);
+        showController(HomeController.class);
     }
 
     private void subscribe(EventBus eventBus) {
-
         eventBus.subscribe(SwitchCenterScreenEvent.class,
-                e -> show(e.getScreen()));
-        
-        eventBus.subscribe(LibraryPlaylistClicked.class, e -> createMusicView());
+                e -> showController(e.getControllerClass()));
+
+        eventBus.subscribe(LibraryPlaylistClicked.class,
+                e -> showController(MusicController.class));
 
         eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {
-
             Account user = SessionService.Instance.getUser();
             if (user == null) return;
 
@@ -77,7 +71,45 @@ public class MainPanel extends JPanel {
         });
     }
 
+    private JPanel createPanelForController(Class<?> controllerClass) {
+        if (controllerClass == HomeController.class) {
+            return new HomeController().getView();
+        }
+        if (controllerClass == SearchController.class) {
+            return new SearchController().getView();
+        }
+        if (controllerClass == MusicController.class) {
+            return new MusicController(context.eventBus).getView();
+        }
+        if (controllerClass == UserProfileController.class) {
+            return new UserProfileController(context.eventBus).getView();
+        }
+        if (controllerClass == AdminProfileController.class) {
+            return new AdminProfileController().getView();
+        }
+        if (controllerClass == ArtistProfileController.class) {
+            return new ArtistProfileController(new ArtistProfileService(context.eventBus), context.eventBus).getView();
+        }
+
+        throw new IllegalArgumentException("Unsupported controller: " + controllerClass.getSimpleName());
+    }
+
+    private void showController(Class<?> controllerClass) {
+        JPanel panel = registry.get(controllerClass);
+
+        if (panel == null) {
+            panel = createPanelForController(controllerClass);
+            register(controllerClass, panel);
+        }
+
+        show(controllerClass);
+    }
+
     public void register(Class<?> key, JPanel panel) {
+        if (registry.get(key) != null) {
+            return;
+        }
+
         registry.register(key, panel);
 
         String name = registry.getName(key);
@@ -98,42 +130,15 @@ public class MainPanel extends JPanel {
         centerRouter.repaint();
     }
 
-    // =========================
-    // PROFILE SCREENS
-    // =========================
-
     public void openUserProfile() {
-        if (userProfileView == null) {
-            userProfileView = new UserProfileView();
-            new tunix.controller.UserProfileController(userProfileView, context.eventBus);
-
-            register(UserProfileView.class, userProfileView);
-        }
-        show(UserProfileView.class);
+        showController(UserProfileController.class);
     }
 
     public void openAdminProfile() {
-        if (adminProfileView == null) {
-            adminProfileView = new AdminProfileView();
-            register(AdminProfileView.class, adminProfileView);
-        }
-        show(AdminProfileView.class);
+        showController(AdminProfileController.class);
     }
 
     public void openArtistProfile() {
-        if (artistProfileView == null) {
-            artistProfileView = new ArtistProfileView();
-            register(ArtistProfileView.class, artistProfileView);
-        }
-        show(ArtistProfileView.class);
-    }
-
-    public void createMusicView() {
-
-        MusicView view = new MusicView();
-        MusicController controller = new MusicController(view, context.eventBus);
-        view.setController(controller);
-        register(MusicView.class, view);
-        show(MusicView.class);
+        showController(ArtistProfileController.class);
     }
 }

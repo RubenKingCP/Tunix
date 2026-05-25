@@ -6,20 +6,14 @@ import tunix.api.ApiClient;
 import tunix.api.LoginApiClient;
 import tunix.api.PlaylistApiClient;
 import tunix.api.RegisterApiClient;
-import tunix.controller.AdminProfileController;
-import tunix.controller.ArtistProfileController;
-import tunix.controller.HomeController;
-import tunix.controller.UserProfileController;
 import tunix.controller.auth.LoginController;
 import tunix.controller.auth.RegisterController;
 import tunix.controller.main.LibraryController;
 import tunix.controller.main.MusicPlayerController;
 import tunix.controller.main.TopBarController;
-import tunix.controller.main.center.MusicController;
 import tunix.model.AppContext;
 import tunix.navigation.ScreenRegistry;
 import tunix.navigation.events.EventBus;
-import tunix.service.ArtistProfileService;
 import tunix.service.LibraryService;
 import tunix.service.MusicPlayerService;
 import tunix.service.PlaylistService;
@@ -30,16 +24,6 @@ import tunix.service.auth.SessionService;
 import tunix.ui.AdminPanel;
 import tunix.ui.AuthPanel;
 import tunix.ui.MainPanel;
-import tunix.ui.views.auth.LoginView;
-import tunix.ui.views.auth.RegisterView;
-import tunix.ui.views.main.LibraryView;
-import tunix.ui.views.main.MusicPlayerView;
-import tunix.ui.views.main.TopBarView;
-import tunix.ui.views.main.center.HomeView;
-import tunix.ui.views.main.center.MusicView;
-import tunix.ui.views.profile.AdminProfileView;
-import tunix.ui.views.profile.ArtistProfileView;
-import tunix.ui.views.profile.UserProfileView;
 
 public class AppLauncher {
     public static final String BASE_URL = "http://localhost:8080";
@@ -61,9 +45,6 @@ public class AppLauncher {
         // =========================
         // AUTH MODULE
         // =========================
-        LoginView loginView = new LoginView();
-        RegisterView registerView = new RegisterView();
-
         LoginService loginService =
                 new LoginService(new LoginApiClient(apiClient), eventBus);
 
@@ -73,15 +54,12 @@ public class AppLauncher {
         SessionService sessionService = new SessionService(context);
 
         LoginController loginController =
-                new LoginController(loginView, loginService, sessionService, eventBus);
+                new LoginController(loginService, sessionService, eventBus);
 
         RegisterController registerController =
-                new RegisterController(registerView, registerService, sessionService, eventBus);
+                new RegisterController(registerService, sessionService, eventBus);
 
-        loginView.setController(loginController);
-        registerView.setController(registerController);
-
-        AuthPanel authPanel = new AuthPanel(loginView, registerView, eventBus);
+        AuthPanel authPanel = new AuthPanel(loginController.getView(), registerController.getView(), eventBus);
 
         // Create main panel
         MainPanel mainPanel = createMainPanel(context);
@@ -107,58 +85,28 @@ public class AppLauncher {
                 // =========================
                 // MAIN MODULE
                 // =========================
-                LibraryView libraryView = new LibraryView();
                 LibraryService libraryService = new LibraryService();
                 PlaylistService playlistService = new PlaylistService(new PlaylistApiClient(context.apiClient));
-
-                LibraryController libraryController =
-                        new LibraryController(libraryView, libraryService, playlistService, context);
-
-                libraryView.setController(libraryController);
-
-                MusicPlayerView musicPlayerView = new MusicPlayerView();
                 MusicPlayerService musicPlayerService = new MusicPlayerService();
-
-                MusicPlayerController musicPlayerController =
-                        new MusicPlayerController(musicPlayerView, musicPlayerService, context.eventBus);
-
-                musicPlayerView.setController(musicPlayerController);
-
-                
-
-                TopBarView topBarView = new TopBarView();
-
                 SearchService searchService = new SearchService(context.apiClient);
 
+                LibraryController libraryController =
+                        new LibraryController(libraryService, playlistService, context);
+
+                MusicPlayerController musicPlayerController =
+                        new MusicPlayerController(musicPlayerService, context.eventBus);
+
                 TopBarController topBarController =
-                        new TopBarController(topBarView, searchService, context.eventBus);
+                        new TopBarController(searchService, context.eventBus);
 
-                topBarView.setController(topBarController);
-                
-
-                // Setup center panel classes
-                //Home
-                HomeView homeView = new HomeView();
-                HomeController homeController = new HomeController(homeView);
-
-                //Profile
-                // Artist
-                ArtistProfileView artistProfileView = new ArtistProfileView();
-                ArtistProfileService artistProfileService = new ArtistProfileService(context.eventBus);
-                ArtistProfileController artistProfileController = new ArtistProfileController(null, artistProfileView, artistProfileService, context.eventBus);
-
-
-                // Create screen registry
                 ScreenRegistry registry = new ScreenRegistry();
 
-                // Create main panel
-                MainPanel mainPanel =
-                        new MainPanel(topBarView, libraryView, musicPlayerView, registry, context);
-
-                //Register the starting class?
-                mainPanel.register(HomeView.class, homeView);
-
-                return mainPanel;
+                return new MainPanel(
+                        topBarController.getView(),
+                        libraryController.getView(),
+                        musicPlayerController.getView(),
+                        registry,
+                        context);
         }
         
 }

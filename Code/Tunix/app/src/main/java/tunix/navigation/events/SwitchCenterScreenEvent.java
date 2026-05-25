@@ -1,13 +1,13 @@
 package tunix.navigation.events;
 
 public class SwitchCenterScreenEvent {
-    private final Class<?> screen;
+    private final Class<?> controllerClass;
 
-    public SwitchCenterScreenEvent(Class<?> screen) {
-        this.screen = screen;
+    public SwitchCenterScreenEvent(Class<?> controllerClass) {
+        this.controllerClass = controllerClass;
     }
 
-    public Class<?> getScreen() {
-        return screen;
+    public Class<?> getControllerClass() {
+        return controllerClass;
     }
 }

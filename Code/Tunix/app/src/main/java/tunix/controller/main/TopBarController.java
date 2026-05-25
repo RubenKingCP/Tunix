@@ -1,14 +1,15 @@
 package tunix.controller.main;
 
+import javax.swing.JPanel;
+
+import tunix.controller.HomeController;
+import tunix.controller.SearchController;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LogoutEvent;
 import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.navigation.events.SwitchProfileScreenEvent;
 import tunix.service.SearchService;
-import tunix.service.auth.SessionService;
 import tunix.ui.views.main.TopBarView;
-import tunix.ui.views.main.center.HomeView;
-import tunix.ui.views.main.center.SearchView;
 import tunix.ui.views.profile.UserProfileView;
 
 public class TopBarController {
@@ -16,17 +17,25 @@ public class TopBarController {
     private final TopBarView topBarView;
     private final EventBus eventBus;
 
-    public TopBarController(TopBarView topBarView, SearchService searchService, EventBus eventBus) {
-        this.topBarView = topBarView;
+    public TopBarController(SearchService searchService, EventBus eventBus) {
         this.searchService = searchService;
         this.eventBus = eventBus;
+        this.topBarView = new TopBarView();
+        this.topBarView.setController(this);
     }
+
+    public JPanel getView() {
+        return topBarView;
+    }
+
     public void onSearch(String query, String searchType) {
-        eventBus.publish(new SwitchCenterScreenEvent(SearchView.class));
+        eventBus.publish(new SwitchCenterScreenEvent(SearchController.class));
     }
+
     public void onHomeButtonClicked() {
-        eventBus.publish(new SwitchCenterScreenEvent(HomeView.class));
+        eventBus.publish(new SwitchCenterScreenEvent(HomeController.class));
     }
+
     public void onProfileButtonClicked() {
         eventBus.publish(new SwitchProfileScreenEvent(UserProfileView.class));
     }
