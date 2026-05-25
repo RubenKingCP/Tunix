@@ -8,6 +8,7 @@ import tunix.service.SearchService;
 import tunix.service.auth.SessionService;
 import tunix.ui.views.main.TopBarView;
 import tunix.ui.views.main.center.HomeView;
+import tunix.ui.views.main.center.SearchView;
 import tunix.ui.views.profile.UserProfileView;
 
 public class TopBarController {
@@ -21,7 +22,7 @@ public class TopBarController {
         this.eventBus = eventBus;
     }
     public void onSearch(String query, String searchType) {
-        // Handle search logic using searchService
+        eventBus.publish(new SwitchCenterScreenEvent(SearchView.class));
     }
     public void onHomeButtonClicked() {
         eventBus.publish(new SwitchCenterScreenEvent(HomeView.class));

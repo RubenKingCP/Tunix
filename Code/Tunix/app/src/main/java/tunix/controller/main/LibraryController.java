@@ -32,8 +32,8 @@ public class LibraryController {
         playlistService.createPlaylist(playlistRequest, assets);
     }
 
-    public void playlistClicked() {
-        appContext.eventBus.publish(new LibraryPlaylistClicked());
+    public void playlistClicked(ILibraryAsset asset) {
+        appContext.eventBus.publish(new LibraryPlaylistClicked(asset));
     }
 
     public void albumClicked() {
