@@ -298,19 +298,6 @@ public class UserProfileView extends JPanel {
         return button;
     }
 
-    private JButton makeSecondaryButton(String text) {
-        JButton button = new JButton(text);
-        button.setBackground(new Color(40, 40, 40));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        button.setOpaque(true);
-        button.setFont(new Font("SansSerif", Font.BOLD, 12));
-        return button;
-    }
-
-
     public void showPremiumTrialScreen() {
         planStatusLabel.setText("Current plan: Free");
         trialStatusLabel.setText("Trial: available");
