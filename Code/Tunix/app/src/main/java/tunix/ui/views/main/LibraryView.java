@@ -512,13 +512,9 @@ public class LibraryView extends JPanel {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                handleAssetClick(asset);
+                onMusicAssetClick(asset);
             }
         });
-    }
-
-    private void handleAssetClick(ILibraryAsset asset) {
-        asset.onClick();
     }
 
     private JLabel buildImagePlaceholder(ILibraryAsset asset, int size) {
@@ -680,22 +676,15 @@ public class LibraryView extends JPanel {
         this.libraryController = libraryController;
     }
 
-    public void display() {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Tunix – Library");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setLayout(new BorderLayout());
+    public void onMusicAssetClick(ILibraryAsset asset) {
+        String type = asset.getType();
 
-            LibraryView library = new LibraryView();
-            frame.add(library, BorderLayout.WEST);
-
-            JPanel center = new JPanel();
-            center.setBackground(new Color(12, 12, 12));
-            frame.add(center, BorderLayout.CENTER);
-
-            frame.setSize(900, 700);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
+        if(type == "Playlist") {
+            System.out.println("Playlist Clicked");
+        } else if (type == "Album") {
+            System.out.println("Album Clicked");
+        } else if (type == "Song") {
+            System.out.println("Song Clicked");
+        }
     }
 }

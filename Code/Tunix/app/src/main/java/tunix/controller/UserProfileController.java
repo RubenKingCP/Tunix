@@ -1,5 +1,6 @@
 package tunix.controller;
 
+
 import tunix.navigation.events.*;
 import tunix.ui.views.profile.UserProfileView;
 
@@ -19,5 +20,9 @@ public class UserProfileController {
     }
     public void purchasePremiumPlan(){
 
+    }
+
+    public void drawView(){
+        view.initGui();
     }
 }

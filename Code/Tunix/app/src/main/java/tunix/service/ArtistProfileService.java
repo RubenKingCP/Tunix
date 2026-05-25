@@ -1,6 +1,7 @@
 package tunix.service;
 
-import com.google.common.eventbus.EventBus;
+import tunix.navigation.events.EventBus;
+
 
 public class ArtistProfileService {
     

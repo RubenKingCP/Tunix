@@ -3,10 +3,12 @@ package tunix.controller.main;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LogoutEvent;
 import tunix.navigation.events.SwitchCenterScreenEvent;
+import tunix.navigation.events.SwitchProfileScreenEvent;
 import tunix.service.SearchService;
-import tunix.ui.ProfilePanel;
+import tunix.service.auth.SessionService;
 import tunix.ui.views.main.TopBarView;
 import tunix.ui.views.main.center.HomeView;
+import tunix.ui.views.profile.UserProfileView;
 
 public class TopBarController {
     private final SearchService searchService;
@@ -25,7 +27,7 @@ public class TopBarController {
         eventBus.publish(new SwitchCenterScreenEvent(HomeView.class));
     }
     public void onProfileButtonClicked() {
-        eventBus.publish(new SwitchCenterScreenEvent(ProfilePanel.class));
+        eventBus.publish(new SwitchProfileScreenEvent(UserProfileView.class));
     }
 
     public void onLogoutButtonClicked() {

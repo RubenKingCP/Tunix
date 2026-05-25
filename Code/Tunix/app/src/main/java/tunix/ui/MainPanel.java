@@ -3,11 +3,18 @@ package tunix.ui;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import tunix.navigation.ScreenRegistry;
 
-import tunix.core.AppContext;
+import tunix.model.Account;
+import tunix.model.AppContext;
+import tunix.navigation.ScreenRegistry;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.SwitchCenterScreenEvent;
+import tunix.navigation.events.SwitchProfileScreenEvent;
+import tunix.service.auth.SessionService;
+import tunix.ui.views.profile.AdminProfileView;
+import tunix.ui.views.profile.ArtistProfileView;
+import tunix.ui.views.profile.UserProfileView;
+import tunix.dto.enums.Role;
 
 public class MainPanel extends JPanel {
 
@@ -15,6 +22,11 @@ public class MainPanel extends JPanel {
     private final CardLayout layout = (CardLayout) centerRouter.getLayout();
 
     private final ScreenRegistry registry;
+    private final AppContext context;
+
+    private UserProfileView userProfileView;
+    private AdminProfileView adminProfileView;
+    private ArtistProfileView artistProfileView;
 
     public MainPanel(JPanel topBar,
                      JPanel libraryPanel,
@@ -23,6 +35,7 @@ public class MainPanel extends JPanel {
                      AppContext context) {
 
         this.registry = registry;
+        this.context = context;
 
         setLayout(new BorderLayout());
 
@@ -30,14 +43,28 @@ public class MainPanel extends JPanel {
         add(libraryPanel, BorderLayout.WEST);
         add(musicPlayer, BorderLayout.SOUTH);
         add(centerRouter, BorderLayout.CENTER);
-        
-        //Test
+
         subscribe(context.eventBus);
     }
 
     private void subscribe(EventBus eventBus) {
+
         eventBus.subscribe(SwitchCenterScreenEvent.class,
                 e -> show(e.getScreen()));
+
+        eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {
+
+            Account user = SessionService.Instance.getUser();
+            if (user == null) return;
+
+            Role role = user.getAccountStatus();
+
+            switch (role) {
+                case USER -> openUserProfile();
+                case ADMIN -> openAdminProfile();
+                case ARTIST -> openArtistProfile();
+            }
+        });
     }
 
     public void register(Class<?> key, JPanel panel) {
@@ -47,12 +74,6 @@ public class MainPanel extends JPanel {
         centerRouter.add(panel, name);
 
         System.out.println("Registered screen: " + key.getSimpleName());
-        System.out.println("centerRouter instance: " + System.identityHashCode(centerRouter));
-        System.out.println("panel added: " + panel.getClass().getSimpleName());
-        System.out.println("ADDING:");
-        System.out.println("  class = " + key.getName());
-        System.out.println("  name  = " + registry.getName(key));
-        System.out.println("  panel = " + panel);
     }
 
     public void show(Class<?> key) {
@@ -62,10 +83,38 @@ public class MainPanel extends JPanel {
             throw new IllegalStateException("Screen not registered: " + key.getSimpleName());
         }
 
-        System.out.println("Showing screen: " + key.getSimpleName());
-        
         layout.show(centerRouter, name);
         centerRouter.revalidate();
         centerRouter.repaint();
+    }
+
+    // =========================
+    // PROFILE SCREENS
+    // =========================
+
+    public void openUserProfile() {
+        if (userProfileView == null) {
+            userProfileView = new UserProfileView();
+            new tunix.controller.UserProfileController(userProfileView, context.eventBus);
+
+            register(UserProfileView.class, userProfileView);
+        }
+        show(UserProfileView.class);
+    }
+
+    public void openAdminProfile() {
+        if (adminProfileView == null) {
+            adminProfileView = new AdminProfileView();
+            register(AdminProfileView.class, adminProfileView);
+        }
+        show(AdminProfileView.class);
+    }
+
+    public void openArtistProfile() {
+        if (artistProfileView == null) {
+            artistProfileView = new ArtistProfileView();
+            register(ArtistProfileView.class, artistProfileView);
+        }
+        show(ArtistProfileView.class);
     }
 }

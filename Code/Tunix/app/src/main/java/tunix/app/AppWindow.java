@@ -1,7 +1,7 @@
 package tunix.app;
 import javax.swing.*;
 
-import tunix.core.AppContext;
+import tunix.model.AppContext;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.SwitchScreenEvent;
 

@@ -1,5 +1,7 @@
 package tunix.ui.views.profile;
 
-public class AdminProfileView {
+import javax.swing.JPanel;
+
+public class AdminProfileView extends JPanel{
     
 }

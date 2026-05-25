@@ -1,25 +1,31 @@
 package tunix.service.auth;
 
 import tunix.model.Account;
+import tunix.model.AppContext;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LoginSuccessEvent;
 import tunix.navigation.events.RegisterSuccessfulEvent;
 
 public class SessionService {
     private Account currentUser;
-    private final EventBus eventBus;
     public static SessionService Instance;
-    public SessionService(EventBus eventBus){
-        this.eventBus = eventBus;
+    private final AppContext appContext;
+    public SessionService(AppContext appContext){
+        this.appContext = appContext;
         Instance = this;
 
-        eventBus.subscribe(RegisterSuccessfulEvent.class, e -> {
+        appContext.eventBus.subscribe(RegisterSuccessfulEvent.class, e -> {
             this.setUser(e);
             System.out.println("Reached session");
-            System.out.println(currentUser);
+            System.out.println(currentUser.getUsername());
         });
 
-        eventBus.subscribe(LoginSuccessEvent.class, e -> this.setUser(e));
+        appContext.eventBus.subscribe(LoginSuccessEvent.class, e -> {
+            this.setUser(e);
+            System.out.println("Reached session");
+            System.out.println(currentUser.getUsername());
+            }
+        );
     }
 
     public void setUser(RegisterSuccessfulEvent event) {
@@ -31,7 +37,7 @@ public class SessionService {
     }
 
     public EventBus getEventBus() {
-        return eventBus;
+        return appContext.eventBus;
     }
 
     public Account getUser() {

@@ -232,6 +232,6 @@ public class TopBarView extends JPanel {
     }
 
     public void onLogoutButtonClicked() {
-        topBarController.onLogoutButtonClicked();
+        topBarController.onLogoutButtonClicked(); 
     }
 }

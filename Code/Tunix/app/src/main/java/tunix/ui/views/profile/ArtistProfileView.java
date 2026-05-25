@@ -1,8 +1,10 @@
 package tunix.ui.views.profile;
 
+import javax.swing.JPanel;
+
 import tunix.controller.ArtistProfileController;
 
-public class ArtistProfileView {
+public class ArtistProfileView extends JPanel{
     private ArtistProfileController artistProfileController;
 
     public ArtistProfileView() {

@@ -37,6 +37,10 @@ public class UserProfileView extends JPanel {
     private final JPanel premiumPanel = new JPanel();
 
     public UserProfileView() {
+        initGui();
+    }
+
+    public void initGui() {
         setLayout(new BorderLayout());
         setBackground(BG);
 
