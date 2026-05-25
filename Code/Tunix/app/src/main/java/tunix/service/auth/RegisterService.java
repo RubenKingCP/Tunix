@@ -4,7 +4,7 @@ package tunix.service.auth;
 import tunix.api.RegisterApiClient;
 import tunix.dto.request.RegisterRequest;
 import tunix.dto.response.ApiResponse;
-import tunix.model.Account;
+import tunix.model.account.Account;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.RegisterSuccessfulEvent;
 import tunix.dto.response.AccountResponse;
@@ -19,20 +19,22 @@ public class RegisterService {
     }
 
     public void register(RegisterRequest registerRequest) {
-        ApiResponse<AccountResponse> response = registerApiClient.register(registerRequest);
+
+        ApiResponse<AccountResponse> response =
+                registerApiClient.register(registerRequest);
+
         if (response.isSuccess()) {
-            System.err.println("\nUser registered to dtaabae");
+
+            System.err.println("\nUser registered to database");
+
             AccountResponse dto = response.getData();
-            Account account = new Account(
-                dto.getAccountId(),
-                dto.getUsername(),
-                dto.getEmail(),
-                dto.getRole()
-            );
+
+            Account account = Account.from(dto);
 
             eventBus.publish(new RegisterSuccessfulEvent(account));
-             
+
         } else {
+
             System.err.println("No :(\n" + response.getMessage());
         }
     }

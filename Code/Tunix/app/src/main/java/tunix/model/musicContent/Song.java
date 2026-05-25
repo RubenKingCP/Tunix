@@ -1,4 +1,10 @@
-package tunix.model;
+package tunix.model.musicContent;
+
+import java.util.List;
+
+import tunix.dto.enums.LibraryAssetType;
+import tunix.model.ILibraryAsset;
+import tunix.model.account.Artist;
 
 public class Song implements ILibraryAsset {
     private final String title;
@@ -28,8 +34,13 @@ public class Song implements ILibraryAsset {
     }
 
     @Override
-    public String getType() {
-        return "Song";
+    public LibraryAssetType getType() {
+        return LibraryAssetType.SONG;
+    }
+
+    @Override
+    public List<Song> getDisplaySongs() {
+        return List.of(this);
     }
 
     @Override

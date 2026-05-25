@@ -4,8 +4,8 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 
-import tunix.model.Account;
 import tunix.model.AppContext;
+import tunix.model.account.Account;
 import tunix.navigation.ScreenRegistry;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LibraryPlaylistClicked;
@@ -133,7 +133,6 @@ public class MainPanel extends JPanel {
         MusicView view = new MusicView();
         MusicController controller = new MusicController(view, context.eventBus);
         view.setController(controller);
-        controller.drawView();
         register(MusicView.class, view);
         show(MusicView.class);
     }

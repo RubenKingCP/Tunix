@@ -3,7 +3,7 @@ package tunix.service;
 import java.util.LinkedList;
 import java.util.List;
 
-import tunix.model.Artist;
+import tunix.model.account.Artist;
 
 public class FollowService {
     public void followArtist(int userId, int artistId){

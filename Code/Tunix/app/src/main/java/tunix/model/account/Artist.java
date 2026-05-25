@@ -1,45 +1,47 @@
-package tunix.model;
+package tunix.model.account;
 
 import tunix.dto.enums.Role;
 
-public class Artist extends Account implements ILibraryAsset {
+public class Artist extends Account {
+
     private String biography;
     private int followersCount;
 
-    public Artist(Long id, String username, String email, Role accountStatus, String biography, int followersCount) {
-        super(id, username, email, accountStatus);
+    private boolean verified;
+
+    public Artist(Long id,
+                  String username,
+                  String email,
+                  String biography,
+                  int followersCount,
+                  boolean verified) {
+
+        super(id, username, email, Role.ARTIST);
+
         this.biography = biography;
         this.followersCount = followersCount;
+        this.verified = verified;
     }
 
-    @Override
+    // =========================
+    // DISPLAY
+    // =========================
+
     public String getTitle() {
         return getUsername();
     }
 
-    @Override
-    public int getId() {
-        return super.getId();
-    }
-
-    @Override
-    public String getType() {
-        return "Artist";
-    }
-
-    @Override
     public String getSubtitle() {
         return followersCount + " followers";
     }
 
-    @Override
     public boolean isCircularAvatar() {
         return true;
     }
 
-    public Long getIdLong() {
-        return super.getLongId();
-    }
+    // =========================
+    // ARTIST DATA
+    // =========================
 
     public String getBiography() {
         return biography;
@@ -55,5 +57,13 @@ public class Artist extends Account implements ILibraryAsset {
 
     public void setFollowersCount(int followersCount) {
         this.followersCount = followersCount;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 }

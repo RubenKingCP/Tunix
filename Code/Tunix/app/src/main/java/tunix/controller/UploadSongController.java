@@ -3,7 +3,7 @@ package tunix.controller;
 import tunix.service.SongService;
 import tunix.ui.views.main.center.UploadSongView;
 import tunix.dto.request.SongRequest;
-import tunix.model.Song;
+import tunix.model.musicContent.Song;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.SongUploadedEvent;
 

@@ -39,6 +39,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import tunix.controller.main.LibraryController;
+import tunix.dto.enums.LibraryAssetType;
 import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.ILibraryAsset;
 
@@ -677,15 +678,15 @@ public class LibraryView extends JPanel {
     }
 
     public void onMusicAssetClick(ILibraryAsset asset) {
-        String type = asset.getType();
+        LibraryAssetType type = asset.getType();
 
-        if(type == "Playlist") {
+        if(type == LibraryAssetType.PLAYLIST) {
             System.out.println("Playlist Clicked");
             libraryController.playlistClicked();
-        } else if (type == "Album") {
+        } else if (type == LibraryAssetType.Album) {
             System.out.println("Album Clicked");
             libraryController.albumClicked();
-        } else if (type == "Song") {
+        } else if (type == LibraryAssetType.SONG) {
             System.out.println("Song Clicked");
             libraryController.songClicked();
         }

@@ -4,7 +4,7 @@ import tunix.api.LoginApiClient;
 import tunix.dto.request.LoginRequest;
 import tunix.dto.response.AccountResponse;
 import tunix.dto.response.ApiResponse;
-import tunix.model.Account;
+import tunix.model.account.Account;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LoginSuccessEvent;
 import tunix.navigation.events.SwitchCenterScreenEvent;
@@ -22,26 +22,26 @@ public class LoginService {
     }
 
     public void login(LoginRequest loginRequest) {
-        ApiResponse<AccountResponse> response = loginApiClient.login(loginRequest);
+    ApiResponse<AccountResponse> response = loginApiClient.login(loginRequest);
 
-        if (response.isSuccess()) {
-            System.out.println("User login");
-            AccountResponse dto = response.getData();
-            Account account = new Account(dto.getAccountId(), dto.getUsername(), dto.getEmail(), dto.getRole());
+    if (response.isSuccess()) {
 
-            // Send success login
-            eventBus.publish(new LoginSuccessEvent(account));
+        System.out.println("User login");
 
-            // Send switch to main panel
-            eventBus.publish(new SwitchScreenEvent(MainPanel.class));
+        AccountResponse dto = response.getData();
 
-            // Send show home view
-            eventBus.publish(new SwitchCenterScreenEvent(HomeView.class));
-        } else {
-            // TODO: Add eventbus system failed view
-            System.out.println(":(");
-        }
+        Account account = Account.from(dto);
+
+        eventBus.publish(new LoginSuccessEvent(account));
+
+        eventBus.publish(new SwitchScreenEvent(MainPanel.class));
+
+        eventBus.publish(new SwitchCenterScreenEvent(HomeView.class));
+
+    } else {
+        System.out.println(":(");
     }
+}
 
     public void logout() {
         

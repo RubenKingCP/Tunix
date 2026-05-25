@@ -1,7 +1,10 @@
 package tunix.model;
 
+import tunix.model.musicContent.Song;
+
 public class PlaylistItem {
-    private Song song;
+
+    private final Song song;
     private int position;
 
     public PlaylistItem(Song song, int position) {

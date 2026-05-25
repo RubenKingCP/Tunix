@@ -1,5 +1,7 @@
 package tunix.model;
 
+import tunix.model.musicContent.Song;
+
 public class AlbumItem {
     private Song song;
     private int trackNumber;

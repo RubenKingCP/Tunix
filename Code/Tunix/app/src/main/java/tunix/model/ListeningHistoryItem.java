@@ -2,6 +2,8 @@ package tunix.model;
 
 import java.time.LocalDateTime;
 
+import tunix.model.musicContent.Song;
+
 public class ListeningHistoryItem {
 
     private Song song;

@@ -1,8 +1,8 @@
 package tunix.service;
 
-import tunix.model.Song;
-import tunix.model.Playlist;
-import tunix.model.Album;
+import tunix.model.musicContent.Album;
+import tunix.model.musicContent.Playlist;
+import tunix.model.musicContent.Song;
 import tunix.model.ILibraryAsset;
 
 import java.util.LinkedList;

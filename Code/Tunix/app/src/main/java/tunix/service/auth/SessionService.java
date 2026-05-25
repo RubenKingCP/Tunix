@@ -1,7 +1,7 @@
 package tunix.service.auth;
 
-import tunix.model.Account;
 import tunix.model.AppContext;
+import tunix.model.account.Account;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LoginSuccessEvent;
 import tunix.navigation.events.RegisterSuccessfulEvent;

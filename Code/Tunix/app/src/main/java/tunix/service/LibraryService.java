@@ -4,12 +4,12 @@ import java.sql.Date;
 import java.util.List;
 
 import tunix.dto.enums.Role;
-import tunix.model.Album;
-import tunix.model.Artist;
 import tunix.model.ILibraryAsset;
-import tunix.model.Playlist;
-import tunix.model.Song;
-import tunix.model.User;
+import tunix.model.account.Artist;
+import tunix.model.account.User;
+import tunix.model.musicContent.Album;
+import tunix.model.musicContent.Playlist;
+import tunix.model.musicContent.Song;
 import tunix.service.auth.SessionService;
 
 public class LibraryService {
@@ -17,28 +17,17 @@ public class LibraryService {
     public List<ILibraryAsset> getLibraryAssets() {
         User you = (User) SessionService.Instance.getUser();
 
-        Artist arcticMonkeys = new Artist(
-                2L,
-                "Arctic Monkeys",
-                "arctic@example.com",
-                Role.ARTIST,
-                "A British rock band known for punchy, melodic songs.",
-                1_250_000
-        );
-
-        Artist tameImpala = new Artist(
-                3L,
-                "Tame Impala",
-                "tame@example.com",
-                Role.ARTIST,
-                "A psychedelic rock project focused on atmospheric soundscapes.",
-                4_800_000
-        );
+        Artist artist = new Artist(3L,
+                "test artist",
+                "test@gmail.com",
+                null,
+                0,
+                false);
 
         Song doIWantToKnow = new Song(
                 "Do I Wanna Know?",
                 101,
-                arcticMonkeys,
+                artist,
                 272,
                 "/music/do-i-wanna-know.mp3",
                 null
@@ -47,7 +36,7 @@ public class LibraryService {
         Song letItHappen = new Song(
                 "Let It Happen",
                 102,
-                tameImpala,
+                artist,
                 467,
                 "/music/let-it-happen.mp3",
                 null
@@ -56,7 +45,7 @@ public class LibraryService {
         Song ruMine = new Song(
                 "R U Mine?",
                 103,
-                arcticMonkeys,
+                artist,
                 205,
                 "/music/r-u-mine.mp3",
                 null
@@ -65,7 +54,7 @@ public class LibraryService {
         Album am = new Album(
                 "AM",
                 201,
-                arcticMonkeys,
+                artist,
                 List.of(doIWantToKnow, ruMine),
                 Date.valueOf("2013-09-09")
         );
@@ -73,7 +62,7 @@ public class LibraryService {
         Album currents = new Album(
                 "Currents",
                 202,
-                tameImpala,
+                artist,
                 List.of(letItHappen),
                 Date.valueOf("2015-07-17")
         );
@@ -88,8 +77,6 @@ public class LibraryService {
         return List.of(
                 chillVibes,
                 morningHits,
-                arcticMonkeys,
-                tameImpala,
                 am,
                 currents,
                 doIWantToKnow,

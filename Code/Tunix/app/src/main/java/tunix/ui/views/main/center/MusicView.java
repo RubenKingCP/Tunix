@@ -7,17 +7,17 @@ import java.awt.image.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.*;
-import tunix.model.Song;
-import java.util.List;
-
 import tunix.controller.main.center.MusicController;
+import tunix.model.ILibraryAsset;
+import tunix.model.musicContent.Playlist;
+import tunix.service.auth.SessionService;
 
 public class MusicView extends JPanel {
-    private MusicController musicController;
-    private List<Song> songs;
+    private ILibraryAsset musicAsset;
+    private MusicController controller;
 
     public MusicView() {
-        
+        initGui();
     }
 
     public void initGui() {
@@ -209,6 +209,7 @@ public class MusicView extends JPanel {
 
     // Song Table -- List of Songs for the Playlist
     private JScrollPane buildSongTable() {
+        Playlist playlist = new Playlist("Testing", 1, SessionService.Instance.getUser());
         String[] columns = { "#", "Title", "Album", "🕐" };
 
         Object[][] rows = { // ALL DATA WILL BE DRAWN BY THE BACKEND
@@ -301,7 +302,11 @@ public class MusicView extends JPanel {
 
     }
 
+    public void getPlaylist() {
+        
+    }
+
     public void setController(MusicController controller) {
-        this.musicController = controller;
+        this.controller = controller;
     }
 }

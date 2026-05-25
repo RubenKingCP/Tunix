@@ -1,7 +1,11 @@
-package tunix.model;
+package tunix.model.musicContent;
 
 import java.sql.Date;
 import java.util.List;
+
+import tunix.dto.enums.LibraryAssetType;
+import tunix.model.ILibraryAsset;
+import tunix.model.account.Artist;
 
 public class Album implements ILibraryAsset{
     private Artist artist;
@@ -30,13 +34,21 @@ public class Album implements ILibraryAsset{
     }
 
     @Override
-    public String getType() {
-        return "Album";
+    public LibraryAssetType getType() {
+        return LibraryAssetType.Album;
     }
 
     @Override
     public String getSubtitle() {
+        if(artist == null) {
+            return "Unknown";
+        }
         return artist.getTitle();
+    }
+
+    @Override
+    public List<Song> getDisplaySongs() {
+        return songs;
     }
 
     public void setTitle(String title) {

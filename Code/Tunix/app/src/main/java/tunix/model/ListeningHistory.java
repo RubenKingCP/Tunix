@@ -1,6 +1,9 @@
 package tunix.model;
 
 import java.util.List;
+
+import tunix.model.musicContent.Song;
+
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 

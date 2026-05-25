@@ -1,7 +1,7 @@
 package tunix.dto.response;
 
-import tunix.model.Artist;
-import tunix.model.Song;
+import tunix.model.account.Artist;
+import tunix.model.musicContent.Song;
 
 public class SongResponse {
     public int songId;

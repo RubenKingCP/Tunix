@@ -1,10 +1,15 @@
-package tunix.model;
+package tunix.model.musicContent;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import tunix.dto.enums.LibraryAssetType;
+import tunix.model.ILibraryAsset;
+import tunix.model.PlaylistItem;
+import tunix.model.account.Account;
+import tunix.model.account.User;
 
 @Getter
 public class Playlist implements ILibraryAsset {
@@ -12,15 +17,15 @@ public class Playlist implements ILibraryAsset {
     private String title;
     private int id;
     private List<PlaylistItem> playlistItems;
-    private User creator;
-    private List<User> coauthors;
+    private Account creator;
+    private List<Account> coauthors;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     private boolean isPublic;
 
-    public Playlist(String title, int id, User creator) {
+    public Playlist(String title, int id, Account creator) {
         this.title = title;
         this.id = id;
         this.creator = creator;
@@ -55,8 +60,16 @@ public class Playlist implements ILibraryAsset {
     }
 
     @Override
-    public String getType() {
-        return "Playlist";
+    public LibraryAssetType getType() {
+        return LibraryAssetType.PLAYLIST;
+    }
+    
+    @Override
+    public List<Song> getDisplaySongs() {
+
+        return playlistItems.stream()
+                .map(PlaylistItem::getSong)
+                .toList();
     }
 
     @Override
@@ -68,11 +81,11 @@ public class Playlist implements ILibraryAsset {
         return playlistItems;
     }
 
-    public User getCreator() {
+    public Account getCreator() {
         return creator;
     }
 
-    public List<User> getCoauthors() {
+    public List<Account> getCoauthors() {
         return coauthors;
     }
 
