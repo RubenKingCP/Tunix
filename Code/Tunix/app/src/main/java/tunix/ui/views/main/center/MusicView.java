@@ -238,7 +238,9 @@ public class MusicView extends JPanel {
             rows[pos][0] = pos+1;
             rows[pos][1] = sg.getTitle();
             rows[pos][2] = sg.getSubtitle();
-            rows[pos][3] = sg.getDuration();
+            int minutes = sg.getDuration()/60;
+            int seconds = sg.getDuration()-(minutes*60);
+            rows[pos][3] = minutes + ":" + seconds;
         }
 
         JTable table = new JTable(rows, columns) {
