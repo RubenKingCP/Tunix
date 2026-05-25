@@ -41,6 +41,8 @@ public class UserProfileView extends JPanel {
     }
 
     public void initGui() {
+        removeAll();
+
         setLayout(new BorderLayout());
         setBackground(BG);
 
@@ -65,6 +67,12 @@ public class UserProfileView extends JPanel {
         scroll.getVerticalScrollBar().setUnitIncrement(20);
 
         add(scroll, BorderLayout.CENTER);
+    }
+
+    public void refresh() {
+        initGui();
+        revalidate();
+        repaint();
     }
 
     private JPanel buildHeader() {
@@ -122,9 +130,16 @@ public class UserProfileView extends JPanel {
         details.setLayout(new BoxLayout(details, BoxLayout.Y_AXIS));
         details.setBackground(CARD_BG);
         details.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        var user = SessionService.Instance.getUser();
-        addDetailRow(details, "Display name", user.getUsername());
-        addDetailRow(details, "Email", user.getEmail());
+
+        var user = SessionService.Instance == null ? null : SessionService.Instance.getUser();
+        if (user == null) {
+            addDetailRow(details, "Display name", "Not signed in");
+            addDetailRow(details, "Email", "—");
+        } else {
+            addDetailRow(details, "Display name", user.getUsername());
+            addDetailRow(details, "Email", user.getEmail());
+        }
+
         addDetailRow(details, "Listening mode", "Personalized");
         addDetailRow(details, "Downloaded songs", "12");
 

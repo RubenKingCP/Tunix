@@ -58,7 +58,7 @@ public class MainPanel extends JPanel {
                 e -> showController(MusicController.class));
 
         eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {
-            Account user = SessionService.Instance.getUser();
+            Account user = SessionService.Instance == null ? null : SessionService.Instance.getUser();
             if (user == null) return;
 
             Role role = user.getAccountStatus();
@@ -100,6 +100,14 @@ public class MainPanel extends JPanel {
         if (panel == null) {
             panel = createPanelForController(controllerClass);
             register(controllerClass, panel);
+        }
+
+        if (panel instanceof tunix.ui.views.profile.UserProfileView userProfileView) {
+            userProfileView.refresh();
+        }
+
+        if (panel instanceof tunix.ui.views.main.center.MusicView musicView) {
+            musicView.refresh();
         }
 
         show(controllerClass);
