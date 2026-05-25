@@ -5,10 +5,14 @@ import java.awt.CardLayout;
 
 import javax.swing.JPanel;
 
+
+import tunix.api.ApiClient;
+import tunix.api.SongApiClient;
 import tunix.controller.AdminProfileController;
 import tunix.controller.ArtistProfileController;
 import tunix.controller.HomeController;
 import tunix.controller.SearchController;
+import tunix.controller.UploadSongController;
 import tunix.controller.UserProfileController;
 import tunix.controller.main.center.MusicController;
 import tunix.dto.enums.Role;
@@ -20,7 +24,9 @@ import tunix.navigation.events.LibraryPlaylistClicked;
 import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.navigation.events.SwitchProfileScreenEvent;
 import tunix.service.ArtistProfileService;
+import tunix.service.SongService;
 import tunix.service.auth.SessionService;
+import tunix.ui.views.main.center.UploadSongView;
 
 public class MainPanel extends JPanel {
 
@@ -98,6 +104,18 @@ public class MainPanel extends JPanel {
         }
         if (controllerClass == ArtistProfileController.class) {
             return new ArtistProfileController(new ArtistProfileService(context.eventBus), context.eventBus).getView();
+        }
+        if (controllerClass == UploadSongController.class) {
+        return new UploadSongController(
+                new UploadSongView(),
+                new SongService(
+                        context.eventBus,
+                        new SongApiClient(
+                                new ApiClient("http://localhost:8080/api")
+                        )
+                ),
+                context.eventBus
+        ).getView();
         }
 
         throw new IllegalArgumentException("Unsupported controller: " + controllerClass.getSimpleName());

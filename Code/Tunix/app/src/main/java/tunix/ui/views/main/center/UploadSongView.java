@@ -1,196 +1,413 @@
 package tunix.ui.views.main.center;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+import tunix.controller.UploadSongController;
 
 public class UploadSongView extends JPanel {
 
     private JTextField songNameField;
-    private JTextField albumField;
+
     private JTextField trackNumberField;
 
+    private JLabel selectedSongLabel;
+
+    private JButton chooseSongButton;
+
+    private JButton uploadButton;
+
+    private UploadSongController controller;
+
     public UploadSongView() {
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Color.DARK_GRAY);
-        setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
+
+        setBackground(new Color(18, 18, 18));
+
+        setBorder(
+                BorderFactory.createEmptyBorder(
+                        24,
+                        24,
+                        24,
+                        24
+                )
+        );
 
         add(buildTitle());
+
         add(Box.createVerticalStrut(24));
+
         add(buildFilePicker());
-        add(Box.createVerticalStrut(16));
-        add(buildForm());
+
         add(Box.createVerticalStrut(24));
+
+        add(buildForm());
+
+        add(Box.createVerticalStrut(24));
+
         add(buildSubmitButton());
     }
 
-    public void displaySelectedImageCover(String imageFilePath) {
+    public void setController(UploadSongController controller) {
 
-    }   
-
-    public void displaySelectedSongFile(String songFilePath) {
-
+        this.controller = controller;
     }
 
-    public void display(){
-
-    }
-
-    public void displaySuccess(String messaString) {
-
-    }
-    
-    public void displayError(String meString) {
-
-    }
     private JLabel buildTitle() {
+
         JLabel title = new JLabel("Upload a Song");
-        title.setFont(new Font("Arial", Font.BOLD, 28));
+
+        title.setFont(
+                new Font("Arial", Font.BOLD, 28)
+        );
+
         title.setForeground(Color.WHITE);
+
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         return title;
     }
+
     private JPanel buildFilePicker() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        panel.setBackground(Color.DARK_GRAY);
+
+        JPanel panel = new JPanel(
+                new FlowLayout(FlowLayout.LEFT, 0, 0)
+        );
+
+        panel.setBackground(new Color(18, 18, 18));
+
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JButton browseButton = new JButton("Choose File");
-        browseButton.setBackground(new Color(30, 215, 96)); // Spotify green
-        browseButton.setForeground(Color.WHITE);
-        browseButton.setFocusPainted(false);
-        browseButton.setFont(new Font("Arial", Font.BOLD, 14));
+        chooseSongButton = new JButton("Choose Song File");
 
-        JLabel fileLabel = new JLabel("  No file selected");
-        fileLabel.setForeground(Color.LIGHT_GRAY);
-        fileLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+        chooseSongButton.setBackground(
+                new Color(30, 215, 96)
+        );
 
-        browseButton.addActionListener(e -> {
-            FileDialog fileDialog = new FileDialog((Frame) SwingUtilities.getWindowAncestor(this), "Choose Audio File", FileDialog.LOAD);
-            fileDialog.setFilenameFilter((dir, name) -> 
-                name.endsWith(".mp3") || name.endsWith(".wav") || 
-                name.endsWith(".flac") || name.endsWith(".aac")
-            );
-            fileDialog.setVisible(true);
+        chooseSongButton.setForeground(Color.BLACK);
 
-            String dir = fileDialog.getDirectory();
-            String file = fileDialog.getFile();
-            if (dir != null && file != null) {
-                fileLabel.setText("  " + file);
+        chooseSongButton.setFocusPainted(false);
+
+        chooseSongButton.setFont(
+                new Font("Arial", Font.BOLD, 14)
+        );
+
+        selectedSongLabel = new JLabel("  No file selected");
+
+        selectedSongLabel.setForeground(Color.LIGHT_GRAY);
+
+        selectedSongLabel.setFont(
+                new Font("Arial", Font.PLAIN, 13)
+        );
+
+        chooseSongButton.addActionListener(e -> {
+
+            if (controller != null) {
+
+                controller.onSelectFileClicked();
             }
         });
 
-        panel.add(browseButton);
-        panel.add(fileLabel);
+        panel.add(chooseSongButton);
+
+        panel.add(Box.createHorizontalStrut(12));
+
+        panel.add(selectedSongLabel);
+
         return panel;
     }
+
     private JPanel buildForm() {
+
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(Color.DARK_GRAY);
+
+        panel.setBackground(new Color(18, 18, 18));
+
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        GridBagConstraints labelConstraints = new GridBagConstraints();
+        GridBagConstraints labelConstraints =
+                new GridBagConstraints();
+
         labelConstraints.anchor = GridBagConstraints.WEST;
-        labelConstraints.insets = new Insets(8, 0, 4, 0);
+
+        labelConstraints.insets =
+                new Insets(8, 0, 4, 0);
+
         labelConstraints.gridx = 0;
-        labelConstraints.fill = GridBagConstraints.HORIZONTAL;
+
+        labelConstraints.fill =
+                GridBagConstraints.HORIZONTAL;
+
         labelConstraints.weightx = 1.0;
 
-        GridBagConstraints fieldConstraints = new GridBagConstraints();
-        fieldConstraints.anchor = GridBagConstraints.WEST;
-        fieldConstraints.insets = new Insets(0, 0, 8, 0);
+        GridBagConstraints fieldConstraints =
+                new GridBagConstraints();
+
+        fieldConstraints.anchor =
+                GridBagConstraints.WEST;
+
+        fieldConstraints.insets =
+                new Insets(0, 0, 8, 0);
+
         fieldConstraints.gridx = 0;
-        fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
+
+        fieldConstraints.fill =
+                GridBagConstraints.HORIZONTAL;
+
         fieldConstraints.weightx = 1.0;
 
-        // Song Name
+        //-------------------------------------------------
+        // SONG NAME
+        //-------------------------------------------------
+
         labelConstraints.gridy = 0;
-        panel.add(buildLabel("Song Name"), labelConstraints);
+
+        panel.add(
+                buildLabel("Song Name"),
+                labelConstraints
+        );
+
         songNameField = new JTextField();
+
         styleTextField(songNameField);
+
         fieldConstraints.gridy = 1;
+
         panel.add(songNameField, fieldConstraints);
 
-        // Album
-        labelConstraints.gridy = 2;
-        panel.add(buildLabel("Album"), labelConstraints);
-        albumField = new JTextField();
-        styleTextField(albumField);
-        fieldConstraints.gridy = 3;
-        panel.add(albumField, fieldConstraints);
+        //-------------------------------------------------
+        // TRACK NUMBER
+        //-------------------------------------------------
 
-        // Track Number
-        labelConstraints.gridy = 4;
-        panel.add(buildLabel("Track Number"), labelConstraints);
+        labelConstraints.gridy = 2;
+
+        panel.add(
+                buildLabel("Track Number"),
+                labelConstraints
+        );
+
         trackNumberField = new JTextField();
+
         styleTextField(trackNumberField);
-        fieldConstraints.gridy = 5;
+
+        fieldConstraints.gridy = 3;
+
         panel.add(trackNumberField, fieldConstraints);
 
         return panel;
     }
 
     private JLabel buildLabel(String text) {
+
         JLabel label = new JLabel(text);
+
         label.setForeground(Color.LIGHT_GRAY);
-        label.setFont(new Font("Arial", Font.PLAIN, 13));
+
+        label.setFont(
+                new Font("Arial", Font.PLAIN, 13)
+        );
+
         return label;
     }
 
     private void styleTextField(JTextField field) {
+
         field.setBackground(new Color(50, 50, 50));
+
         field.setForeground(Color.WHITE);
+
         field.setCaretColor(Color.WHITE);
-        field.setFont(new Font("Arial", Font.PLAIN, 14));
-        field.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(80, 80, 80)),
-            BorderFactory.createEmptyBorder(6, 10, 6, 10)
-        ));
-        field.setPreferredSize(new Dimension(400, 36));
+
+        field.setFont(
+                new Font("Arial", Font.PLAIN, 14)
+        );
+
+        field.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                new Color(80, 80, 80)
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                6,
+                                10,
+                                6,
+                                10
+                        )
+                )
+        );
+
+        field.setPreferredSize(
+                new Dimension(400, 36)
+        );
     }
+
     private JPanel buildSubmitButton() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        panel.setBackground(Color.DARK_GRAY);
+
+        JPanel panel = new JPanel(
+                new FlowLayout(FlowLayout.LEFT, 0, 0)
+        );
+
+        panel.setBackground(new Color(18, 18, 18));
+
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JButton submitButton = new JButton("Upload Song");
-        submitButton.setBackground(new Color(30, 215, 96));
-        submitButton.setForeground(Color.WHITE);
-        submitButton.setFocusPainted(false);
-        submitButton.setFont(new Font("Arial", Font.BOLD, 15));
-        submitButton.setBorder(BorderFactory.createEmptyBorder(10, 28, 10, 28));
-        submitButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        uploadButton = new JButton("Upload Song");
 
-        submitButton.addActionListener(e -> {
-            String songName = songNameField.getText().trim();
-            String album = albumField.getText().trim();
-            String trackNumber = trackNumberField.getText().trim();
+        uploadButton.setBackground(
+                new Color(30, 215, 96)
+        );
 
-            if (songName.isEmpty() || album.isEmpty() || trackNumber.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                    "Please fill in all fields and select a file.",
-                    "Missing Information",
-                    JOptionPane.WARNING_MESSAGE);
-                return;
+        uploadButton.setForeground(Color.BLACK);
+
+        uploadButton.setFocusPainted(false);
+
+        uploadButton.setFont(
+                new Font("Arial", Font.BOLD, 15)
+        );
+
+        uploadButton.setBorder(
+                BorderFactory.createEmptyBorder(
+                        10,
+                        28,
+                        10,
+                        28
+                )
+        );
+
+        uploadButton.setCursor(
+                Cursor.getPredefinedCursor(
+                        Cursor.HAND_CURSOR
+                )
+        );
+
+        uploadButton.addActionListener(e -> {
+
+            if (controller != null) {
+
+                controller.onSubmitButtonClicked();
             }
-
-            // TODO: wire up to controller
-            JOptionPane.showMessageDialog(this,
-                "Song uploaded successfully!",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
         });
 
-        panel.add(submitButton);
+        panel.add(uploadButton);
+
         return panel;
     }
 
+    //-------------------------------------------------
+    // VIEW METHODS
+    //-------------------------------------------------
+
+    public void displaySelectedSongFile(
+            String songFilePath
+    ) {
+
+        selectedSongLabel.setText(
+                "  " + songFilePath
+        );
+    }
+
+    public void displaySelectedImageCover(
+            String imageFilePath
+    ) {
+
+        // intentionally empty
+        // use case does not require image upload
+    }
+
+    public void display() {
+
+        setVisible(true);
+    }
+
+    public void displaySuccess(String message) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    public void displayError(String message) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    //-------------------------------------------------
+    // GETTERS
+    //-------------------------------------------------
+
+    public String getSongTitle() {
+
+        return songNameField.getText().trim();
+    }
+
+    public int getTrackNumber() {
+
+        try {
+
+            return Integer.parseInt(
+                    trackNumberField.getText().trim()
+            );
+
+        } catch (Exception e) {
+
+            return 0;
+        }
+    }
+
+    //-------------------------------------------------
+    // STANDALONE TEST
+    //-------------------------------------------------
+
     public static void main(String[] args) {
+
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Tunix - Upload Song");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setContentPane(new UploadSongView());
-            frame.setSize(600, 500);
+
+            JFrame frame = new JFrame(
+                    "Tunix - Upload Song"
+            );
+
+            frame.setDefaultCloseOperation(
+                    JFrame.EXIT_ON_CLOSE
+            );
+
+            UploadSongView view =
+                    new UploadSongView();
+
+            frame.setContentPane(view);
+
+            frame.setSize(700, 500);
+
             frame.setLocationRelativeTo(null);
+
             frame.setVisible(true);
         });
     }
