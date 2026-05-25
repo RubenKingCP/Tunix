@@ -682,7 +682,7 @@ public class LibraryView extends JPanel {
 
         if(type == LibraryAssetType.PLAYLIST) {
             System.out.println("Playlist Clicked");
-            libraryController.playlistClicked();
+            libraryController.playlistClicked(asset);
         } else if (type == LibraryAssetType.Album) {
             System.out.println("Album Clicked");
             libraryController.albumClicked();

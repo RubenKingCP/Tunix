@@ -11,13 +11,16 @@ public class LoginController {
     private final LoginView loginView;
     private final LoginService loginService;
     private final EventBus eventBus;
-    private final SessionService sessionService;
 
-    public LoginController(LoginView loginView, LoginService loginService, SessionService sessionService, EventBus eventBus){
-        this.loginView = loginView;
+    public LoginController(LoginService loginService, SessionService sessionService, EventBus eventBus){
         this.loginService = loginService;
         this.eventBus = eventBus;
-        this.sessionService = sessionService;
+        this.loginView = new LoginView();
+        this.loginView.setController(this);
+    }
+
+    public LoginView getView() {
+        return loginView;
     }
 
     public void onLogin(String username, String password){

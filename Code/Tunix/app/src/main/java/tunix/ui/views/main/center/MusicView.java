@@ -21,14 +21,18 @@ public class MusicView extends JPanel {
     private ILibraryAsset musicAsset;
     private MusicController controller;
     // I put it here because we needed it for the header, too, so multiple functions use it
-    private Playlist playlist = new Playlist("Testing", 1, SessionService.Instance.getUser());
-    // add testing songs
-    
+    private Playlist playlist;
+
     public MusicView() {
         initGui();
     }
 
     public void initGui() {
+        removeAll();
+
+        var currentUser = SessionService.Instance == null ? null : SessionService.Instance.getUser();
+        playlist = new Playlist("Testing", 1, currentUser);
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.DARK_GRAY);
         setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
@@ -36,6 +40,12 @@ public class MusicView extends JPanel {
         add(buildHeader());
         add(buildActionsBar());
         add(buildSongTable());
+    }
+
+    public void refresh() {
+        initGui();
+        revalidate();
+        repaint();
     }
 
     // Scroll Bar
@@ -108,7 +118,8 @@ public class MusicView extends JPanel {
         playlistName.setForeground(Color.WHITE);
         playlistName.setFont(new Font("Dialog", Font.BOLD, 28));
 
-        JLabel artist = new JLabel(playlist.getCreator().getUsername());
+        String creatorName = playlist.getCreator() == null ? "Guest" : playlist.getCreator().getUsername();
+        JLabel artist = new JLabel(creatorName);
         artist.setForeground(Color.LIGHT_GRAY);
         artist.setFont(new Font("Dialog", Font.PLAIN, 14));
 
@@ -318,9 +329,5 @@ public class MusicView extends JPanel {
 
     public void setController(MusicController controller) {
         this.controller = controller;
-    }
-
-    public static void main(String[] args) {
-        MusicView mv = new MusicView();
     }
 }

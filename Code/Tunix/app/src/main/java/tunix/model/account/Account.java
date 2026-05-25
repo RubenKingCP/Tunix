@@ -7,7 +7,7 @@ import tunix.dto.enums.Role;
 import tunix.dto.response.AccountResponse;
 
 @Setter
-public abstract class Account {
+public abstract class Account{
 
     protected Long id;
     protected String username;
