@@ -11,10 +11,15 @@ import tunix.controller.main.center.MusicController;
 import tunix.model.ILibraryAsset;
 import tunix.model.musicContent.Playlist;
 import tunix.service.auth.SessionService;
+// -- STUFF I ADDED --
+import tunix.model.musicContent.Song;
+import tunix.model.PlaylistItem;
 
 public class MusicView extends JPanel {
     private ILibraryAsset musicAsset;
     private MusicController controller;
+    // I put it here because we needed it for the header, too, so multiple functions use it
+    private Playlist playlist = new Playlist("Testing", 1, SessionService.Instance.getUser());
 
     public MusicView() {
         initGui();
@@ -93,6 +98,8 @@ public class MusicView extends JPanel {
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setBackground(Color.DARK_GRAY);
 
+        // -------- IM NOT CHANGING THAT, I DONT KNOW HOW WE'LL KNOW IF IT IS PLAYLIST/ALBUM
+        // SO I CANT CREATE AN INSTANCE OF A MODEL... (I SUPPOSE ALBUMS ARE )
         JLabel type = new JLabel("Public Playlist"); // TO-DO: REPLACE WITH ACTUAL PRIVACY SETTING FROM DB
         type.setForeground(Color.LIGHT_GRAY);
         type.setFont(new Font("Dialog", Font.PLAIN, 12));
@@ -209,16 +216,18 @@ public class MusicView extends JPanel {
 
     // Song Table -- List of Songs for the Playlist
     private JScrollPane buildSongTable() {
-        Playlist playlist = new Playlist("Testing", 1, SessionService.Instance.getUser());
         String[] columns = { "#", "Title", "Album", "🕐" };
+        java.util.List<PlaylistItem> playlistItems = playlist.getPlaylistItems();
 
-        Object[][] rows = { // ALL DATA WILL BE DRAWN BY THE BACKEND
-            { "1", "Song Title Placeholder", "Album Placeholder", "3:45" },
-            { "2", "Song Title Placeholder", "Album Placeholder", "4:12" },
-            { "3", "Song Title Placeholder", "Album Placeholder", "2:58" },
-            { "4", "Song Title Placeholder", "Album Placeholder", "5:01" },
-            { "5", "Song Title Placeholder", "Album Placeholder", "3:33" },
-        };
+        // ------------ CHANGED CODE, ADDED MODEL STUFF ------------------
+        Object[][] rows = new Object[playlistItems.size()][3];
+        for (PlaylistItem item : playlistItems) {
+            int pos = item.getPosition();
+            Song sg = item.getSong();
+            rows[pos][0] = pos;
+            rows[pos][1] = sg.getTitle();
+            rows[pos][2] = sg.getDuration();
+        }
 
         JTable table = new JTable(rows, columns) {
             @Override
