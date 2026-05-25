@@ -11,15 +11,16 @@ public class RegisterController {
     private final RegisterService registerService;
     private final RegisterView registerView;
     private final EventBus eventBus;
-    private final SessionService sessopService;
     
-    public RegisterController(RegisterView registerView, RegisterService registerService, SessionService sessionService, EventBus eventBus) {
+    public RegisterController(RegisterService registerService, SessionService sessionService, EventBus eventBus) {
         this.registerService = registerService;
-        this.registerView = registerView;
-        this.sessopService = sessionService;
         this.eventBus = eventBus;
+        this.registerView = new RegisterView();
+        this.registerView.setController(this);
+    }
 
-        
+    public RegisterView getView() {
+        return registerView;
     }
 
     public void onRegisterButtonClicked() {

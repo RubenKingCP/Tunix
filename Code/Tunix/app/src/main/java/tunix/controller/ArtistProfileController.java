@@ -1,22 +1,25 @@
 package tunix.controller;
 
+import javax.swing.JPanel;
+
 import tunix.service.ArtistProfileService;
 import tunix.ui.views.profile.ArtistProfileView;
-import tunix.model.account.Artist;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.OpenSongUploadViewEvent;
 
 public class ArtistProfileController {
-    private ArtistProfileView artistProfileView;
-    private ArtistProfileService artistProfileService;
-    private EventBus eventBus;
-    private Artist artist;
+    private final ArtistProfileView artistProfileView;
+    private final ArtistProfileService artistProfileService;
+    private final EventBus eventBus;
 
-    public ArtistProfileController(Artist artist, ArtistProfileView artistProfileView, ArtistProfileService artistProfileService, EventBus eventBus) {
-        this.artist = artist;
-        this.artistProfileView = artistProfileView;
+    public ArtistProfileController(ArtistProfileService artistProfileService, EventBus eventBus) {
+        this.artistProfileView = new ArtistProfileView();
         this.artistProfileService = artistProfileService;
         this.eventBus = eventBus;
+    }
+
+    public JPanel getView() {
+        return artistProfileView;
     }
 
     public void onUploadSongClicked() {

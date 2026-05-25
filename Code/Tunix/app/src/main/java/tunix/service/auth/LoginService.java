@@ -5,12 +5,12 @@ import tunix.dto.request.LoginRequest;
 import tunix.dto.response.AccountResponse;
 import tunix.dto.response.ApiResponse;
 import tunix.model.account.Account;
+import tunix.controller.HomeController;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LoginSuccessEvent;
 import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.navigation.events.SwitchScreenEvent;
 import tunix.ui.MainPanel;
-import tunix.ui.views.main.center.HomeView;
 
 public class LoginService {
     private final LoginApiClient loginApiClient;
@@ -36,7 +36,7 @@ public class LoginService {
 
         eventBus.publish(new SwitchScreenEvent(MainPanel.class));
 
-        eventBus.publish(new SwitchCenterScreenEvent(HomeView.class));
+        eventBus.publish(new SwitchCenterScreenEvent(HomeController.class));
 
     } else {
         System.out.println(":(");
