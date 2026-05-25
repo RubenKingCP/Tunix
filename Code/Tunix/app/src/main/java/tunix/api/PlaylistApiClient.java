@@ -20,5 +20,9 @@ public class PlaylistApiClient {
 
     public ApiResponse<PlaylistResponse> createPlaylist(PlaylistCreateRequest playlistCreateRequest) {
         return apiClient.post("/playlists/create", playlistCreateRequest, PlaylistResponse.class);
+    }
+
+    public ApiResponse<PlaylistResponse> getPlaylistsByName(String query) {
+        return apiClient.post("/playlists/name",query,PlaylistResponse.class);
     } 
 }

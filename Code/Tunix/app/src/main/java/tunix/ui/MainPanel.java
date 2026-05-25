@@ -29,15 +29,18 @@ public class MainPanel extends JPanel {
 
     private final ScreenRegistry registry;
     private final AppContext context;
+    private final SearchController searchController;
 
     public MainPanel(JPanel topBar,
                      JPanel libraryPanel,
                      JPanel musicPlayer,
                      ScreenRegistry registry,
-                     AppContext context) {
+                     AppContext context,
+                     SearchController searchController) {
 
         this.registry = registry;
         this.context = context;
+        this.searchController = searchController;
 
         setLayout(new BorderLayout());
 
@@ -76,7 +79,7 @@ public class MainPanel extends JPanel {
             return new HomeController().getView();
         }
         if (controllerClass == SearchController.class) {
-            return new SearchController().getView();
+            return searchController.getView();
         }
         if (controllerClass == MusicController.class) {
             return new MusicController(context.eventBus).getView();
@@ -95,11 +98,18 @@ public class MainPanel extends JPanel {
     }
 
     private void showController(Class<?> controllerClass) {
-        JPanel panel = registry.get(controllerClass);
+        JPanel panel;
 
-        if (panel == null) {
-            panel = createPanelForController(controllerClass);
+        if (controllerClass == SearchController.class) {
+            panel = searchController.getView();
             register(controllerClass, panel);
+        } else {
+            panel = registry.get(controllerClass);
+
+            if (panel == null) {
+                panel = createPanelForController(controllerClass);
+                register(controllerClass, panel);
+            }
         }
 
         if (panel instanceof tunix.ui.views.profile.UserProfileView userProfileView) {
@@ -114,8 +124,14 @@ public class MainPanel extends JPanel {
     }
 
     public void register(Class<?> key, JPanel panel) {
-        if (registry.get(key) != null) {
+        JPanel existing = registry.get(key);
+
+        if (existing == panel) {
             return;
+        }
+
+        if (existing != null) {
+            centerRouter.remove(existing);
         }
 
         registry.register(key, panel);

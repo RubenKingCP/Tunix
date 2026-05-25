@@ -14,4 +14,8 @@ public class SongApiClient {
     public ApiResponse<SongResponse> uploadSong(SongRequest songRequest) {
         return apiClient.post("/songs/upload", songRequest, SongResponse.class);
     }
+
+    public ApiResponse<SongResponse> getSongsByName(String query) {
+        return apiClient.post("/songs/name",query,SongResponse.class);
+    }
 }

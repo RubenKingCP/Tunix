@@ -8,17 +8,16 @@ import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LogoutEvent;
 import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.navigation.events.SwitchProfileScreenEvent;
-import tunix.service.SearchService;
 import tunix.ui.views.main.TopBarView;
 import tunix.ui.views.profile.UserProfileView;
 
 public class TopBarController {
-    private final SearchService searchService;
+    private final SearchController searchController;
     private final TopBarView topBarView;
     private final EventBus eventBus;
 
-    public TopBarController(SearchService searchService, EventBus eventBus) {
-        this.searchService = searchService;
+    public TopBarController(SearchController searchController, EventBus eventBus) {
+        this.searchController = searchController;
         this.eventBus = eventBus;
         this.topBarView = new TopBarView();
         this.topBarView.setController(this);
@@ -29,6 +28,7 @@ public class TopBarController {
     }
 
     public void onSearch(String query, String searchType) {
+        searchController.search(query, searchType);
         eventBus.publish(new SwitchCenterScreenEvent(SearchController.class));
     }
 

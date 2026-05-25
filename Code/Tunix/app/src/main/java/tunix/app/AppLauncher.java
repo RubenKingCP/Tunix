@@ -2,10 +2,13 @@
 package tunix.app;
 
 
+import tunix.api.AlbumApi;
 import tunix.api.ApiClient;
 import tunix.api.LoginApiClient;
 import tunix.api.PlaylistApiClient;
 import tunix.api.RegisterApiClient;
+import tunix.api.SongApiClient;
+import tunix.controller.SearchController;
 import tunix.controller.auth.LoginController;
 import tunix.controller.auth.RegisterController;
 import tunix.controller.main.LibraryController;
@@ -88,7 +91,8 @@ public class AppLauncher {
                 LibraryService libraryService = new LibraryService();
                 PlaylistService playlistService = new PlaylistService(new PlaylistApiClient(context.apiClient));
                 MusicPlayerService musicPlayerService = new MusicPlayerService();
-                SearchService searchService = new SearchService(context.apiClient);
+                SearchService searchService = new SearchService(new SongApiClient(context.apiClient), new PlaylistApiClient(context.apiClient),new AlbumApi());
+                SearchController searchController = new SearchController(searchService);
 
                 LibraryController libraryController =
                         new LibraryController(libraryService, playlistService, context);
@@ -97,7 +101,7 @@ public class AppLauncher {
                         new MusicPlayerController(musicPlayerService, context.eventBus);
 
                 TopBarController topBarController =
-                        new TopBarController(searchService, context.eventBus);
+                        new TopBarController(searchController, context.eventBus);
 
                 ScreenRegistry registry = new ScreenRegistry();
 
@@ -106,7 +110,8 @@ public class AppLauncher {
                         libraryController.getView(),
                         musicPlayerController.getView(),
                         registry,
-                        context);
+                        context,
+                        searchController);
         }
         
 }
