@@ -22,11 +22,13 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -38,6 +40,7 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import tunix.controller.main.LibraryController;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.dto.request.PlaylistCreateRequest;
@@ -665,6 +668,187 @@ public class LibraryView extends JPanel {
     }
 
     public void showPlaylistCreationMenu() {
+        // Main dialog
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Create Playlist", java.awt.Dialog.ModalityType.APPLICATION_MODAL);        dialog.setSize(420, 420);
+        dialog.setLocationRelativeTo(this);
+        dialog.setResizable(false);
+        dialog.getRootPane().setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60)));
+
+        JPanel main = new JPanel();
+        main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
+        main.setBackground(BG);
+        main.setBorder(BorderFactory.createEmptyBorder(24, 28, 20, 28));
+
+        // Title
+        JLabel titleLabel = new JLabel("Create Playlist");
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Cover picker
+        JPanel coverRow = new JPanel(new BorderLayout(14, 0));
+        coverRow.setBackground(BG);
+        coverRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        coverRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+
+        // Cover placeholder box
+        JLabel coverBox = new JLabel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(40, 40, 40));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2.setColor(new Color(100, 100, 100));
+                g2.setFont(new Font("Arial", Font.PLAIN, 28));
+                FontMetrics fm = g2.getFontMetrics();
+                String icon = "🎵";
+                g2.drawString(icon, (getWidth() - fm.stringWidth(icon)) / 2,
+                        (getHeight() - fm.getHeight()) / 2 + fm.getAscent());
+                g2.dispose();
+            }
+        };
+        coverBox.setPreferredSize(new Dimension(72, 72));
+        coverBox.setMinimumSize(new Dimension(72, 72));
+        coverBox.setMaximumSize(new Dimension(72, 72));
+        coverBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        coverBox.setToolTipText("Click to choose a cover image");
+
+        // Track chosen file path
+        String[] chosenCoverPath = {null};
+
+        coverBox.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                java.awt.FileDialog fileDialog = new java.awt.FileDialog(
+                        (java.awt.Frame) SwingUtilities.getWindowAncestor(LibraryView.this),
+                        "Choose Cover Image",
+                        java.awt.FileDialog.LOAD
+                );
+                fileDialog.setFile("*.jpg;*.jpeg;*.png;*.gif");
+                fileDialog.setVisible(true);
+
+                String dir = fileDialog.getDirectory();
+                String file = fileDialog.getFile();
+                if (dir != null && file != null) {
+                    chosenCoverPath[0] = dir + file;
+                    coverBox.setToolTipText(file);
+                    coverBox.repaint();
+                }
+            }
+        });
+
+        JPanel coverTextCol = new JPanel();
+        coverTextCol.setLayout(new BoxLayout(coverTextCol, BoxLayout.Y_AXIS));
+        coverTextCol.setBackground(BG);
+
+        JLabel coverHint = new JLabel("Click the box to add a cover");
+        coverHint.setForeground(new Color(160, 160, 160));
+        coverHint.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        coverTextCol.add(Box.createVerticalGlue());
+        coverTextCol.add(coverHint);
+        coverTextCol.add(Box.createVerticalGlue());
+
+        coverRow.add(coverBox, BorderLayout.WEST);
+        coverRow.add(coverTextCol, BorderLayout.CENTER);
+
+        // Name field
+        JLabel nameLabel = new JLabel("Playlist name *");
+        nameLabel.setForeground(new Color(160, 160, 160));
+        nameLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JTextField nameField = styledTextField("My Playlist #1");
+        nameField.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Description field
+        JLabel descLabel = new JLabel("Description (optional)");
+        descLabel.setForeground(new Color(160, 160, 160));
+        descLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JTextField descField = styledTextField("Add an optional description");
+        descField.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Buttons row
+        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonRow.setBackground(BG);
+        buttonRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        buttonRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setForeground(new Color(180, 180, 180));
+        cancelButton.setBackground(new Color(40, 40, 40));
+        cancelButton.setFocusPainted(false);
+        cancelButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(60, 60, 60), 1, true),
+                BorderFactory.createEmptyBorder(8, 20, 8, 20)));
+        cancelButton.setFont(new Font("Arial", Font.BOLD, 13));
+        cancelButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        cancelButton.addActionListener(e -> dialog.dispose());
+
+        JButton createBtn = new JButton("Create");
+        createBtn.setForeground(Color.BLACK);
+        createBtn.setBackground(Color.WHITE);
+        createBtn.setOpaque(true);
+        createBtn.setFocusPainted(false);
+        createBtn.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.WHITE, 1, true),
+                BorderFactory.createEmptyBorder(8, 20, 8, 20)));
+        createBtn.setFont(new Font("Arial", Font.BOLD, 13));
+        createBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        buttonRow.add(cancelButton);
+        buttonRow.add(createBtn);
+
+        // Assemble
+        main.add(titleLabel);
+        main.add(Box.createVerticalStrut(20));
+        main.add(coverRow);
+        main.add(Box.createVerticalStrut(20));
+        main.add(nameLabel);
+        main.add(Box.createVerticalStrut(6));
+        main.add(nameField);
+        main.add(Box.createVerticalStrut(16));
+        main.add(descLabel);
+        main.add(Box.createVerticalStrut(6));
+        main.add(descField);
+        main.add(Box.createVerticalStrut(24));
+        main.add(buttonRow);
+
+        dialog.setContentPane(main);
+        dialog.getContentPane().setBackground(BG);
+        dialog.setVisible(true);
+    }
+
+    // Helper to keep field styling consistent
+    private JTextField styledTextField(String placeholder) {
+        JTextField field = new JTextField(placeholder);
+        field.setBackground(new Color(40, 40, 40));
+        field.setForeground(Color.GRAY);
+        field.setCaretColor(Color.WHITE);
+        field.setFont(new Font("Arial", Font.PLAIN, 13));
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(60, 60, 60), 1, true),
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)));
+        field.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (field.getText().equals(placeholder)) {
+                    field.setText("");
+                    field.setForeground(Color.WHITE);
+                }
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (field.getText().isEmpty()) {
+                    field.setForeground(Color.GRAY);
+                    field.setText(placeholder);
+                }
+            }
+        });
+        return field;
     }
 
     public void onPlaylistCreateConfirmClicked(PlaylistCreateRequest playlistRequest) {
