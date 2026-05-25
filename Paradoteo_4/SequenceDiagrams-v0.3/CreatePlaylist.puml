@@ -13,7 +13,6 @@ participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistBackendRepository
 
-database DB
 
 activate LibraryView
 User -> LibraryView : clicks "Create Playlist"
@@ -40,8 +39,6 @@ PlaylistBackendController -> PlaylistBackendService : checkForDuplicateSong(play
 activate PlaylistBackendService
 PlaylistBackendService -> PlaylistBackendRepository : checkForDuplicateSong(playlistId, songId)
 activate PlaylistBackendRepository
-PlaylistBackendRepository -> DB : run mySQL query
-DB --> PlaylistBackendRepository : hasDuplicate
 PlaylistBackendRepository --> PlaylistBackendService : hasDuplicate
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : hasDuplicate
@@ -72,8 +69,6 @@ PlaylistBackendController -> PlaylistBackendService : createPlaylist(playlistId)
 activate PlaylistBackendService
 PlaylistBackendService -> PlaylistBackendRepository : createPlaylist(playlistId)
 activate PlaylistBackendRepository
-PlaylistBackendRepository -> DB : run mySQL query
-DB --> PlaylistBackendRepository : success
 PlaylistBackendRepository --> PlaylistBackendService : success
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : success

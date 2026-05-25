@@ -16,7 +16,6 @@ participant ArtistBackendController
 participant ArtistBackendService
 participant ArtistBackendRepository
 
-database DB
 
 participant EventBus
 
@@ -40,8 +39,6 @@ ArtistBackendController -> ArtistBackendService : searchArtistByName(query)
 activate ArtistBackendService
 ArtistBackendService -> ArtistBackendRepository : searchArtistByName(query)
 activate ArtistBackendRepository
-ArtistBackendRepository -> DB : run mySQL query
-DB --> ArtistBackendRepository : return results
 ArtistBackendRepository --> ArtistBackendService : return results
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return results

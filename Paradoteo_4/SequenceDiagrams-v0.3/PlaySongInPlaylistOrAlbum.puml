@@ -17,7 +17,6 @@ participant SongBackendRepository
 
 participant EventBus
 
-database DB
 
 activate MusicPlayerView
 ref over MusicView, MusicController
@@ -48,16 +47,18 @@ ApiService -> SongBackendController : getSongById(songId)
 activate SongBackendController
 SongBackendService -> SongBackendRepository : getSongById(songId)
 activate SongBackendRepository
-SongBackendRepository -> DB : run mySQL query
-DB --> SongBackendRepository : return song
 SongBackendRepository --> SongBackendService : return song
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : return song
 deactivate SongBackendService
 SongBackendController --> ApiService : return song
 deactivate SongBackendController
-Api --> SongService : return song
+ApiService --> SongApiClient : return song
+deactivate ApiService
+SongApiClient --> SongService : return song
+deactivate SongApiClient
 SongService --> MusicPlayerController : return song
+deactivate SongService
 MusicPlayerController ->> MusicPlayerView : updateView()
 
 

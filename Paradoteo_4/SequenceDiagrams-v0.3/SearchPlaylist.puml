@@ -16,7 +16,6 @@ participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistBackendRepository
 
-database DB
 
 participant EventBus
 
@@ -40,8 +39,6 @@ PlaylistBackendController -> PlaylistBackendService : searchPlaylistByName(query
 activate PlaylistBackendService
 PlaylistBackendService -> PlaylistBackendRepository : searchPlaylistByName(query)
 activate PlaylistBackendRepository
-PlaylistBackendRepository -> DB : run mySQL query
-DB --> PlaylistBackendRepository : return results
 PlaylistBackendRepository --> PlaylistBackendService : return results
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : return results

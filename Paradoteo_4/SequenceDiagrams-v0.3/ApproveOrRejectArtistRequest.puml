@@ -31,8 +31,6 @@ ArtistRequestBackendController -> ArtistRequestBackendService : getApplicationDe
 activate ArtistRequestBackendService
 ArtistRequestBackendService -> ArtistRequestBackendRepository : getApplicationDetails(applicationId)
 activate ArtistRequestBackendRepository
-ArtistRequestBackendRepository -> DB : run mySQL query
-DB --> ArtistRequestBackendRepository : return application details
 ArtistRequestBackendRepository --> ArtistRequestBackendService : return application details
 deactivate ArtistRequestBackendRepository
 ArtistRequestBackendService --> ArtistRequestBackendController : return application details
@@ -64,8 +62,6 @@ ArtistRequestBackendController -> ArtistRequestBackendService : saveResponse(adm
 activate ArtistRequestBackendService
 ArtistRequestBackendService -> ArtistRequestBackendRepository : saveResponse(adminRes, applicationId)
 activate ArtistRequestBackendRepository
-ArtistRequestBackendRepository -> DB : run mySQL query
-DB --> ArtistRequestBackendRepository : return success
 ArtistRequestBackendRepository --> ArtistRequestBackendService : return success
 deactivate ArtistRequestBackendRepository
 ArtistRequestBackendService --> ArtistRequestBackendController : return success

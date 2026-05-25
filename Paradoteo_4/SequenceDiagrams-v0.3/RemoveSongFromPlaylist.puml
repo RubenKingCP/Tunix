@@ -13,7 +13,6 @@ participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistBackendRepository
 
-database DB
 
 ref over MusicView, MusicController
 SelectPlaylist
@@ -46,8 +45,6 @@ alt isOwner
     activate PlaylistBackendService
     PlaylistBackendService -> PlaylistBackendRepository : removeSongFromPlaylist(playlistId, songId)
     activate PlaylistBackendRepository
-    PlaylistBackendRepository -> DB
-    DB --> PlaylistBackendRepository : return succes/fail
     PlaylistBackendRepository --> PlaylistBackendService : return succes/fail
     deactivate PlaylistBackendRepository
     PlaylistBackendService --> PlaylistBackendController : return succes/fail

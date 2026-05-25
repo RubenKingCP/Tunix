@@ -15,7 +15,6 @@ participant UserBackendController
 participant UserBackendService
 participant UserBackendRepository
 
-database DB
 
 activate UserProfileView
 User -> UserProfileView : clicks on "Buy Premium"
@@ -41,8 +40,6 @@ UserBackendController -> UserBackendService : updateUserSubscription(userId,true
 activate UserBackendService
 UserBackendService -> UserBackendRepository : updateUserSubscription(userId,true)
 activate UserBackendRepository
-UserBackendRepository -> DB : run mySQL query
-DB --> UserBackendRepository : return success
 UserBackendRepository --> UserBackendService : return success
 deactivate UserBackendRepository
 UserBackendService --> UserBackendController : return success

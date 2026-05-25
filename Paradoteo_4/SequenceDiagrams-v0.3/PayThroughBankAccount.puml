@@ -15,7 +15,6 @@ participant UserBackendController
 participant UserBackendService
 participant UserBackendRepository
 
-database DB
 
 participant EventBus
 
@@ -51,8 +50,6 @@ UserBackendController -> UserBackendService : saveBankCredentials(credentials)
 activate UserBackendService
 UserBackendService -> UserBackendRepository : saveBankCredentials(credentials)
 activate UserBackendRepository
-UserBackendRepository -> DB : run mySQL query
-DB --> UserBackendRepository : return success
 UserBackendRepository --> UserBackendService : return success
 deactivate UserBackendRepository
 UserBackendService --> UserBackendController : return success

@@ -16,7 +16,6 @@ participant ArtistRequestBackendController
 participant ArtistRequestBackendService
 participant ArtistRequestBackendRepository
 
-database DB
 
 participant EventBus
 
@@ -58,8 +57,6 @@ ArtistRequestBackendController -> ArtistRequestBackendService : submitArtistAppl
 activate ArtistRequestBackendService
 ArtistRequestBackendService -> ArtistRequestBackendRepository : submitArtistApplication(formData)
 activate ArtistRequestBackendRepository
-ArtistRequestBackendRepository -> DB : run mySQL query
-DB --> ArtistRequestBackendRepository : return success
 ArtistRequestBackendRepository --> ArtistRequestBackendService : return success
 deactivate ArtistRequestBackendRepository
 ArtistRequestBackendService --> ArtistRequestBackendController : return success

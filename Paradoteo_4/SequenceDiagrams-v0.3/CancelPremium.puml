@@ -13,7 +13,6 @@ participant UserBackendController
 participant UserBackendService
 participant UserBackendRepository
 
-database DB
 
 activate UserProfileView
 User -> UserProfileView : clicks on "Cancel Premium"
@@ -31,8 +30,6 @@ UserBackendController -> UserBackendService : updatePremiumStatus(userId,false)
 activate UserBackendService
 UserBackendService -> UserBackendRepository : updatePremiumStatus(userId,false)
 activate UserBackendRepository
-UserBackendRepository -> DB : run mySQL query
-DB --> UserBackendRepository : return success
 UserBackendRepository --> UserBackendService : return success
 deactivate UserBackendRepository
 UserBackendService -> UserBackendController : return success

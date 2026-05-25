@@ -14,7 +14,6 @@ participant SongBackendController
 participant SongBackendService
 participant SongBackendRepository
 
-database DB
 
 activate ArtistProfileView
 Artist -> ArtistProfileView : artist clicks on "Upload Song"
@@ -41,8 +40,6 @@ SongBackendController -> SongBackendService : checkForDuplicateName(songName)
 activate SongBackendService
 SongBackendService -> SongBackendRepository : checkForDuplicateName(songName)
 activate SongBackendRepository
-SongBackendRepository -> DB : run mySQL query
-DB --> SongBackendRepository : hasDuplicate
 SongBackendRepository --> SongBackendService : hasDuplicate
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : hasDuplicate
@@ -70,8 +67,6 @@ SongBackendController -> SongBackendService : uploadSong(song)
 activate SongBackendService
 SongBackendService -> SongBackendRepository : uploadSong(song)
 activate SongBackendRepository
-SongBackendRepository -> DB : run mySQL query
-DB --> SongBackendRepository : success
 SongBackendRepository --> SongBackendService : success
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : success

@@ -23,7 +23,6 @@ participant ArtistBackendController
 participant ArtistBackendService
 participant ArtistBackendRepository
 
-database DB
 
 participant EventBus
 
@@ -57,8 +56,6 @@ ArtistBackendController -> ArtistBackendService : getArtistDataAndFollowStatus(a
 activate ArtistBackendService
 ArtistBackendService -> ArtistBackendRepository : getArtistDataAndFollowStatus(artistId,userId)
 activate ArtistBackendRepository
-ArtistBackendRepository -> DB : run mySQL query
-DB --> ArtistBackendRepository : return artist data and follow status
 ArtistBackendRepository --> ArtistBackendService : return artist data and follow status
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return artist data and follow status
@@ -93,8 +90,6 @@ ArtistFollowBackendController -> ArtistFollowBackendService : updateFollowStatus
 activate ArtistFollowBackendService
 ArtistFollowBackendService -> ArtistFollowBackendRepository : updateFollowStatus(newFollowStatus,artistId,userId)
 activate ArtistFollowBackendRepository
-ArtistFollowBackendRepository -> DB : run mySQL query
-DB --> ArtistFollowBackendRepository : return success/fail
 ArtistFollowBackendRepository --> ArtistFollowBackendService : return success/fail
 deactivate ArtistFollowBackendRepository
 ArtistFollowBackendService --> ArtistFollowBackendController : return success/fail

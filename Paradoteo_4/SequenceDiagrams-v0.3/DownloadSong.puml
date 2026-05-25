@@ -14,7 +14,6 @@ participant SongBackendService
 participant SongBackendRepository
 participant FileSystemService
 
-database DB
 
 activate MusicView
 User -> MusicView : selects song
@@ -40,8 +39,6 @@ alt User is Premium
     activate SongBackendService
     SongBackendService -> SongBackendRepository : downloadSong(songId)
     activate SongBackendRepository
-    SongBackendRepository -> DB : run mySQL query
-    DB --> SongBackendRepository : return song file
     SongBackendRepository --> SongBackendService : return song file
     deactivate SongBackendRepository
     SongBackendService --> SongBackendController : return song file

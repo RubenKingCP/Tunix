@@ -16,7 +16,6 @@ participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistBackendRepository
 
-database DB
 
 participant EventBus
 
@@ -46,8 +45,6 @@ PlaylistBackendController -> PlaylistBackendService : checkForDuplicateSong(play
 activate PlaylistBackendService
 PlaylistBackendService -> PlaylistBackendRepository : checkForDuplicateSong(playlistId, songId)
 activate PlaylistBackendRepository
-PlaylistBackendRepository -> DB : run mySQL query
-DB --> PlaylistBackendRepository : hasDuplicate
 PlaylistBackendRepository --> PlaylistBackendService : hasDuplicate
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : hasDuplicate
@@ -74,8 +71,6 @@ PlaylistBackendController -> PlaylistBackendService : addToPlaylist(playlistId, 
 activate PlaylistBackendService
 PlaylistBackendService -> PlaylistBackendRepository : addToPlaylist(playlistId, songId)
 activate PlaylistBackendRepository
-PlaylistBackendRepository -> DB : run mySQL query
-DB --> PlaylistBackendRepository : updated playlist
 PlaylistBackendRepository --> PlaylistBackendService : updated playlist
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : updated playlist
