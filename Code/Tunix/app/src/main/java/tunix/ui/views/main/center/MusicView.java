@@ -14,6 +14,8 @@ import tunix.service.auth.SessionService;
 // -- STUFF I ADDED --
 import tunix.model.musicContent.Song;
 import tunix.model.PlaylistItem;
+// TEMPORARY FOR TESTING PURPOSES
+import tunix.model.account.Artist;
 
 public class MusicView extends JPanel {
     private ILibraryAsset musicAsset;
@@ -223,7 +225,9 @@ public class MusicView extends JPanel {
 
     // Song Table -- List of Songs for the Playlist
     private JScrollPane buildSongTable() {
-        String[] columns = { "#", "Title", "Album", "🕐" };
+        // TEMPORARY SONG FOR TESTING
+        playlist.addSong(new Song("Song Name", 1, new Artist(1L, "Artist Name", "artist@gmail.com", null, 1109, false), 321, "path", "path"));
+        String[] columns = { "#", "Title", "Artist", "🕐" };
         java.util.List<PlaylistItem> playlistItems = playlist.getPlaylistItems();
 
         // ------------ CHANGED CODE, ADDED MODEL STUFF ------------------
@@ -231,10 +235,12 @@ public class MusicView extends JPanel {
         for (PlaylistItem item : playlistItems) {
             int pos = item.getPosition();
             Song sg = item.getSong();
-            rows[pos][0] = pos;
+            rows[pos][0] = pos+1;
             rows[pos][1] = sg.getTitle();
             rows[pos][2] = sg.getSubtitle();
-            rows[pos][3] = sg.getDuration();
+            int minutes = sg.getDuration()/60;
+            int seconds = sg.getDuration()-(minutes*60);
+            rows[pos][3] = minutes + ":" + seconds;
         }
 
         JTable table = new JTable(rows, columns) {
