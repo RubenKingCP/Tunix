@@ -1,385 +1,1019 @@
 package tunix.ui.views.main.center;
 
-import tunix.controller.ArtistProfileController;
-import tunix.controller.UploadSongController;
-import tunix.navigation.events.EventBus;
-import tunix.navigation.events.SwitchCenterScreenEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+
+import tunix.model.musicContent.Album;
+import tunix.model.musicContent.Song;
+import tunix.model.account.Artist;
 
 public class ArtistView extends JPanel {
 
-    private static final Color BACKGROUND_COLOR = new Color(18, 18, 18);
-    private static final Color HEADER_COLOR = new Color(25, 25, 25);
-    private static final Color BUTTON_COLOR = new Color(30, 215, 96);
-    private static final Color TEXT_COLOR = Color.WHITE;
+    private Artist artist;
 
-    private final EventBus eventBus;
+    private List<Song> topSongs = new ArrayList<>();
 
-    private UploadSongController uploadController;
+    private List<Album> albums = new ArrayList<>();
 
-    private JLabel selectedSongLabel;
-    private JLabel selectedCoverLabel;
+    public ArtistView() {
 
-    private JTextField titleField;
-    private JTextField albumField;
-
-    private JSpinner trackNumberSpinner;
-
-    public ArtistView(EventBus eventBus) {
-
-        this.eventBus = eventBus;
-
-        initializeUI();
+        initGui();
     }
 
-    public void setUploadController(UploadSongController uploadController) {
+    public void setArtistData(
+            Artist artist,
+            List<Song> topSongs,
+            List<Album> albums
+    ) {
 
-        this.uploadController = uploadController;
+        this.artist = artist;
+
+        this.topSongs =
+                topSongs == null
+                        ? new ArrayList<>()
+                        : topSongs;
+
+        this.albums =
+                albums == null
+                        ? new ArrayList<>()
+                        : albums;
+
+        initGui();
+
+        revalidate();
+
+        repaint();
     }
 
-    private void initializeUI() {
+    private void initGui() {
 
-        setLayout(new BorderLayout());
+        removeAll();
 
-        setBackground(BACKGROUND_COLOR);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        add(createHeader(), BorderLayout.NORTH);
-        add(createMainContent(), BorderLayout.CENTER);
-        add(createFooter(), BorderLayout.SOUTH);
-    }
+        setBackground(Color.DARK_GRAY);
 
-    private JPanel createHeader() {
-
-        JPanel headerPanel = new JPanel(new BorderLayout());
-
-        headerPanel.setBackground(HEADER_COLOR);
-
-        headerPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
-
-        JLabel title = new JLabel("Artist Upload Center");
-
-        title.setForeground(TEXT_COLOR);
-
-        title.setFont(new Font("Arial", Font.BOLD, 30));
-
-        headerPanel.add(title, BorderLayout.WEST);
-
-        return headerPanel;
-    }
-
-    private JPanel createMainContent() {
-
-        JPanel contentPanel = new JPanel(new GridBagLayout());
-
-        contentPanel.setBackground(BACKGROUND_COLOR);
-
-        contentPanel.setBorder(new EmptyBorder(40, 60, 40, 60));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        gbc.insets = new Insets(12, 12, 12, 12);
-
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        gbc.anchor = GridBagConstraints.WEST;
-
-        //-------------------------------------------------
-        // SONG FILE SECTION
-        //-------------------------------------------------
-
-        JLabel songFileTitle = createLabel("Song File:");
-
-        selectedSongLabel = createLabel("No file selected");
-
-        JButton selectSongButton = createButton("Choose Song");
-
-        selectSongButton.addActionListener(e -> {
-
-            if (uploadController != null) {
-
-                uploadController.onSelectFileClicked();
-            }
-        });
-
-        //-------------------------------------------------
-        // COVER IMAGE SECTION
-        //-------------------------------------------------
-
-        JLabel coverTitle = createLabel("Album Cover:");
-
-        selectedCoverLabel = createLabel("No image selected");
-
-        JButton selectCoverButton = createButton("Choose Cover");
-
-        selectCoverButton.addActionListener(e -> {
-
-            if (uploadController != null) {
-
-                uploadController.onSelectImageCoverClicked();
-            }
-        });
-
-        //-------------------------------------------------
-        // SONG TITLE
-        //-------------------------------------------------
-
-        JLabel titleLabel = createLabel("Song Title:");
-
-        titleField = new JTextField(25);
-
-        //-------------------------------------------------
-        // ALBUM NAME
-        //-------------------------------------------------
-
-        JLabel albumLabel = createLabel("Album:");
-
-        albumField = new JTextField(25);
-
-        //-------------------------------------------------
-        // TRACK NUMBER
-        //-------------------------------------------------
-
-        JLabel trackLabel = createLabel("Track Number:");
-
-        trackNumberSpinner = new JSpinner(
-                new SpinnerNumberModel(1, 1, 100, 1)
-        );
-
-        //-------------------------------------------------
-        // ROW 1
-        //-------------------------------------------------
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-
-        contentPanel.add(songFileTitle, gbc);
-
-        gbc.gridx = 1;
-
-        contentPanel.add(selectedSongLabel, gbc);
-
-        gbc.gridx = 2;
-
-        contentPanel.add(selectSongButton, gbc);
-
-        //-------------------------------------------------
-        // ROW 2
-        //-------------------------------------------------
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-
-        contentPanel.add(coverTitle, gbc);
-
-        gbc.gridx = 1;
-
-        contentPanel.add(selectedCoverLabel, gbc);
-
-        gbc.gridx = 2;
-
-        contentPanel.add(selectCoverButton, gbc);
-
-        //-------------------------------------------------
-        // ROW 3
-        //-------------------------------------------------
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-
-        contentPanel.add(titleLabel, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridwidth = 2;
-
-        contentPanel.add(titleField, gbc);
-
-        //-------------------------------------------------
-        // ROW 4
-        //-------------------------------------------------
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
-
-        contentPanel.add(albumLabel, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridwidth = 2;
-
-        contentPanel.add(albumField, gbc);
-
-        //-------------------------------------------------
-        // ROW 5
-        //-------------------------------------------------
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 1;
-
-        contentPanel.add(trackLabel, gbc);
-
-        gbc.gridx = 1;
-
-        contentPanel.add(trackNumberSpinner, gbc);
-
-        return contentPanel;
-    }
-
-    private JPanel createFooter() {
-
-        JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        footerPanel.setBackground(HEADER_COLOR);
-
-        footerPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-
-        JButton backButton = createButton("Back");
-
-        JButton uploadButton = createButton("Upload Song");
-
-        //-------------------------------------------------
-        // BACK BUTTON
-        //-------------------------------------------------
-
-        backButton.addActionListener(e ->
-                eventBus.publish(
-                        new SwitchCenterScreenEvent(
-                                ArtistProfileController.class
-                        )
+        setBorder(
+                BorderFactory.createEmptyBorder(
+                        24,
+                        24,
+                        24,
+                        24
                 )
         );
 
-        //-------------------------------------------------
-        // UPLOAD BUTTON
-        //-------------------------------------------------
+        add(buildHeader());
 
-        uploadButton.addActionListener(e -> {
+        add(Box.createVerticalStrut(24));
 
-            if (uploadController == null) {
+        add(buildActionsBar());
 
-                displayError("Upload controller is not connected.");
+        add(Box.createVerticalStrut(24));
 
-                return;
-            }
+        add(buildPopularSongsSection());
 
-            //-------------------------------------------------
-            // VALIDATION
-            //-------------------------------------------------
+        add(Box.createVerticalStrut(32));
 
-            if (getSongTitle().isBlank()) {
-
-                displayError("Please enter a song title.");
-
-                return;
-            }
-
-            if (getAlbumName().isBlank()) {
-
-                displayError("Please enter an album name.");
-
-                return;
-            }
-
-            //-------------------------------------------------
-            // SUBMIT
-            //-------------------------------------------------
-
-            uploadController.onSubmitButtonClicked();
-        });
-
-        footerPanel.add(backButton);
-
-        footerPanel.add(uploadButton);
-
-        return footerPanel;
+        add(buildAlbumsSection());
     }
 
-    private JLabel createLabel(String text) {
+    private JPanel buildHeader() {
 
-        JLabel label = new JLabel(text);
+        JPanel header =
+                new JPanel(new BorderLayout(24, 0));
 
-        label.setForeground(TEXT_COLOR);
+        header.setBackground(Color.DARK_GRAY);
 
-        label.setFont(new Font("Arial", Font.PLAIN, 16));
+        header.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        return label;
+        header.add(
+                buildArtistAvatar(),
+                BorderLayout.WEST
+        );
+
+        header.add(
+                buildArtistInfo(),
+                BorderLayout.CENTER
+        );
+
+        return header;
     }
 
-    private JButton createButton(String text) {
+    private JLabel buildArtistAvatar() {
 
-        JButton button = new JButton(text);
+        int size = 180;
 
-        button.setBackground(BUTTON_COLOR);
+        BufferedImage image =
+                new BufferedImage(
+                        size,
+                        size,
+                        BufferedImage.TYPE_INT_RGB
+                );
 
-        button.setForeground(Color.BLACK);
+        Graphics2D g2 = image.createGraphics();
 
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        g2.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+        );
+
+        g2.setColor(new Color(50, 50, 50));
+
+        g2.fillOval(0, 0, size, size);
+
+        g2.setColor(Color.WHITE);
+
+        g2.setFont(
+                new Font(
+                        "Dialog",
+                        Font.BOLD,
+                        64
+                )
+        );
+
+        String initial =
+                artist == null
+                        ? "A"
+                        : artist.getTitle()
+                                .substring(0, 1)
+                                .toUpperCase();
+
+        FontMetrics metrics =
+                g2.getFontMetrics();
+
+        g2.drawString(
+                initial,
+                (size - metrics.stringWidth(initial)) / 2,
+                (size + metrics.getAscent()) / 2
+        );
+
+        g2.dispose();
+
+        return new JLabel(new ImageIcon(image));
+    }
+
+    private JPanel buildArtistInfo() {
+
+        JPanel info = new JPanel();
+
+        info.setLayout(
+                new BoxLayout(
+                        info,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        info.setBackground(Color.DARK_GRAY);
+
+        JLabel verified =
+                new JLabel(
+                        artist != null && artist.isVerified()
+                                ? "✓ Verified Artist"
+                                : "Artist"
+                );
+
+        verified.setForeground(
+                new Color(120, 180, 255)
+        );
+
+        verified.setFont(
+                new Font(
+                        "Dialog",
+                        Font.BOLD,
+                        13
+                )
+        );
+
+        JLabel artistName =
+                new JLabel(
+                        artist == null
+                                ? "Unknown Artist"
+                                : artist.getTitle()
+                );
+
+        artistName.setForeground(Color.WHITE);
+
+        artistName.setFont(
+                new Font(
+                        "Dialog",
+                        Font.BOLD,
+                        42
+                )
+        );
+
+        JLabel followers =
+                new JLabel(
+                        artist == null
+                                ? "0 followers"
+                                : artist.getFollowersCount()
+                                        + " followers"
+                );
+
+        followers.setForeground(Color.LIGHT_GRAY);
+
+        followers.setFont(
+                new Font(
+                        "Dialog",
+                        Font.PLAIN,
+                        14
+                )
+        );
+
+        JLabel biography =
+                new JLabel(
+                        artist == null
+                                ? ""
+                                : "<html><div style='width:500px;'>"
+                                        + artist.getBiography()
+                                        + "</div></html>"
+                );
+
+        biography.setForeground(Color.LIGHT_GRAY);
+
+        biography.setFont(
+                new Font(
+                        "Dialog",
+                        Font.PLAIN,
+                        13
+                )
+        );
+
+        info.add(Box.createVerticalGlue());
+
+        info.add(verified);
+
+        info.add(Box.createVerticalStrut(10));
+
+        info.add(artistName);
+
+        info.add(Box.createVerticalStrut(10));
+
+        info.add(followers);
+
+        info.add(Box.createVerticalStrut(16));
+
+        info.add(biography);
+
+        info.add(Box.createVerticalGlue());
+
+        return info;
+    }
+
+    private JButton buildCirclePlayButton() {
+
+        JButton button =
+                new JButton("▶") {
+
+                    @Override
+                    protected void paintComponent(
+                            Graphics g
+                    ) {
+
+                        Graphics2D g2 =
+                                (Graphics2D) g.create();
+
+                        g2.setRenderingHint(
+                                RenderingHints.KEY_ANTIALIASING,
+                                RenderingHints.VALUE_ANTIALIAS_ON
+                        );
+
+                        g2.setColor(
+                                getModel().isRollover()
+                                        ? new Color(0xDDDDDD)
+                                        : Color.WHITE
+                        );
+
+                        g2.fillOval(
+                                0,
+                                0,
+                                getWidth(),
+                                getHeight()
+                        );
+
+                        g2.setColor(Color.BLACK);
+
+                        g2.setFont(getFont());
+
+                        FontMetrics fm =
+                                g2.getFontMetrics();
+
+                        int x =
+                                (getWidth()
+                                        - fm.stringWidth(
+                                                getText()
+                                        )) / 2 + 2;
+
+                        int y =
+                                (getHeight()
+                                        + fm.getAscent()
+                                        - fm.getDescent()) / 2;
+
+                        g2.drawString(
+                                getText(),
+                                x,
+                                y
+                        );
+
+                        g2.dispose();
+                    }
+                };
+
+        button.setPreferredSize(
+                new Dimension(52, 52)
+        );
+
+        button.setFont(
+                new Font(
+                        "Dialog",
+                        Font.BOLD,
+                        18
+                )
+        );
+
+        button.setContentAreaFilled(false);
+
+        button.setBorderPainted(false);
 
         button.setFocusPainted(false);
 
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setCursor(
+                Cursor.getPredefinedCursor(
+                        Cursor.HAND_CURSOR
+                )
+        );
 
         return button;
     }
 
-    //-------------------------------------------------
-    // VIEW METHODS
-    //-------------------------------------------------
+    private JButton buildActionButton(
+            String label
+    ) {
 
-    public void display() {
+        JButton button =
+                new JButton(label);
 
-        setVisible(true);
-    }
+        button.setFocusPainted(false);
 
-    public void displaySelectedSongFile(String filePath) {
+        button.setBorderPainted(false);
 
-        selectedSongLabel.setText(filePath);
-    }
+        button.setContentAreaFilled(false);
 
-    public void displaySelectedImageCover(String imagePath) {
-
-        selectedCoverLabel.setText(imagePath);
-    }
-
-    public void displayError(String message) {
-
-        JOptionPane.showMessageDialog(
-                this,
-                message,
-                "Error",
-                JOptionPane.ERROR_MESSAGE
+        button.setForeground(
+                new Color(0xAAAAAA)
         );
-    }
 
-    public void displaySuccess(String message) {
-
-        JOptionPane.showMessageDialog(
-                this,
-                message,
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE
+        button.setFont(
+                new Font(
+                        "Dialog",
+                        Font.BOLD,
+                        18
+                )
         );
+
+        button.setCursor(
+                Cursor.getPredefinedCursor(
+                        Cursor.HAND_CURSOR
+                )
+        );
+
+        return button;
     }
 
-    //-------------------------------------------------
-    // GETTERS
-    //-------------------------------------------------
+    private JPanel buildPopularSongsSection() {
 
-    public String getSongTitle() {
+        JPanel section = new JPanel();
 
-        return titleField.getText().trim();
+        section.setLayout(
+                new BoxLayout(
+                        section,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        section.setBackground(Color.DARK_GRAY);
+
+        section.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        JLabel title =
+                new JLabel("Popular");
+
+        title.setForeground(Color.WHITE);
+
+        title.setFont(
+                new Font(
+                        "Dialog",
+                        Font.BOLD,
+                        24
+                )
+        );
+
+        section.add(title);
+
+        section.add(Box.createVerticalStrut(16));
+
+        section.add(buildSongsTable());
+
+        return section;
     }
 
-    public String getAlbumName() {
+    private JScrollPane buildSongsTable() {
 
-        return albumField.getText().trim();
+        String[] columns =
+                { "#", "Title", "Duration" };
+
+        Object[][] rows =
+                new Object[topSongs.size()][3];
+
+        for (int i = 0; i < topSongs.size(); i++) {
+
+            Song song = topSongs.get(i);
+
+            rows[i][0] = i + 1;
+
+            rows[i][1] = song.getTitle();
+
+            int minutes =
+                    song.getDuration() / 60;
+
+            int seconds =
+                    song.getDuration() % 60;
+
+            rows[i][2] =
+                    minutes
+                            + ":"
+                            + String.format(
+                                    "%02d",
+                                    seconds
+                            );
+        }
+
+        JTable table =
+                new JTable(rows, columns) {
+
+                    @Override
+                    public boolean isCellEditable(
+                            int row,
+                            int column
+                    ) {
+                        return false;
+                    }
+                };
+
+        table.setBackground(Color.DARK_GRAY);
+
+        table.setForeground(Color.WHITE);
+
+        table.setFont(
+                new Font(
+                        "Dialog",
+                        Font.PLAIN,
+                        14
+                )
+        );
+
+        table.setRowHeight(46);
+
+        table.setShowGrid(false);
+
+        table.setIntercellSpacing(
+                new Dimension(0, 0)
+        );
+
+        table.setSelectionBackground(
+                new Color(0x3A3A3A)
+        );
+
+        JTableHeader header =
+                table.getTableHeader();
+
+        header.setDefaultRenderer(
+                new DefaultTableCellRenderer() {
+
+                    @Override
+                    public Component getTableCellRendererComponent(
+                            JTable table,
+                            Object value,
+                            boolean isSelected,
+                            boolean hasFocus,
+                            int row,
+                            int column
+                    ) {
+
+                        JLabel label =
+                                (JLabel)
+                                        super.getTableCellRendererComponent(
+                                                table,
+                                                value,
+                                                isSelected,
+                                                hasFocus,
+                                                row,
+                                                column
+                                        );
+
+                        label.setBackground(
+                                Color.DARK_GRAY
+                        );
+
+                        label.setForeground(
+                                Color.LIGHT_GRAY
+                        );
+
+                        label.setFont(
+                                new Font(
+                                        "Dialog",
+                                        Font.PLAIN,
+                                        12
+                                )
+                        );
+
+                        return label;
+                    }
+                }
+        );
+
+        DefaultTableCellRenderer center =
+                new DefaultTableCellRenderer();
+
+        center.setHorizontalAlignment(
+                SwingConstants.CENTER
+        );
+
+        table.getColumnModel()
+                .getColumn(0)
+                .setCellRenderer(center);
+
+        table.getColumnModel()
+                .getColumn(2)
+                .setCellRenderer(center);
+
+        JScrollPane scroll =
+                new JScrollPane(table);
+
+        scroll.setBorder(null);
+
+        scroll.getViewport()
+                .setBackground(Color.DARK_GRAY);
+
+        scroll.setBackground(Color.DARK_GRAY);
+
+        styleScrollBar(scroll);
+
+        return scroll;
     }
 
-    public int getTrackNumber() {
+    private JPanel buildAlbumsSection() {
 
-        return (Integer) trackNumberSpinner.getValue();
+        JPanel section = new JPanel();
+
+        section.setLayout(
+                new BoxLayout(
+                        section,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        section.setBackground(Color.DARK_GRAY);
+
+        section.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        JLabel title =
+                new JLabel("Albums");
+
+        title.setForeground(Color.WHITE);
+
+        title.setFont(
+                new Font(
+                        "Dialog",
+                        Font.BOLD,
+                        24
+                )
+        );
+
+        section.add(title);
+
+        section.add(Box.createVerticalStrut(20));
+
+        JPanel albumsRow =
+                new JPanel(
+                        new FlowLayout(
+                                FlowLayout.LEFT,
+                                20,
+                                0
+                        )
+                );
+
+        albumsRow.setBackground(Color.DARK_GRAY);
+
+        for (Album album : albums) {
+
+            albumsRow.add(
+                    buildAlbumCard(album)
+            );
+        }
+
+        section.add(albumsRow);
+
+        return section;
     }
+
+    private JPanel buildAlbumCard(
+            Album album
+    ) {
+
+        JPanel card = new JPanel();
+
+        card.setLayout(
+                new BoxLayout(
+                        card,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        card.setPreferredSize(
+                new Dimension(180, 240)
+        );
+
+        card.setBackground(
+                new Color(32, 32, 32)
+        );
+
+        card.setBorder(
+                BorderFactory.createEmptyBorder(
+                        12,
+                        12,
+                        12,
+                        12
+                )
+        );
+
+        JLabel cover =
+                buildAlbumCover();
+
+        JLabel title =
+                new JLabel(album.getTitle());
+
+        title.setForeground(Color.WHITE);
+
+        title.setFont(
+                new Font(
+                        "Dialog",
+                        Font.BOLD,
+                        14
+                )
+        );
+
+        JLabel subtitle =
+                new JLabel(
+                        album.getSongs().size()
+                                + " songs"
+                );
+
+        subtitle.setForeground(
+                Color.LIGHT_GRAY
+        );
+
+        subtitle.setFont(
+                new Font(
+                        "Dialog",
+                        Font.PLAIN,
+                        12
+                )
+        );
+
+        card.add(cover);
+
+        card.add(Box.createVerticalStrut(12));
+
+        card.add(title);
+
+        card.add(Box.createVerticalStrut(4));
+
+        card.add(subtitle);
+
+        return card;
+    }
+
+    private JLabel buildAlbumCover() {
+
+        int size = 156;
+
+        BufferedImage image =
+                new BufferedImage(
+                        size,
+                        size,
+                        BufferedImage.TYPE_INT_RGB
+                );
+
+        Graphics2D g2 = image.createGraphics();
+
+        g2.setColor(new Color(60, 60, 60));
+
+        g2.fillRect(0, 0, size, size);
+
+        g2.setColor(Color.WHITE);
+
+        g2.setFont(
+                new Font(
+                        "Dialog",
+                        Font.PLAIN,
+                        42
+                )
+        );
+
+        String note = "♪";
+
+        FontMetrics fm =
+                g2.getFontMetrics();
+
+        g2.drawString(
+                note,
+                (size - fm.stringWidth(note)) / 2,
+                (size + fm.getAscent()) / 2
+        );
+
+        g2.dispose();
+
+        return new JLabel(new ImageIcon(image));
+    }
+
+    private void styleScrollBar(
+            JScrollPane scrollPane
+    ) {
+
+        JScrollBar bar =
+                scrollPane.getVerticalScrollBar();
+
+        bar.setPreferredSize(
+                new Dimension(6, 0)
+        );
+
+        bar.setUI(new BasicScrollBarUI() {
+
+            @Override
+            protected void configureScrollBarColors() {
+
+                thumbColor =
+                        new Color(
+                                180,
+                                180,
+                                180,
+                                160
+                        );
+
+                trackColor =
+                        new Color(
+                                50,
+                                50,
+                                50,
+                                255
+                        );
+            }
+
+            @Override
+            protected JButton createDecreaseButton(
+                    int orientation
+            ) {
+                return invisibleButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(
+                    int orientation
+            ) {
+                return invisibleButton();
+            }
+
+            private JButton invisibleButton() {
+
+                JButton button =
+                        new JButton();
+
+                button.setPreferredSize(
+                        new Dimension(0, 0)
+                );
+
+                return button;
+            }
+
+            @Override
+            protected void paintThumb(
+                    Graphics g,
+                    JComponent c,
+                    java.awt.Rectangle r
+            ) {
+
+                Graphics2D g2 =
+                        (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.setColor(thumbColor);
+
+                g2.fillRoundRect(
+                        r.x,
+                        r.y,
+                        r.width,
+                        r.height,
+                        6,
+                        6
+                );
+
+                g2.dispose();
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() -> {
+
+            Artist artist =
+                    new Artist(
+                            1L,
+                            "Arctic Pulse",
+                            "artist@test.com",
+                            "An electronic alternative artist blending ambient textures with synth-driven melodies.",
+                            245120,
+                            true
+                    );
+
+            List<Song> songs =
+                    List.of(
+                            new Song(
+                                    "Neon Dreams",
+                                    1,
+                                    artist,
+                                    212,
+                                    "",
+                                    ""
+                            ),
+                            new Song(
+                                    "Afterlight",
+                                    2,
+                                    artist,
+                                    184,
+                                    "",
+                                    ""
+                            ),
+                            new Song(
+                                    "Static Horizon",
+                                    3,
+                                    artist,
+                                    201,
+                                    "",
+                                    ""
+                            )
+                    );
+
+            List<Album> albums =
+                    List.of(
+                            new Album(
+                                    "Midnight Echoes",
+                                    1,
+                                    artist,
+                                    songs,
+                                    null
+                            ),
+                            new Album(
+                                    "Synthetic Bloom",
+                                    2,
+                                    artist,
+                                    songs,
+                                    null
+                            )
+                    );
+
+            ArtistView view =
+                    new ArtistView();
+
+            view.setArtistData(
+                    artist,
+                    songs,
+                    albums
+            );
+
+            JFrame frame =
+                    new JFrame(
+                            "Artist View"
+                    );
+
+            frame.setDefaultCloseOperation(
+                    JFrame.EXIT_ON_CLOSE
+            );
+
+            frame.setContentPane(view);
+
+            frame.setSize(1000, 800);
+
+            frame.setLocationRelativeTo(null);
+
+            frame.setVisible(true);
+        });
+    }
+
+// =========================
+// CONTROLLER HOOK (SAFE)
+// =========================
+
+private tunix.controller.ArtistController controller;
+
+public void setController(tunix.controller.ArtistController controller) {
+    this.controller = controller;
 }
+
+// =========================
+// INTERACTION HOOKS
+// =========================
+
+private void onFollowClicked() {
+    if (artist == null) return;
+
+    // Placeholder logic (safe no-op for now)
+    System.out.println("Follow clicked for: " + artist.getTitle());
+}
+
+// Future navigation-ready hook
+private void onAlbumClicked(Album album) {
+    if (album == null) return;
+
+    System.out.println("Album clicked: " + album.getTitle());
+
+    // Later you will plug EventBus here:
+    // eventBus.publish(new OpenAlbumViewEvent(album));
+}
+
+// =========================
+// WIRE ACTIONS INTO UI
+// =========================
+
+private JPanel buildActionsBar() {
+
+    JPanel bar =
+            new JPanel(
+                    new FlowLayout(
+                            FlowLayout.LEFT,
+                            16,
+                            0
+                    )
+            );
+
+    bar.setBackground(Color.DARK_GRAY);
+    bar.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    JButton playButton = buildCirclePlayButton();
+
+    JButton followButton = buildActionButton("Follow");
+    followButton.addActionListener(e -> onFollowClicked());
+
+    JButton shuffleButton = buildActionButton("Shuffle");
+    JButton optionsButton = buildActionButton("⋯");
+
+    bar.add(playButton);
+    bar.add(followButton);
+    bar.add(shuffleButton);
+    bar.add(optionsButton);
+
+    return bar;
+}
+
+
+
+}
+

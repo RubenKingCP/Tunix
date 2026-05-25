@@ -8,7 +8,9 @@ import javax.swing.JPanel;
 
 import tunix.api.ApiClient;
 import tunix.api.SongApiClient;
+import tunix.navigation.events.OpenArtistViewEvent;
 import tunix.controller.AdminProfileController;
+import tunix.controller.ArtistController;
 import tunix.controller.ArtistProfileController;
 import tunix.controller.HomeController;
 import tunix.controller.SearchController;
@@ -30,6 +32,7 @@ import tunix.ui.views.main.center.UploadSongView;
 
 public class MainPanel extends JPanel {
 
+    private ArtistController artistController;
     private final JPanel centerRouter = new JPanel(new CardLayout());
     private final CardLayout layout = (CardLayout) centerRouter.getLayout();
 
@@ -70,6 +73,30 @@ public class MainPanel extends JPanel {
             if (musicPanel instanceof tunix.ui.views.main.center.MusicView musicView) {
                 musicView.setAsset(e.getPlaylist());
             }
+        eventBus.subscribe(OpenArtistViewEvent.class, event -> {
+            showController(ArtistController.class);
+
+            JPanel panel = registry.get(ArtistController.class);
+
+            if (panel instanceof tunix.ui.views.main.center.ArtistView view) {
+
+                if (artistController == null) {
+                    artistController = new ArtistController();
+                }
+
+                artistController.loadArtist(
+                        event.getArtist(),
+                        java.util.List.of(),
+                        java.util.List.of()
+                );
+
+                view.setArtistData(
+                        event.getArtist(),
+                        java.util.List.of(),
+                        java.util.List.of()
+                );
+            }
+        });
         });
 
         eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {
