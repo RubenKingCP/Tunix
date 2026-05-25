@@ -75,7 +75,6 @@ public class SearchView extends JPanel {
         setBackground(BG);
         setOpaque(true);
 
-        add(buildTopBar(), BorderLayout.NORTH);
 
         JScrollPane scroll = new JScrollPane(buildContent());
         scroll.setBorder(null);
@@ -95,36 +94,7 @@ public class SearchView extends JPanel {
         refreshContent();
     }
 
-    private JPanel buildTopBar() {
-        JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
-        bar.setBackground(SURFACE);
-        bar.setBorder(new EmptyBorder(4, 16, 4, 16));
-
-        JLabel icon = new JLabel("🔍");
-        icon.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        bar.add(icon);
-
-        searchField = new RoundTextField(28);
-        searchField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        searchField.setBackground(SURFACE2);
-        searchField.setForeground(TEXT_PRIMARY);
-        searchField.setCaretColor(TEXT_PRIMARY);
-        searchField.setBorder(new EmptyBorder(6, 12, 6, 12));
-        searchField.setText("What do you want to listen to?");
-        searchField.setForeground(TEXT_SECONDARY);
-
-        searchField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (searchField.getText().trim().isBlank()) {
-                    refreshContent();
-                }
-            }
-        });
-
-        bar.add(searchField);
-        return bar;
-    }
+    
 
     private JPanel buildContent() {
         contentPanel = new JPanel();
