@@ -1,15 +1,17 @@
 package tunix.service.auth;
 
 import tunix.api.LoginApiClient;
+import tunix.controller.HomeController;
 import tunix.dto.request.LoginRequest;
 import tunix.dto.response.AccountResponse;
 import tunix.dto.response.ApiResponse;
 import tunix.model.account.Account;
-import tunix.controller.HomeController;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LoginSuccessEvent;
+import tunix.navigation.events.LogoutEvent;
 import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.navigation.events.SwitchScreenEvent;
+import tunix.ui.AuthPanel;
 import tunix.ui.MainPanel;
 
 public class LoginService {
@@ -19,32 +21,34 @@ public class LoginService {
     public LoginService(LoginApiClient loginApiClient, EventBus eventBus) {
         this.loginApiClient = loginApiClient;
         this.eventBus = eventBus;
+
+        this.eventBus.subscribe(LogoutEvent.class, ignored -> logout());
     }
 
     public void login(LoginRequest loginRequest) {
-    ApiResponse<AccountResponse> response = loginApiClient.login(loginRequest);
+        ApiResponse<AccountResponse> response = loginApiClient.login(loginRequest);
 
-    if (response.isSuccess()) {
+        if (response.isSuccess()) {
+            System.out.println("User login");
 
-        System.out.println("User login");
+            AccountResponse dto = response.getData();
 
-        AccountResponse dto = response.getData();
+            Account account = Account.from(dto);
 
-        Account account = Account.from(dto);
-
-        eventBus.publish(new LoginSuccessEvent(account));
-
-        eventBus.publish(new SwitchScreenEvent(MainPanel.class));
-
-        eventBus.publish(new SwitchCenterScreenEvent(HomeController.class));
-
-    } else {
-        System.out.println(":(");
+            eventBus.publish(new LoginSuccessEvent(account));
+            eventBus.publish(new SwitchScreenEvent(MainPanel.class));
+            eventBus.publish(new SwitchCenterScreenEvent(HomeController.class));
+        } else {
+            System.out.println(":(");
+        }
     }
-}
 
     public void logout() {
-        
+        if (SessionService.Instance != null) {
+            SessionService.Instance.clear();
+        }
+
+        eventBus.publish(new SwitchScreenEvent(AuthPanel.class));
     }
 }
  
