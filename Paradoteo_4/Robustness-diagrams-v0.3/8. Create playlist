@@ -21,7 +21,7 @@ entity "Playlist" as E_PL
 GX --> B_LIB : Επιλογή\n"Create New\nPlaylist"
 B_LIB --> C_DPE
 C_DPE --> B_PE
-GX --> B_PE : Εισαγωγή ονόματος, περιγραφής\nκαι δημοσιώτητας playlist
+GX --> B_PE : "Εισαγωγή ονόματος και περιγραφής playlist"
 GX --> B_PE : (Προεραιτικά) Επιλογή εικόνας
 B_PE --> C_FS : (Προεραιτικά)
 C_FS --> E_FS
