@@ -10,8 +10,6 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -30,6 +28,8 @@ import javax.swing.border.EmptyBorder;
 
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.LibraryPlaylistClicked;
 
 public class SearchView extends JPanel {
 
@@ -67,14 +67,19 @@ public class SearchView extends JPanel {
     private JTextField searchField;
     private JPanel contentPanel;
     private List<ILibraryAsset> results;
+    private final EventBus eventBus;
 
     public SearchView(List<ILibraryAsset> results) {
+        this(results, null);
+    }
+
+    public SearchView(List<ILibraryAsset> results, EventBus eventBus) {
         this.results = results == null ? List.of() : List.copyOf(results);
+        this.eventBus = eventBus;
 
         setLayout(new BorderLayout());
         setBackground(BG);
         setOpaque(true);
-
 
         JScrollPane scroll = new JScrollPane(buildContent());
         scroll.setBorder(null);
@@ -182,6 +187,12 @@ public class SearchView extends JPanel {
         panel.add(sub);
 
         addHoverEffect(panel);
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openResult(asset);
+            }
+        });
         return panel;
     }
 
@@ -259,6 +270,12 @@ public class SearchView extends JPanel {
                 panel.repaint();
             }
         });
+    }
+
+    private void openResult(ILibraryAsset asset) {
+        if (eventBus != null) {
+            eventBus.publish(new LibraryPlaylistClicked(asset));
+        }
     }
 
     private static String truncate(String value, int max) {

@@ -57,8 +57,14 @@ public class MainPanel extends JPanel {
         eventBus.subscribe(SwitchCenterScreenEvent.class,
                 e -> showController(e.getControllerClass()));
 
-        eventBus.subscribe(LibraryPlaylistClicked.class,
-                e -> showController(MusicController.class));
+        eventBus.subscribe(LibraryPlaylistClicked.class, e -> {
+            showController(MusicController.class);
+
+            JPanel musicPanel = registry.get(MusicController.class);
+            if (musicPanel instanceof tunix.ui.views.main.center.MusicView musicView) {
+                musicView.setAsset(e.getPlaylist());
+            }
+        });
 
         eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {
             Account user = SessionService.Instance == null ? null : SessionService.Instance.getUser();
