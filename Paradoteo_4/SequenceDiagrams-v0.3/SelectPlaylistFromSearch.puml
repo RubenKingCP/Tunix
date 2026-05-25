@@ -16,7 +16,6 @@ participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistBackendRepository
 
-database DB
 
 participant EventBus
 
@@ -50,8 +49,6 @@ PlaylistBackendController -> PlaylistBackendService : getPlaylistById(playlistId
 activate PlaylistBackendService
 PlaylistBackendService -> PlaylistBackendRepository : findById(playlistId)
 activate PlaylistBackendRepository
-PlaylistBackendRepository -> DB : query playlist by id
-DB --> PlaylistBackendRepository : return playlist data
 PlaylistBackendRepository --> PlaylistBackendService : return playlist data
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : return playlist data

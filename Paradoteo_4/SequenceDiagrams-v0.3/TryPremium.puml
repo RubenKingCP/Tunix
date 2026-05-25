@@ -13,7 +13,6 @@ participant UserBackendController
 participant UserBackendService
 participant UserBackendRepository
 
-database DB
 
 activate UserProfileView
 User -> UserProfileView : clicks on "Try Premium"
@@ -36,8 +35,6 @@ UserBackendController -> UserBackendService : tryPremium(userId)
 activate UserBackendService
 UserBackendService -> UserBackendRepository : tryPremium(userId)
 activate UserBackendRepository
-UserBackendRepository -> DB : run mySQL query
-DB --> UserBackendRepository : return success
 UserBackendRepository --> UserBackendService : return success
 deactivate UserBackendRepository
 UserBackendService -> UserBackendController : return success

@@ -16,7 +16,6 @@ participant AlbumBackendController
 participant AlbumBackendService
 participant AlbumBackendRepository
 
-database DB
 
 participant EventBus
 
@@ -40,8 +39,6 @@ AlbumBackendController -> AlbumBackendService : searchAlbumByName(query)
 activate AlbumBackendService
 AlbumBackendService -> AlbumBackendRepository : searchAlbumByName(query)
 activate AlbumBackendRepository
-AlbumBackendRepository -> DB : run mySQL query
-DB --> AlbumBackendRepository : return results
 AlbumBackendRepository --> AlbumBackendService : return results
 deactivate AlbumBackendRepository
 AlbumBackendService --> AlbumBackendController : return results

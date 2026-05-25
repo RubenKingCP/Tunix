@@ -18,7 +18,6 @@ participant ArtistBackendController
 participant ArtistBackendService
 participant ArtistBackendRepository
 
-database DB
 
 activate AdminDashboardView
 Admin -> AdminDashboardView : clicks on "Remove Media"
@@ -36,8 +35,6 @@ ArtistBackendController -> ArtistBackendService : getArtistStrikes(artistId)
 activate ArtistBackendService
 ArtistBackendService -> ArtistBackendRepository : getArtistStrikes(artistId)
 activate ArtistBackendRepository
-ArtistBackendRepository -> DB : run mySQL query
-DB --> ArtistBackendRepository : return strikes
 ArtistBackendRepository --> ArtistBackendService : return strikes
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return strikes
@@ -68,8 +65,6 @@ ArtistBackendController -> ArtistBackendService : giveArtistStrike(artistId,stri
 activate ArtistBackendService
 ArtistBackendService -> ArtistBackendRepository : giveArtistStrike(artistId,strikeInfo)
 activate ArtistBackendRepository
-ArtistBackendRepository -> DB : run mySQL query
-DB --> ArtistBackendRepository : return success
 ArtistBackendRepository --> ArtistBackendService : return success
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return success
@@ -97,8 +92,6 @@ ArtistBackendController -> ArtistBackendService : banArtist(artistId)
 activate ArtistBackendService
 ArtistBackendService -> ArtistBackendRepository : banArtist(artistId)
 activate ArtistBackendRepository
-ArtistBackendRepository -> DB : run mySQL query
-DB --> ArtistBackendRepository : return success
 ArtistBackendRepository --> ArtistBackendService : return success
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return success
@@ -124,8 +117,6 @@ SongBackendController -> SongBackendService : removeSong(songId)
 activate SongBackendService
 SongBackendService -> SongBackendRepository : removeSong(songId)
 activate SongBackendRepository
-SongBackendRepository -> DB : run mySQL query
-DB --> SongBackendRepository : return success
 SongBackendRepository --> SongBackendService : return success
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : return success

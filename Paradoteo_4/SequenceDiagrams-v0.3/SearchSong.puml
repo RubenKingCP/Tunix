@@ -16,7 +16,6 @@ participant SongBackendController
 participant SongBackendService
 participant SongBackendRepository
 
-database DB
 
 participant EventBus
 
@@ -40,8 +39,6 @@ SongBackendController -> SongBackendService : searchSongByName(query)
 activate SongBackendService
 SongBackendService -> SongBackendRepository : searchSongByName(query)
 activate SongBackendRepository
-SongBackendRepository -> DB : run mySQL query
-DB --> SongBackendRepository : return results
 SongBackendRepository --> SongBackendService : return results
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : return results
