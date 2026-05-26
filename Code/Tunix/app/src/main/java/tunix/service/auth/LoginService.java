@@ -26,6 +26,7 @@ public class LoginService {
     }
 
     public void login(LoginRequest loginRequest) {
+        System.out.println("Send request to service");
         ApiResponse<AccountResponse> response = loginApiClient.login(loginRequest);
 
         if (response.isSuccess()) {
@@ -51,4 +52,3 @@ public class LoginService {
         eventBus.publish(new SwitchScreenEvent(AuthPanel.class));
     }
 }
- 

@@ -25,7 +25,7 @@ public class SongBackendController {
     public ResponseEntity<ApiResponse<SongResponse>> uploadSong(@RequestBody SongRequest songRequest) {
         try {
             SongEntity song = songService.uploadSong(songRequest);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Song uploaded successfully", SongResponse.fromSong(song)));
+            return ResponseEntity.ok(new ApiResponse<>(true, "Song uploaded successfully", SongResponse.fromEntity(song)));
         } catch (Exception e) {
             return ResponseEntity.ok(new ApiResponse<>(false, "Failed to upload song: " + e.getMessage(), null));
         }

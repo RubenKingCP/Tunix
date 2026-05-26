@@ -5,7 +5,6 @@ import lombok.*;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -13,21 +12,16 @@ import lombok.*;
 public class ArtistEntity {
 
     @Id
-    private Long artistId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "artist_id")
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
     private AccountEntity account;
 
-    private String stageName;
+    private String biography;
 
-    @Column(length = 1000)
-    private String bio;
-
-    private String profilePictureUrl;
-
-    private int monthlyListeners;
+    private int followersCount;
 
     private boolean verified;
 }

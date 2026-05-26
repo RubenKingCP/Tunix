@@ -32,7 +32,7 @@ public class SearchService {
             // return List.of();
             return List.of(new Song(
                     "Dummy Song",
-                    1,
+                    1L,
                     new Artist(1L, "Dummy Artist", "dummy.artist@example.com", "Dummy artist bio", 0, false),
                     180,
                     "",
@@ -53,7 +53,7 @@ public class SearchService {
             Artist artist = new Artist(3L, "Dummy Album Artist", "dummy.album.artist@example.com", "Dummy album artist bio", 0, false);
             Song dummySong = new Song(
                     "Dummy Album Song",
-                    2,
+                    2l,
                     artist,
                     200,
                     "",

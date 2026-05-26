@@ -1,11 +1,12 @@
 package tunixserver.dto.response;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tunixserver.dto.enums.Role;
+import tunixserver.entities.AccountEntity;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class AccountResponse {
 
     private Long accountId;
@@ -13,15 +14,17 @@ public class AccountResponse {
     private String email;
     private Role role;
 
-    private UserResponse userResponse;     
-    private ArtistResponse artistResponse;
+    private UserResponse user;
+    private ArtistResponse artist;
 
-    public AccountResponse(Long accountId, String username, String email, Role role, UserResponse userResponse, ArtistResponse artistResponse) {
-        this.accountId = accountId;
-        this.username = username;
-        this.email = email;
-        this.role = role;
-        this.userResponse = userResponse;
-        this.artistResponse = artistResponse;
-    } 
+    public static AccountResponse fromEntity(AccountEntity acc) {
+        return new AccountResponse(
+                acc.getAccountId(),
+                acc.getUsername(),
+                acc.getEmail(),
+                acc.getRole(),
+                acc.getUser() != null ? UserResponse.fromEntity(acc.getUser()) : null,
+                acc.getArtist() != null ? ArtistResponse.fromEntity(acc.getArtist()) : null
+        );
+    }
 }

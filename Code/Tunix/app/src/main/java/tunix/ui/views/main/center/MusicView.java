@@ -132,7 +132,7 @@ public class MusicView extends JPanel {
     private Song createDummySong() {
         return new Song(
                 "Demo Song",
-                1,
+                1L,
                 new Artist(1L, "Demo Artist", "demo@example.com", null, 210, false),
                 210,
                 "path",

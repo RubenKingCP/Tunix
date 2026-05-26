@@ -1,22 +1,33 @@
 package tunixserver.dto.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import tunixserver.entities.ArtistEntity;
-import tunixserver.entities.SongEntity;
+import tunixserver.entities.SongEntity; 
 
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SongResponse {
-    public int songId;
-    public String title;
-    public ArtistEntity artist; // nested DTO for artist
-    public int duration;
-    public String filePathUrl;
-    public String coverImageUrl;
 
-    // empty constructor for Jackson
-    public SongResponse() {
-        
-    }
+    private Long id;
+    private String title;
+    private ArtistEntity artistId;
+    private String artistName;
+    private int duration;
+    private String filePathUrl;
+    private String coverImageUrl;
 
-    public static SongResponse fromSong(SongEntity songEntity) {
-        return null; // placeholder for mapping logic from SongEntity to SongResponse
+    public static SongResponse fromEntity(SongEntity song) {
+        return new SongResponse(
+                song.getId(),
+                song.getTitle(),
+                song.getArtist() != null ? song.getArtist() : null,
+                song.getArtist() != null ? song.getArtist().getAccount().getUsername() : null,
+                song.getDuration(),
+                song.getFilePathUrl(),
+                song.getCoverImageUrl()
+        );
     }
 }

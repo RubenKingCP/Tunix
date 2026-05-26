@@ -40,6 +40,7 @@ public class UserBackendController {
                                 "\nPassword: " + loginRequest.getPassword()
             );
             AccountResponse accountResponse = userBackendService.loginUser(loginRequest);
+            System.out.println("Data from reponse: " + accountResponse.getUsername());
             return ResponseEntity.ok(new ApiResponse<>(true, "User login succesfull!", accountResponse));
 
         } catch(Exception exception) {

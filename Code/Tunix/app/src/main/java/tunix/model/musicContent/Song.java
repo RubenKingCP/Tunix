@@ -3,24 +3,36 @@ package tunix.model.musicContent;
 import java.util.List;
 
 import tunix.dto.enums.LibraryAssetType;
+import tunix.dto.response.SongResponse;
 import tunix.model.ILibraryAsset;
 import tunix.model.account.Artist;
 
 public class Song implements ILibraryAsset {
     private final String title;
-    private final int songId;
+    private final Long songId;
     private final Artist artist;
     private final int duration; // Duration in seconds
     private final String filePathUrl;
     private final String coverImageUrl; // Optional cover image URL
 
-    public Song(String title, int songId, Artist artist, int duration, String filePathUrl, String coverImageUrl) {
+    public Song(String title, Long songId, Artist artist, int duration, String filePathUrl, String coverImageUrl) {
         this.title = title;
         this.songId = songId;
         this.artist = artist;
         this.duration = duration;
         this.filePathUrl = filePathUrl;
         this.coverImageUrl = coverImageUrl;
+    }
+
+    public static Song fromDto(SongResponse dto, Artist artist) {
+        return new Song(
+                dto.getTitle(),
+                dto.getSongId(),
+                artist,
+                dto.getDuration(),
+                dto.getFilePathUrl(),
+                dto.getCoverImageUrl()
+        );
     }
 
     @Override
@@ -30,7 +42,7 @@ public class Song implements ILibraryAsset {
 
     @Override
     public int getId() {
-        return songId;
+        return songId.intValue();
     }
 
     @Override

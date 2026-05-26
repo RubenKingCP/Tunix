@@ -8,7 +8,6 @@ import javax.swing.JPanel;
 
 import tunix.api.ApiClient;
 import tunix.api.SongApiClient;
-import tunix.navigation.events.OpenArtistViewEvent;
 import tunix.controller.AdminProfileController;
 import tunix.controller.ArtistController;
 import tunix.controller.ArtistProfileController;
@@ -29,6 +28,7 @@ import tunix.service.ArtistProfileService;
 import tunix.service.SongService;
 import tunix.service.auth.SessionService;
 import tunix.ui.views.main.center.UploadSongView;
+import tunix.navigation.events.OpenArtistViewEvent;
 
 public class MainPanel extends JPanel {
 
@@ -66,6 +66,8 @@ public class MainPanel extends JPanel {
         eventBus.subscribe(SwitchCenterScreenEvent.class,
                 e -> showController(e.getControllerClass()));
 
+
+        //TODO: Figure what the fuck is happening here
         eventBus.subscribe(LibraryPlaylistClicked.class, e -> {
             showController(MusicController.class);
 
@@ -73,30 +75,30 @@ public class MainPanel extends JPanel {
             if (musicPanel instanceof tunix.ui.views.main.center.MusicView musicView) {
                 musicView.setAsset(e.getPlaylist());
             }
-        eventBus.subscribe(OpenArtistViewEvent.class, event -> {
-            showController(ArtistController.class);
+            eventBus.subscribe(OpenArtistViewEvent.class, event -> {
+                showController(ArtistController.class);
 
-            JPanel panel = registry.get(ArtistController.class);
+                JPanel panel = registry.get(ArtistController.class);
 
-            if (panel instanceof tunix.ui.views.main.center.ArtistView view) {
+                if (panel instanceof tunix.ui.views.main.center.ArtistView view) {
 
-                if (artistController == null) {
-                    artistController = new ArtistController();
+                    if (artistController == null) {
+                        artistController = new ArtistController();
+                    }
+
+                    artistController.loadArtist(
+                            event.getArtist(),
+                            java.util.List.of(),
+                            java.util.List.of()
+                    );
+
+                    view.setArtistData(
+                            event.getArtist(),
+                            java.util.List.of(),
+                            java.util.List.of()
+                    );
                 }
-
-                artistController.loadArtist(
-                        event.getArtist(),
-                        java.util.List.of(),
-                        java.util.List.of()
-                );
-
-                view.setArtistData(
-                        event.getArtist(),
-                        java.util.List.of(),
-                        java.util.List.of()
-                );
-            }
-        });
+            });
         });
 
         eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {

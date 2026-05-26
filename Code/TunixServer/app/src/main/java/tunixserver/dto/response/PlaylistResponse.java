@@ -1,0 +1,38 @@
+package tunixserver.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import tunixserver.entities.PlaylistEntity;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class PlaylistResponse {
+
+    private Long id;
+    private String title;
+    private Long creatorId;
+    private boolean isPublic;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    private List<SongResponse> songs;
+
+    public static PlaylistResponse fromEntity(PlaylistEntity p) {
+        return new PlaylistResponse(
+                p.getId(),
+                p.getTitle(),
+                p.getCreator() != null ? p.getCreator().getAccountId() : null,
+                p.isPublic(),
+                p.getCreatedAt(),
+                p.getUpdatedAt(),
+                p.getSongs().stream()
+                        .map(SongResponse::fromEntity)
+                        .toList()
+        );
+    }
+}

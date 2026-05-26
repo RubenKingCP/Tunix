@@ -26,7 +26,7 @@ public class LibraryService {
 
         Song doIWantToKnow = new Song(
                 "Do I Wanna Know?",
-                101,
+                101L,
                 artist,
                 272,
                 "/music/do-i-wanna-know.mp3",
@@ -35,7 +35,7 @@ public class LibraryService {
 
         Song letItHappen = new Song(
                 "Let It Happen",
-                102,
+                102L,
                 artist,
                 467,
                 "/music/let-it-happen.mp3",
@@ -44,7 +44,7 @@ public class LibraryService {
 
         Song ruMine = new Song(
                 "R U Mine?",
-                103,
+                103L,
                 artist,
                 205,
                 "/music/r-u-mine.mp3",

@@ -33,7 +33,6 @@ public class AppWindow extends JFrame {
     }
 
     public void register(Class<?> key, JPanel panel) {
-        System.err.println("Class Registered: " + key.getName());
         screens.put(key, panel);
         root.add(panel, key.getSimpleName());
     }
@@ -42,7 +41,6 @@ public class AppWindow extends JFrame {
         if (!screens.containsKey(key)) {
             throw new IllegalStateException("Screen not found: " + key.getSimpleName());
         }
-        System.err.println("Current panel showing: " + key.getSimpleName());
         layout.show(root, key.getSimpleName());
     }
 }

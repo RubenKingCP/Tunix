@@ -1,6 +1,5 @@
 package tunixserver.service;
 
-
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -12,88 +11,74 @@ import tunixserver.dto.response.AccountResponse;
 import tunixserver.dto.response.UserResponse;
 import tunixserver.dto.response.ArtistResponse;
 import tunixserver.entities.AccountEntity;
-import tunixserver.entities.ArtistEntity;
 import tunixserver.entities.UserEntity;
 import tunixserver.repository.AccountBackendRepository;
 import tunixserver.repository.UserBackendRepository;
 
 @Service
 public class UserBackendService {
-    private final UserBackendRepository userBackendRepository;
-    private final AccountBackendRepository accountBackendRepository;
 
-    public UserBackendService(UserBackendRepository userBackendRepository, AccountBackendRepository accountBackendRepository) {
-        this.userBackendRepository = userBackendRepository;
-        this.accountBackendRepository = accountBackendRepository;
+    private final UserBackendRepository userRepo;
+    private final AccountBackendRepository accountRepo;
+
+    public UserBackendService(UserBackendRepository userRepo,
+                              AccountBackendRepository accountRepo) {
+        this.userRepo = userRepo;
+        this.accountRepo = accountRepo;
     }
 
-    public AccountResponse registerUser(RegisterRequest registerRequest) {
-        
-        // Map Account request to entity
-        AccountEntity accountEntity = AccountEntity.builder()
-                .username(registerRequest.getUsername())
-                .email(registerRequest.getEmail())
-                .password(registerRequest.getPassword())
+    public AccountResponse registerUser(RegisterRequest req) {
+
+        AccountEntity account = AccountEntity.builder()
+                .username(req.getUsername())
+                .email(req.getEmail())
+                .password(req.getPassword())
                 .role(Role.USER)
                 .build();
 
-        AccountEntity savedAccount = accountBackendRepository.save(accountEntity);
+        AccountEntity savedAccount = accountRepo.save(account);
 
-        // Map user request to entity
-        UserEntity userEntity = UserEntity.builder()
-                .account(savedAccount)
-                .displayName(registerRequest.getUsername())
-                .premiumTrialUsed(false)
-                .build();
+        UserEntity user = new UserEntity();
+        user.setAccount(savedAccount);
+        user.setDisplayName(req.getUsername());
+        user.setPremium(false);
+        user.setPremiumTrialUsed(false);
 
-        userBackendRepository.save(userEntity);
+        userRepo.save(user);
 
-        // Get the user response
-        UserResponse user = new UserResponse(userEntity.getDisplayName(), null, false);
-        
-        // Send the account response to user
+        UserResponse userResponse = UserResponse.fromEntity(user);
+
         return new AccountResponse(
                 savedAccount.getAccountId(),
                 savedAccount.getUsername(),
                 savedAccount.getEmail(),
                 savedAccount.getRole(),
-                user,
+                userResponse,
                 null
         );
     }
 
-    public AccountResponse loginUser(LoginRequest loginRequest) {
+    public AccountResponse loginUser(LoginRequest req) {
 
-        Optional<AccountEntity> loginAccount = accountBackendRepository.findByUsernameAndPassword(loginRequest.getUsername(), loginRequest.getPassword());
+        Optional<AccountEntity> optional = accountRepo
+                .findByUsernameAndPassword(req.getUsername(), req.getPassword());
 
-        AccountEntity account = loginAccount.get();
-        UserEntity user = account.getUser();
-        ArtistEntity artist = account.getArtist();
+        AccountEntity account = optional
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-        UserResponse userResponse = null;
-        if (user != null) {
-            userResponse = new UserResponse(
-                user.getDisplayName(),
-                user.getProfilePictureUrl(),
-                user.isPremiumTrialUsed()
-            );
-        }
+        UserResponse userResponse =
+                account.getUser() != null ? UserResponse.fromEntity(account.getUser()) : null;
 
-        ArtistResponse artistResponse = null;
-        if (artist != null) {
-            artistResponse = new ArtistResponse(
-                artist.getStageName(),
-                artist.getBio()
-            );
-        }
+        ArtistResponse artistResponse =
+                account.getArtist() != null ? ArtistResponse.fromEntity(account.getArtist()) : null;
 
         return new AccountResponse(
-            account.getAccountId(),
-            account.getUsername(),
-            account.getEmail(),
-            account.getRole(),
-            userResponse,
-            artistResponse
+                account.getAccountId(),
+                account.getUsername(),
+                account.getEmail(),
+                account.getRole(),
+                userResponse,
+                artistResponse
         );
     }
 }

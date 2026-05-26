@@ -3,6 +3,7 @@ package tunix.service;
 import tunix.navigation.events.EventBus;
 import tunix.api.SongApiClient;
 import tunix.dto.request.SongRequest;
+import tunix.dto.response.SongResponse;
 import tunix.model.musicContent.Song;
 
 public class SongService {
@@ -15,7 +16,8 @@ public class SongService {
     }
 
     public Song uploadSong(SongRequest songRequest) {
-        return songApiClient.uploadSong(songRequest).getData().toSong();
+        SongResponse songResponse = songApiClient.uploadSong(songRequest).getData();
+        return new Song(songResponse.getTitle(), songResponse.getSongId(), songResponse.getArtist(), 0, null, null);
     }
 
 }

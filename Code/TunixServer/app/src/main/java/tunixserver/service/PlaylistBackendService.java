@@ -17,23 +17,33 @@ public class PlaylistBackendService {
         this.songBackendRepository = songBackendRepository;
     }
 
-    public boolean addSongToPlaylist(int playlistId, int songId) {
-        // Logic to add the song to the playlist in the database
-        PlaylistEntity playlist = playlistBackendRepository.findById(playlistId);
-        SongEntity song = songBackendRepository.findById(songId).orElseThrow(null);
-        // Check if already in playlist, if not add to playlist and save
-        if (!checkDuplicate(playlistId, songId)) {
-            playlist.addSong(song);
-            playlistBackendRepository.save(playlist);
-        } else {
-            // Return error response to controller indicating the song is already in the playlist
+    public boolean addSongToPlaylist(Long playlistId, Long songId) {
+
+        PlaylistEntity playlist = playlistBackendRepository.findById(playlistId)
+                .orElseThrow(() -> new RuntimeException("Playlist not found"));
+
+        SongEntity song = songBackendRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Song not found"));
+
+        // check duplicate (based on ManyToMany list)
+        boolean exists = playlist.getSongs()
+                .stream()
+                .anyMatch(s -> s.getSongId().equals(songId));
+
+        if (exists) {
             return false;
         }
+
+        playlist.getSongs().add(song);
+
+        playlistBackendRepository.save(playlist);
+
         return true;
     }
 
-    public boolean checkDuplicate(int playlistId, int songId) {
-        PlaylistEntity playlist = playlistBackendRepository.findById(playlistId);
+    public boolean checkDuplicate(Long playlistId, Long songId) {
+        PlaylistEntity playlist = playlistBackendRepository.findById(playlistId)
+                .orElseThrow(() -> new RuntimeException("Playlist not found"));
         for (SongEntity s : playlist.getSongs()) {
             if (s.getSongId() == songId) {
                 return true; // Song already in playlist

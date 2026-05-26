@@ -14,10 +14,6 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-
-import javax.swing.SwingUtilities;
-import javax.swing.JFrame;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -538,35 +534,8 @@ public class ArtistProfileView extends JPanel {
     }
 
     public void setUploadSongListener(ActionListener listener) {
-
         uploadSongButton.addActionListener(listener);
     }
-
-
-    public static void main(String[] args) {
-
-    SwingUtilities.invokeLater(() -> {
-
-        JFrame frame =
-                new JFrame("Artist Profile Test");
-
-        frame.setDefaultCloseOperation(
-                JFrame.EXIT_ON_CLOSE
-        );
-
-        frame.setSize(900, 700);
-
-        frame.setLocationRelativeTo(null);
-
-        frame.setContentPane(
-                new ArtistProfileView()
-        );
-
-        frame.setVisible(true);
-    });
-}
-
-
 }
 
 

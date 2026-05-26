@@ -25,7 +25,7 @@ public class AlbumBackendController {
     public ResponseEntity<ApiResponse<AlbumResponse>> uploadAlbum(@RequestBody AlbumRequest albumRequest){
         try {
             AlbumEntity album = albumBackendService.uploadAlbum(albumRequest);
-            return ResponseEntity.ok(new ApiResponse<AlbumResponse>(true, "Album uploaded successfully", AlbumResponse.fromAlbum(album)));
+            return ResponseEntity.ok(new ApiResponse<AlbumResponse>(true, "Album uploaded successfully", AlbumResponse.fromEntity(album)));
         } catch (Exception e) {
             return ResponseEntity.ok(new ApiResponse<AlbumResponse>(false, "Failed to upload album: " + e.getMessage(), null));
         }
@@ -35,7 +35,7 @@ public class AlbumBackendController {
     public ResponseEntity<ApiResponse<AlbumResponse>> fetchAlbum(@RequestBody AlbumRequest albumRequest){
         try {
             AlbumEntity album = albumBackendService.fetchAlbum(albumRequest);
-            return ResponseEntity.ok(new ApiResponse<AlbumResponse>(true, "Album fetched successfully", AlbumResponse.fromAlbum(album)));
+            return ResponseEntity.ok(new ApiResponse<AlbumResponse>(true, "Album fetched successfully", AlbumResponse.fromEntity(album)));
         } catch (Exception e) {
             return ResponseEntity.ok(new ApiResponse<AlbumResponse>(false, "Failed to fetch album: " + e.getMessage(), null));
         }

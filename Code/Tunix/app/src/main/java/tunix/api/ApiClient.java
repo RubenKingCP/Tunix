@@ -90,7 +90,7 @@ public class ApiClient {
     private <T> ApiResponse<T> sendAndParse(HttpRequest request, Class<T> dataType) throws Exception {
         HttpResponse<String> response =
                 httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
+        System.out.println("RAW RESPONSE: " + response.body());
         JsonNode root = objectMapper.readTree(response.body());
         boolean success = root.get("success").asBoolean();
         String message = root.get("message").asText();

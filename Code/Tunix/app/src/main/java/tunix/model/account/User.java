@@ -5,6 +5,7 @@ public class User extends Account {
 
     private String displayName;
     private String profilePictureUrl;
+    private Long id;
 
     private boolean premium;
     private boolean premiumTrialUsed;
@@ -87,7 +88,9 @@ public class User extends Account {
     // HELPERS
     // =========================
 
-    public boolean canStartPremiumTrial() {
+    public boolean isPremiumTrialUsed() {
         return !premium && !premiumTrialUsed;
     }
+
+
 }

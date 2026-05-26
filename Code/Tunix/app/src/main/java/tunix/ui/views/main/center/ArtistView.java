@@ -878,7 +878,7 @@ public class ArtistView extends JPanel {
                     List.of(
                             new Song(
                                     "Neon Dreams",
-                                    1,
+                                    1L,
                                     artist,
                                     212,
                                     "",
@@ -886,7 +886,7 @@ public class ArtistView extends JPanel {
                             ),
                             new Song(
                                     "Afterlight",
-                                    2,
+                                    2L,
                                     artist,
                                     184,
                                     "",
@@ -894,7 +894,7 @@ public class ArtistView extends JPanel {
                             ),
                             new Song(
                                     "Static Horizon",
-                                    3,
+                                    3L,
                                     artist,
                                     201,
                                     "",

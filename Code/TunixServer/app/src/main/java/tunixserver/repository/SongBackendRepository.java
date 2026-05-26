@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 import tunixserver.entities.SongEntity;
 
 @Repository
-public interface SongBackendRepository extends JpaRepository<SongEntity, Integer> {
-    // duplicate check — Spring generates the SQL automatically
-    boolean existsByTitleAndArtistId(String title, int artistId);
+public interface SongBackendRepository extends JpaRepository<SongEntity, Long> {
+
+    boolean existsByTitleAndArtist_Id(String title, Long artistId);
+
+    SongEntity getSongById(Long songId);
+
 }

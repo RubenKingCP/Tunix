@@ -1,7 +1,6 @@
 package tunixserver.dto.response;
 
-import java.time.LocalDateTime;
-
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import tunixserver.entities.AlbumEntity;
@@ -9,18 +8,17 @@ import tunixserver.entities.AlbumEntity;
 @Getter
 @AllArgsConstructor
 public class AlbumResponse {
-    private Long albumId;
+
+    private Long id;
     private String title;
     private Long artistId;
-    private LocalDateTime releaseDate;
+    private LocalDate releaseDate;
 
-    public static AlbumResponse fromAlbum(AlbumEntity album) {
-        Long artistId = album.getArtist() != null ? album.getArtist().getArtistId() : null;
-
+    public static AlbumResponse fromEntity(AlbumEntity album) {
         return new AlbumResponse(
-                album.getAlbumId(),
+                album.getId(),
                 album.getTitle(),
-                artistId,
+                album.getArtist() != null ? album.getArtist().getId() : null,
                 album.getReleaseDate()
         );
     }

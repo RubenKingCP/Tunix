@@ -1,12 +1,49 @@
 package tunixserver.entities;
 
-public class PlaylistEntity {
-    public void addSong(SongEntity song) {
-        // Logic to add the song to the playlist's list of songs
-    }
+import jakarta.persistence.*;
+import lombok.*;
 
-    public Iterable<SongEntity> getSongs() {
-        // Logic to return the list of songs in the playlist
-        return null; // Placeholder return statement
-    }
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "playlist")
+public class PlaylistEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
+    private AccountEntity creator;
+
+    private boolean isPublic;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @ManyToMany
+    @JoinTable(
+        name = "playlist_song",
+        joinColumns = @JoinColumn(name = "playlist_id"),
+        inverseJoinColumns = @JoinColumn(name = "song_id")
+    )
+    private List<SongEntity> songs = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "playlist_coauthor",
+        joinColumns = @JoinColumn(name = "playlist_id"),
+        inverseJoinColumns = @JoinColumn(name = "account_id")
+    )
+    private List<AccountEntity> coauthors = new ArrayList<>();
 }

@@ -1,69 +1,33 @@
 package tunixserver.entities;
 
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import java.time.LocalDate;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "album")
 public class AlbumEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long albumId;
+    private Long id;
 
     private String title;
 
     @ManyToOne
-    @JoinColumn(name = "artist_id")
+    @JoinColumn(name = "artist_id", nullable = false)
     private ArtistEntity artist;
 
-    private LocalDateTime releaseDate;
+    private LocalDate releaseDate;
 
-    public AlbumEntity() {
-    }
-
-    public AlbumEntity(String title, ArtistEntity artist, LocalDateTime releaseDate) {
+    public AlbumEntity(String title, ArtistEntity artistEntity, LocalDate rDate) {
+        this.artist = artistEntity;
         this.title = title;
-        this.artist = artist;
-        this.releaseDate = releaseDate;
-    }
-
-    public Long getAlbumId() {
-        return albumId;
-    }
-
-    public void setAlbumId(Long albumId) {
-        this.albumId = albumId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public ArtistEntity getArtist() {
-        return artist;
-    }
-
-    public void setArtist(ArtistEntity artist) {
-        this.artist = artist;
-    }
-
-    public LocalDateTime getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(LocalDateTime releaseDate) {
-        this.releaseDate = releaseDate;
+        this.releaseDate = rDate;
     }
 }
