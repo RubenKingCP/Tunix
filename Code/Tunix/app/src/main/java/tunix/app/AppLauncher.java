@@ -2,12 +2,15 @@
 package tunix.app;
 
 
+import tunix.api.AdminApi;
 import tunix.api.AlbumApi;
 import tunix.api.ApiClient;
+import tunix.api.ArtistRequestApiClient;
 import tunix.api.LoginApiClient;
 import tunix.api.PlaylistApiClient;
 import tunix.api.RegisterApiClient;
 import tunix.api.SongApiClient;
+import tunix.controller.AdminController;
 import tunix.controller.SearchController;
 import tunix.controller.auth.LoginController;
 import tunix.controller.auth.RegisterController;
@@ -17,10 +20,13 @@ import tunix.controller.main.TopBarController;
 import tunix.model.AppContext;
 import tunix.navigation.ScreenRegistry;
 import tunix.navigation.events.EventBus;
+import tunix.service.AdminService;
+import tunix.service.ArtistRequestService;
 import tunix.service.LibraryService;
 import tunix.service.MusicPlayerService;
 import tunix.service.PlaylistService;
 import tunix.service.SearchService;
+import tunix.service.SongService;
 import tunix.service.auth.LoginService;
 import tunix.service.auth.RegisterService;
 import tunix.service.auth.SessionService;
@@ -70,7 +76,7 @@ public class AppLauncher {
         // =========================
         // ADMIN (placeholder)
         // =========================
-        AdminPanel adminPanel = new AdminPanel();
+        AdminPanel adminPanel = new AdminPanel(new AdminController(eventBus, new AdminService(new AdminApi()), new ArtistRequestService(new ArtistRequestApiClient(apiClient)), new SongService(eventBus, new SongApiClient(apiClient))));
 
         // =========================
         // REGISTER SCREENS

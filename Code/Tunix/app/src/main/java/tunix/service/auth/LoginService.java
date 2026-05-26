@@ -6,11 +6,13 @@ import tunix.dto.request.LoginRequest;
 import tunix.dto.response.AccountResponse;
 import tunix.dto.response.ApiResponse;
 import tunix.model.account.Account;
+import tunix.model.account.Admin;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LoginSuccessEvent;
 import tunix.navigation.events.LogoutEvent;
 import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.navigation.events.SwitchScreenEvent;
+import tunix.ui.AdminPanel;
 import tunix.ui.AuthPanel;
 import tunix.ui.MainPanel;
 
@@ -35,10 +37,14 @@ public class LoginService {
             AccountResponse dto = response.getData();
 
             Account account = Account.from(dto);
-
-            eventBus.publish(new LoginSuccessEvent(account));
-            eventBus.publish(new SwitchScreenEvent(MainPanel.class));
-            eventBus.publish(new SwitchCenterScreenEvent(HomeController.class));
+            if (account.getClass() != Admin.class){
+                eventBus.publish(new LoginSuccessEvent(account));
+                eventBus.publish(new SwitchScreenEvent(MainPanel.class));
+                eventBus.publish(new SwitchCenterScreenEvent(HomeController.class));
+            } else {
+                eventBus.publish(new SwitchScreenEvent(AdminPanel.class));
+            }
+            
         } else {
             System.out.println(":(");
         }

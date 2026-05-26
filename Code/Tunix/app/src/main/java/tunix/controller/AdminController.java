@@ -2,23 +2,27 @@ package tunix.controller;
 
 import java.util.List;
 
-import javax.swing.JPanel;
-
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.LogoutEvent;
 import tunix.service.AdminService;
 import tunix.service.ArtistRequestService;
+import tunix.service.SongService;
 import tunix.ui.views.admin.AdminView;
 import tunix.model.ArtistRequest;
 
 public class AdminController {
     private final AdminView adminView;
     private final AdminService adminService;
+    private final SongService songService;
     private final ArtistRequestService artistRequestService;
+    private final EventBus eventBus;
 
-    public AdminController(AdminService adminService, ArtistRequestService artistRequestService) {
-        this.adminView = new AdminView();
-        this.adminView.setController(this);
+    public AdminController(EventBus eventBus, AdminService adminService, ArtistRequestService artistRequestService, SongService songService) {
+        this.eventBus = eventBus;
+        this.adminView = new AdminView(this);
         this.adminService = adminService;
         this.artistRequestService = artistRequestService;
+        this.songService = songService;
     }
 
     public AdminView getView() {
@@ -51,5 +55,9 @@ public class AdminController {
 
     public void onRemoveSongClicked(int songId){
         //Code to remove media
+    }
+
+    public void onLogoutButtonClicked() {
+        eventBus.publish(new LogoutEvent());
     }
 }
