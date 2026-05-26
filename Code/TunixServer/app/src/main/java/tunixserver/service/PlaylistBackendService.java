@@ -52,10 +52,10 @@ public class PlaylistBackendService {
         return false; // Song not in playlist
     } 
 
-    public boolean createPlaylist(PlaylistCreateRequest playlistCreateRequest) {
+    public PlaylistEntity createPlaylist(PlaylistCreateRequest playlistCreateRequest) {
         // Code for this
         // PlaylistEntity playlistEntity = playlistCreateRequest.toPlaylistEntity();
         // playlistBackendRepository.save(playlistEntity);
-        return false;
+        return null;
     }
 }

@@ -133,3 +133,21 @@ CREATE TABLE playlist_item (
 
     UNIQUE (playlist_id, position)
 );
+
+CREATE TABLE artist_request (
+    request_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT NOT NULL,
+
+    stage_name VARCHAR(150),
+    bio TEXT,
+    profile_picture_url TEXT,
+
+    status ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
+
+    requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    reviewed_at DATETIME,
+
+    FOREIGN KEY (user_id) REFERENCES user(id)
+        ON DELETE CASCADE
+);

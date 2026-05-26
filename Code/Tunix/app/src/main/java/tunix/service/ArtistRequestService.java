@@ -6,7 +6,7 @@ import tunix.api.ArtistRequestApiClient;
 import tunix.dto.enums.ArtistRequestStatus;
 import tunix.dto.request.ArtistApplicationRequest;
 import tunix.dto.response.ApiResponse;
-import tunix.dto.response.ArtistRequestResponse;
+import tunix.dto.response.ArtistApplicationResponse;
 import tunix.model.ArtistRequest;
 import java.util.ArrayList;
 
@@ -37,21 +37,21 @@ public class ArtistRequestService {
     );
 }
 
-    public ArtistRequest toModel(ArtistRequestResponse dto) {
+    public ArtistRequest toModel(ArtistApplicationResponse dto) {
 
         return new ArtistRequest(0, null, null);
     }
 
     public boolean approveArtistRequest(int requestId) {
         // Code to approve artist request via API call
-        ApiResponse<ArtistRequestResponse> response = artistRequestApiClient.approveArtistRequest(requestId);
+        ApiResponse<ArtistApplicationResponse> response = artistRequestApiClient.approveArtistRequest(requestId);
         // Handle error success
         return true;
     }
 
     public boolean rejectArtistRequest(int requestId) {
         // Code to reject artist request via API call
-        ApiResponse<ArtistRequestResponse> response = artistRequestApiClient.approveArtistRequest(requestId);
+        ApiResponse<ArtistApplicationResponse> response = artistRequestApiClient.approveArtistRequest(requestId);
         // Handle error success
         return true;
     }

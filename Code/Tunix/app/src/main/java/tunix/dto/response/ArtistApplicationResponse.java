@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArtistRequestResponse {
+public class ArtistApplicationResponse {
 
     private Long requestId;
     private Long accountId;

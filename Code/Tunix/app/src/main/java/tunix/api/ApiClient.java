@@ -88,6 +88,23 @@ public class ApiClient {
         }
     }
 
+    // PUT
+    public <T> ApiResponse<T> put(String path, Object body, Class<T> dataType) {
+        try {
+            String jsonRequest = objectMapper.writeValueAsString(body);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + path))
+                    .header("Content-Type", "application/json")
+                    .PUT(HttpRequest.BodyPublishers.ofString(jsonRequest))
+                    .build();
+
+            return sendAndParse(request, dataType);
+
+        } catch (Exception e) {
+            throw new RuntimeException("PUT failed: " + path, e);
+        }
+    }
     // shared logic for parsing the response
     private <T> ApiResponse<T> sendAndParse(HttpRequest request, Class<T> dataType) throws Exception {
         HttpResponse<String> response =

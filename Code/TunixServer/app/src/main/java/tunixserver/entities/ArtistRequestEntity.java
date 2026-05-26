@@ -1,14 +1,9 @@
 package tunixserver.entities;
 
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
+import tunixserver.dto.enums.RequestStatus;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "artist_request")
@@ -16,22 +11,30 @@ public class ArtistRequestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "request_id")
     private Long requestId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @Column(name = "stage_name")
     private String stageName;
 
+    @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
 
+    @Column(name = "profile_picture_url", columnDefinition = "TEXT")
     private String profilePictureUrl;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private RequestStatus status;
 
+    @Column(name = "requested_at")
     private LocalDateTime requestedAt;
 
+    @Column(name = "reviewed_at")
     private LocalDateTime reviewedAt;
 
     public ArtistRequestEntity() {
@@ -42,7 +45,7 @@ public class ArtistRequestEntity {
         this.stageName = stageName;
         this.bio = bio;
         this.profilePictureUrl = profilePictureUrl;
-        this.status = "PENDING";
+        this.status = RequestStatus.PENDING;
         this.requestedAt = LocalDateTime.now();
     }
 
@@ -86,11 +89,11 @@ public class ArtistRequestEntity {
         this.profilePictureUrl = profilePictureUrl;
     }
 
-    public String getStatus() {
+    public RequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RequestStatus status) {
         this.status = status;
     }
 
@@ -111,12 +114,12 @@ public class ArtistRequestEntity {
     }
 
     public void approve() {
-        this.status = "APPROVED";
+        this.status = RequestStatus.APPROVED;
         this.reviewedAt = LocalDateTime.now();
     }
 
     public void reject() {
-        this.status = "REJECTED";
+        this.status = RequestStatus.REJECTED;
         this.reviewedAt = LocalDateTime.now();
     }
 }
