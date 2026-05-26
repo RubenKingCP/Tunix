@@ -27,16 +27,16 @@ public class UserProfileController {
     }
 
     public boolean startTrial() {
-        // Logic to start the trial for the user
-        return true; // Return true if trial started successfully
+        return service.startTrial(SessionService.Instance.getUser().getLongId());
+        //return true; // Return true if trial started successfully
     }
 
-    public void purchasePremiumPlan(){
-
+    public boolean purchasePremiumPlan(){
+        return service.buyPremium(SessionService.Instance.getUser().getLongId());
     }
 
-    public void cancelPremium(){
-
+    public boolean cancelPremium(){
+        return service.cancelPremium(SessionService.Instance.getUser().getLongId());
     }
 
     public void drawView(){

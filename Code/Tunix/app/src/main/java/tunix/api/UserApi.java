@@ -14,9 +14,9 @@ public class UserApi {
         return true; // Return true if update was successful
     }*/
    public boolean buyPremium(int userId){
-        return true;
+        return api.post("accounts/start", userId, boolean.class).getData();
    }
    public boolean cancelPremium(int userId){
-        return true;
+        return api.post("accounts/cancel", userId, boolean.class).getData();
    }
 }

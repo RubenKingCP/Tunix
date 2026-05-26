@@ -184,7 +184,7 @@ public class UserProfileView extends JPanel {
         buttonRow.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JButton purchaseButton = makePrimaryButton("Purchase premium", PREMIUM);
-        purchaseButton.addActionListener(e -> handlePurchasePremium());
+        purchaseButton.addActionListener(e -> controller.purchasePremiumPlan());
         buttonRow.add(purchaseButton);
 
         if (controller.checkTrialEligibility()) {
