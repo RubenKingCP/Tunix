@@ -3,7 +3,6 @@ package tunixserver.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import tunixserver.entities.ArtistEntity;
 import tunixserver.entities.SongEntity; 
 
 @Getter
@@ -13,21 +12,31 @@ public class SongResponse {
 
     private Long id;
     private String title;
-    private ArtistEntity artistId;
-    private String artistName;
+
+    private Long artistId;      // ✅ ONLY ID
+    private String artistName;  // ✅ SAFE FLAT FIELD
+
     private int duration;
     private String filePathUrl;
     private String coverImageUrl;
 
     public static SongResponse fromEntity(SongEntity song) {
-        return new SongResponse(
-                song.getId(),
-                song.getTitle(),
-                song.getArtist() != null ? song.getArtist() : null,
-                song.getArtist() != null ? song.getArtist().getAccount().getUsername() : null,
-                song.getDuration(),
-                song.getFilePathUrl(),
-                song.getCoverImageUrl()
-        );
-    }
+
+    return new SongResponse(
+            song.getId(),
+            song.getTitle(),
+
+            song.getArtist() != null
+                    ? song.getArtist().getId()
+                    : null,
+
+            song.getArtist() != null
+                    ? song.getArtist().getAccount().getUsername()
+                    : null,
+
+            song.getDuration(),
+            song.getFilePathUrl(),
+            song.getCoverImageUrl()
+    );
+}
 }

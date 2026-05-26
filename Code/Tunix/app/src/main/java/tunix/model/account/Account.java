@@ -1,7 +1,5 @@
 package tunix.model.account;
 
-import java.math.BigInteger;
-
 import lombok.Setter;
 import tunix.dto.enums.Role;
 import tunix.dto.response.AccountResponse;

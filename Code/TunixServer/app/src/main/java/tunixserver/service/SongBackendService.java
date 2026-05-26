@@ -19,30 +19,32 @@ public class SongBackendService {
         this.artistRepository = artistRepository;
     }
     public SongEntity uploadSong(SongRequest req) {
+        System.out.println("SongBackendService: Reached upload song");
+        // 1. Check duplicate
+        boolean exists = songRepository.existsByTitleAndArtist_Id(
+                req.getTitle(),
+                req.getArtistId()
+        );
+        System.out.println("Duplicate Song found: " + exists);
 
-    // 1. Check duplicate
-    boolean exists = songRepository.existsByTitleAndArtist_Id(
-            req.getTitle(),
-            req.getArtistId()
-    );
+        if (exists) {
+            throw new RuntimeException("Song already exists");
+        }
 
-    if (exists) {
-        throw new RuntimeException("Song already exists");
+        // 2. Fetch artist
+        System.out.println("Fetching Song's Artist");
+        ArtistEntity artist = artistRepository.findById(req.getArtistId())
+                .orElseThrow(() -> new RuntimeException("Artist not found"));
+
+        // 3. Create song entity
+        SongEntity song = new SongEntity();
+        song.setTitle(req.getTitle());
+        song.setArtist(artist);
+        song.setDuration(req.getDuration());
+        song.setFilePathUrl(req.getFilePathUrl());
+        song.setCoverImageUrl(req.getCoverImageUrl());
+
+        // 4. Save to DB
+        return songRepository.save(song);
     }
-
-    // 2. Fetch artist
-    ArtistEntity artist = artistRepository.findById(req.getArtistId())
-            .orElseThrow(() -> new RuntimeException("Artist not found"));
-
-    // 3. Create song entity
-    SongEntity song = new SongEntity();
-    song.setTitle(req.getTitle());
-    song.setArtist(artist);
-    song.setDuration(req.getDuration());
-    song.setFilePathUrl(req.getFilePathUrl());
-    song.setCoverImageUrl(req.getCoverImageUrl());
-
-    // 4. Save to DB
-    return songRepository.save(song);
-}
 }

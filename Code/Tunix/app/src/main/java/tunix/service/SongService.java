@@ -16,6 +16,7 @@ public class SongService {
     }
 
     public Song uploadSong(SongRequest songRequest) {
+        System.out.println("SongService: Sending request to server to upload song");
         SongResponse songResponse = songApiClient.uploadSong(songRequest).getData();
         return new Song(songResponse.getTitle(), songResponse.getSongId(), songResponse.getArtist(), 0, null, null);
     }

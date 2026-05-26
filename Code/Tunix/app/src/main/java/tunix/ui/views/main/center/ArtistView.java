@@ -928,23 +928,6 @@ public class ArtistView extends JPanel {
                     songs,
                     albums
             );
-
-            JFrame frame =
-                    new JFrame(
-                            "Artist View"
-                    );
-
-            frame.setDefaultCloseOperation(
-                    JFrame.EXIT_ON_CLOSE
-            );
-
-            frame.setContentPane(view);
-
-            frame.setSize(1000, 800);
-
-            frame.setLocationRelativeTo(null);
-
-            frame.setVisible(true);
         });
     }
 

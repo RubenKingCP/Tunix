@@ -13,7 +13,7 @@ import tunixserver.dto.response.SongResponse;
 import tunixserver.entities.SongEntity;
 
 @RestController
-@RequestMapping("/api/songs")
+@RequestMapping("/songs")
 public class SongBackendController {
     private final SongBackendService songService;
 
@@ -24,6 +24,7 @@ public class SongBackendController {
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse<SongResponse>> uploadSong(@RequestBody SongRequest songRequest) {
         try {
+            System.out.println("SongBackendController: Got request\nSongBackendController Request: " + songRequest.getTitle());
             SongEntity song = songService.uploadSong(songRequest);
             return ResponseEntity.ok(new ApiResponse<>(true, "Song uploaded successfully", SongResponse.fromEntity(song)));
         } catch (Exception e) {

@@ -12,10 +12,11 @@ public class SongApiClient {
     }
 
     public ApiResponse<SongResponse> uploadSong(SongRequest songRequest) {
+        System.out.println("SongApiClient: Sending request to api client");
         return apiClient.post("/songs/upload", songRequest, SongResponse.class);
     }
 
     public ApiResponse<SongResponse> getSongsByName(String query) {
         return apiClient.post("/songs/name",query,SongResponse.class);
-    }
+    } 
 }

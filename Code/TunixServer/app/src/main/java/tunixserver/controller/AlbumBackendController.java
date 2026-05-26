@@ -14,7 +14,7 @@ import tunixserver.service.AlbumBackendService;
 
 
 @RestController
-@RequestMapping("/api/albums")
+@RequestMapping("/albums")
 public class AlbumBackendController {
     private final AlbumBackendService albumBackendService;
     AlbumBackendController(AlbumBackendService albumBackendService) {

@@ -5,17 +5,19 @@ import lombok.Getter;
 
 @Getter
 public class SongRequest {
-    private String title;
-    private int artistId;
-    private File mp3file;
-    private int duration; // Duration in seconds
-    private File coverImage; // Optional cover image file
+     private String title;
+    private Long artistId;
+    private int duration;
+    private String filePathUrl;
+    private String coverImageUrl;
 
-    public SongRequest(String title, int artistId, File mp3file, int duration, File coverImage) {
+    public SongRequest() {}
+
+    public SongRequest(String title, Long artistId, String fileUrlPath, int duration, String coverImage) {
         this.title = title;
         this.artistId = artistId;
-        this.mp3file = mp3file;
+        this.filePathUrl = fileUrlPath;
         this.duration = duration;
-        this.coverImage = coverImage;
+        this.coverImageUrl = coverImage;
     }
 }

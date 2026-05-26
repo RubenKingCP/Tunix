@@ -140,7 +140,7 @@ public class MainPanel extends JPanel {
                 new SongService(
                         context.eventBus,
                         new SongApiClient(
-                                new ApiClient("http://localhost:8080/api")
+                                context.apiClient
                         )
                 ),
                 context.eventBus
