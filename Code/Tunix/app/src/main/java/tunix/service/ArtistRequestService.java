@@ -3,6 +3,7 @@ package tunix.service;
 import java.util.List;
 
 import tunix.api.ArtistRequestApiClient;
+import tunix.dto.request.ArtistApplicationRequest;
 import tunix.dto.response.ApiResponse;
 import tunix.dto.response.ArtistRequestResponse;
 import tunix.model.ArtistRequest;
@@ -49,5 +50,9 @@ public class ArtistRequestService {
         ApiResponse<ArtistRequestResponse> response = artistRequestApiClient.approveArtistRequest(requestId);
         // Handle error success
         return true;
+    }
+
+    public void makeRequest(int userId, String stageName, String message){
+        artistRequestApiClient.makeRequest(new ArtistApplicationRequest(userId,stageName,message));
     }
 }

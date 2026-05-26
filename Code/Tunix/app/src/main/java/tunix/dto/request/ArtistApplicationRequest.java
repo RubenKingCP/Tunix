@@ -5,13 +5,15 @@ import lombok.Getter;
 @Getter
 public class ArtistApplicationRequest {
 
-    private String name;
+    private int accountId;
+    private String stageName;
     private String message;
 
     public ArtistApplicationRequest() {}
 
-    public ArtistApplicationRequest(String name, String message) {
-        this.name = name;
+    public ArtistApplicationRequest(int accountId, String stageName, String message) {
+        this.accountId = accountId;
+        this.stageName = stageName;
         this.message = message;
     }
 } 

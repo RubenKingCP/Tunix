@@ -21,6 +21,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import tunix.controller.UserProfileController;
 import tunix.dto.enums.Role;
@@ -228,7 +230,7 @@ public class UserProfileView extends JPanel {
             actions.add(Box.createVerticalStrut(10));
             JButton artistRequestButton = makePrimaryButton("Request to become an artist", PREMIUM);
             artistRequestButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-            artistRequestButton.addActionListener(e -> requestArtistAccess());
+            artistRequestButton.addActionListener(e -> showArtistRequestForm());
             actions.add(artistRequestButton);
         }
 
@@ -270,7 +272,7 @@ public class UserProfileView extends JPanel {
         return account != null && account.getAccountStatus() == Role.USER;
     }
 
-    private void requestArtistAccess() {
+    private void showArtistRequestForm() {
         if (!shouldShowArtistRequestButton()) {
             JOptionPane.showMessageDialog(this,
                     "Please sign in as a regular user to request artist access.",
@@ -279,44 +281,56 @@ public class UserProfileView extends JPanel {
             return;
         }
 
-        JOptionPane.showMessageDialog(this,
-                "Your request to become an artist has been submitted for review.",
-                "Artist request",
-                JOptionPane.INFORMATION_MESSAGE);
-    }
+        JTextField stageNameField = new JTextField(24);
+        JTextArea bioArea = new JTextArea(8, 24);
+        bioArea.setLineWrap(true);
+        bioArea.setWrapStyleWord(true);
+        JScrollPane bioScroll = new JScrollPane(bioArea);
 
-    private void handlePurchasePremium() {
-        User user = getCurrentUser();
-        if (user == null) {
+        JPanel form = new JPanel();
+        form.setBackground(CARD_BG);
+        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
+        form.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        JLabel stageNameLabel = new JLabel("Stage name");
+        stageNameLabel.setForeground(Color.WHITE);
+        JLabel bioLabel = new JLabel("Tell us about your music and why you want to become an artist");
+        bioLabel.setForeground(Color.WHITE);
+
+        form.add(stageNameLabel);
+        form.add(Box.createVerticalStrut(6));
+        form.add(stageNameField);
+        form.add(Box.createVerticalStrut(12));
+        form.add(bioLabel);
+        form.add(Box.createVerticalStrut(6));
+        form.add(bioScroll);
+
+        int result = JOptionPane.showConfirmDialog(this,
+                form,
+                "Request to become an artist",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
+
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String stageName = stageNameField.getText().trim();
+        String bio = bioArea.getText().trim();
+
+        if (stageName.isEmpty() || bio.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please sign in to purchase premium.",
-                    "Purchase premium",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    "Please complete both the stage name and bio fields before submitting.",
+                    "Artist request",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        user.setPremium(true);
-        user.setPremiumTrialUsed(true);
-        
-        refresh();
-        JOptionPane.showMessageDialog(this,
-                "Premium purchase completed. Your account is now premium.",
-                "Purchase premium",
-                JOptionPane.INFORMATION_MESSAGE);
-    }
+        controller.requestArtistStatus(stageName, bio);
 
-    private void handleCancelPremium() {
-        User user = getCurrentUser();
-        if (user == null) {
-            return;
-        }
-
-        user.setPremium(false);
-        user.setPremiumTrialUsed(true);
-        refresh();
         JOptionPane.showMessageDialog(this,
-                "Your premium subscription has been canceled.",
-                "Cancel premium",
+                "Your artist request has been submitted for review.",
+                "Artist request",
                 JOptionPane.INFORMATION_MESSAGE);
     }
 

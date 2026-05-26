@@ -1,5 +1,6 @@
 package tunix.api;
 
+import tunix.dto.request.ArtistApplicationRequest;
 import tunix.dto.response.ApiResponse;
 import tunix.dto.response.ArtistRequestResponse;
 import java.util.List;
@@ -28,5 +29,9 @@ public class ArtistRequestApiClient {
     public ApiResponse<ArtistRequestResponse> rejectArtistRequest(int requestId) {
         // Code to make API call to backend to reject artist request
         return apiClient.post("/artist-requests/reject", requestId, ArtistRequestResponse.class);
+    }
+
+    public void makeRequest(ArtistApplicationRequest req){
+        apiClient.post("artist-requests/make",req, ArtistApplicationRequest.class);
     }
 }

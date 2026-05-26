@@ -3,6 +3,7 @@ package tunix.controller;
 import javax.swing.JPanel;
 
 import tunix.navigation.events.*;
+import tunix.service.ArtistRequestService;
 import tunix.service.UserService;
 import tunix.service.auth.SessionService;
 import tunix.ui.views.profile.UserProfileView;
@@ -10,12 +11,14 @@ import tunix.ui.views.profile.UserProfileView;
 public class UserProfileController {
     private final UserProfileView view;
     private final UserService service;
+    private final ArtistRequestService artistRequestService;
     EventBus eventBus;
 
-    public UserProfileController(EventBus eventBus, UserService service) {
+    public UserProfileController(EventBus eventBus, UserService service, ArtistRequestService artistRequestService) {
         this.service = service;
         this.view = new UserProfileView(this);
         this.eventBus = eventBus;
+        this.artistRequestService = artistRequestService;
     }
 
     public JPanel getView() {
@@ -41,5 +44,9 @@ public class UserProfileController {
 
     public void drawView(){
         view.initGui();
+    }
+
+    public void requestArtistStatus(String stageName, String bio) {
+        artistRequestService.makeRequest(SessionService.Instance.getAccount().getLongId(), stageName, bio);
     }
 }

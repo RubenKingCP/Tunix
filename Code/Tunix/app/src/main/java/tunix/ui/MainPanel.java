@@ -6,26 +6,16 @@ import java.awt.CardLayout;
 import javax.swing.JPanel;
 
 
-import tunix.api.ApiClient;
-import tunix.api.SongApiClient;
-import tunix.api.UserApi;
-import tunix.controller.AdminProfileController;
-import tunix.controller.ArtistController;
-import tunix.controller.ArtistProfileController;
-import tunix.controller.HomeController;
-import tunix.controller.SearchController;
-import tunix.controller.UploadSongController;
-import tunix.controller.UserProfileController;
+import tunix.api.*;
+import tunix.controller.*;
 import tunix.controller.main.center.MusicController;
 import tunix.dto.enums.Role;
 import tunix.model.AppContext;
 import tunix.model.account.Account;
 import tunix.navigation.ScreenRegistry;
 import tunix.navigation.events.EventBus;
-import tunix.navigation.events.LibraryPlaylistClicked;
-import tunix.navigation.events.SwitchCenterScreenEvent;
-import tunix.navigation.events.SwitchProfileScreenEvent;
-import tunix.service.ArtistProfileService;
+import tunix.navigation.events.*;
+import tunix.service.*;
 import tunix.service.SongService;
 import tunix.service.UserService;
 import tunix.service.auth.SessionService;
@@ -128,7 +118,7 @@ public class MainPanel extends JPanel {
             return new MusicController(context.eventBus).getView();
         }
         if (controllerClass == UserProfileController.class) {
-            return new UserProfileController(context.eventBus, new UserService(new UserApi(context.apiClient))).getView();
+            return new UserProfileController(context.eventBus, new UserService(new UserApi(context.apiClient)),new ArtistRequestService(new ArtistRequestApiClient(context.apiClient))).getView();
         }
         if (controllerClass == AdminProfileController.class) {
             return new AdminProfileController().getView();
