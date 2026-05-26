@@ -24,4 +24,8 @@ public class ArtistRequest {
     public String getReason() {
         return reason;
     }
+
+    public void updateStatus(ArtistRequestStatus e){
+        this.status = e;
+    }
 }

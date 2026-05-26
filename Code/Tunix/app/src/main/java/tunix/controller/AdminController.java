@@ -49,5 +49,7 @@ public class AdminController {
         }
     }
 
-
+    public void onRemoveSongClicked(int songId){
+        //Code to remove media
+    }
 }
