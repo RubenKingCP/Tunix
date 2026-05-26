@@ -211,11 +211,11 @@ public class ArtistProfileView extends JPanel {
         var user =
                 SessionService.Instance == null
                         ? null
-                        : SessionService.Instance.getUser();
+                        : SessionService.Instance.getAccount();
 
         System.out.println("Check to see artist section:");
-        System.out.println("SessionUser: " + SessionService.Instance.getUser());
-        System.out.println("Check to see if it has artist: " + SessionService.Instance.getUser().getAccountStatus());
+        System.out.println("SessionUser: " + SessionService.Instance.getAccount());
+        System.out.println("Check to see if it has artist: " + SessionService.Instance.getAccount().getAccountStatus());
         if (user == null) {
 
             addDetailRow(details, "Artist Name", "Not signed in");

@@ -3,14 +3,18 @@ package tunix.controller;
 import javax.swing.JPanel;
 
 import tunix.navigation.events.*;
+import tunix.service.UserService;
+import tunix.service.auth.SessionService;
 import tunix.ui.views.profile.UserProfileView;
 
 public class UserProfileController {
     private final UserProfileView view;
+    private final UserService service;
     EventBus eventBus;
 
-    public UserProfileController(EventBus eventBus) {
-        this.view = new UserProfileView();
+    public UserProfileController(EventBus eventBus, UserService service) {
+        this.service = service;
+        this.view = new UserProfileView(this);
         this.eventBus = eventBus;
     }
 
@@ -18,8 +22,8 @@ public class UserProfileController {
         return view;
     }
 
-    public void checkTrialEligibility() {
-        // Logic to check if the user is eligible for a trial
+    public boolean checkTrialEligibility() {
+        return SessionService.Instance.getUser().isPremiumTrialUsed();
     }
 
     public boolean startTrial() {
@@ -28,6 +32,10 @@ public class UserProfileController {
     }
 
     public void purchasePremiumPlan(){
+
+    }
+
+    public void cancelPremium(){
 
     }
 

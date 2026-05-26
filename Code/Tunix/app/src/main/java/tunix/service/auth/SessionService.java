@@ -2,6 +2,9 @@ package tunix.service.auth;
 
 import tunix.model.AppContext;
 import tunix.model.account.Account;
+import tunix.model.account.Admin;
+import tunix.model.account.Artist;
+import tunix.model.account.User;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LoginSuccessEvent;
 import tunix.navigation.events.RegisterSuccessfulEvent;
@@ -30,6 +33,7 @@ public class SessionService {
 
     public void setUser(RegisterSuccessfulEvent event) {
         this.currentUser = event.getAccount();
+        
     }
 
     public void setUser(LoginSuccessEvent event){
@@ -40,8 +44,29 @@ public class SessionService {
         return appContext.eventBus;
     }
 
-    public Account getUser() {
+    public Account getAccount() {
         return currentUser;
+    }
+
+    public User getUser(){
+        if (currentUser.getClass().equals(User.class)){
+            return (User)currentUser;
+        }
+        return null;
+    }
+
+    public Artist getArtist(){
+        if (currentUser.getClass().equals(Artist.class)){
+            return (Artist)currentUser;
+        }
+        return null;
+    }
+
+    public Admin getAdmin(){
+        if (currentUser.getClass().equals(Admin.class)){
+            return (Admin)currentUser;
+        }
+        return null;
     }
 
     public void clear() {

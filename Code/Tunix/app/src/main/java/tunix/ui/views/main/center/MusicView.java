@@ -112,7 +112,7 @@ public class MusicView extends JPanel {
     }
 
     private Playlist buildPlaylistForAsset(ILibraryAsset asset) {
-        var currentUser = SessionService.Instance == null ? null : SessionService.Instance.getUser();
+        var currentUser = SessionService.Instance == null ? null : SessionService.Instance.getAccount();
         Playlist builtPlaylist = new Playlist(asset == null ? "Testing" : asset.getTitle(),
                 asset == null ? 1 : asset.getId(), currentUser);
 
@@ -151,7 +151,7 @@ public class MusicView extends JPanel {
             }
         }
 
-        var currentUser = SessionService.Instance == null ? null : SessionService.Instance.getUser();
+        var currentUser = SessionService.Instance == null ? null : SessionService.Instance.getAccount();
         return currentUser == null ? "Guest" : currentUser.getUsername();
     }
 

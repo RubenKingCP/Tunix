@@ -22,6 +22,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import tunix.controller.UserProfileController;
+import tunix.dto.enums.Role;
+import tunix.model.account.User;
 import tunix.service.auth.SessionService;
 
 public class UserProfileView extends JPanel {
@@ -35,8 +38,10 @@ public class UserProfileView extends JPanel {
     private final JLabel planStatusLabel = new JLabel("Current plan: Free");
     private final JLabel trialStatusLabel = new JLabel("Trial: not started");
     private final JPanel premiumPanel = new JPanel();
+    private final UserProfileController controller;
 
-    public UserProfileView() {
+    public UserProfileView(UserProfileController controller) {
+        this.controller = controller;
         initGui();
     }
 
@@ -131,7 +136,7 @@ public class UserProfileView extends JPanel {
         details.setBackground(CARD_BG);
         details.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
-        var user = SessionService.Instance == null ? null : SessionService.Instance.getUser();
+        var user = SessionService.Instance == null ? null : SessionService.Instance.getAccount();
         if (user == null) {
             addDetailRow(details, "Display name", "Not signed in");
             addDetailRow(details, "Email", "—");
@@ -150,9 +155,14 @@ public class UserProfileView extends JPanel {
     private JPanel buildPremiumSection() {
         JPanel section = buildSectionContainer("Premium");
 
+        premiumPanel.removeAll();
         premiumPanel.setLayout(new BoxLayout(premiumPanel, BoxLayout.Y_AXIS));
         premiumPanel.setBackground(CARD_BG);
         premiumPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+
+        PremiumUiState premiumUiState = getPremiumUiState(getCurrentUser());
+        planStatusLabel.setText(premiumUiState.planText());
+        trialStatusLabel.setText(premiumUiState.trialText());
 
         JLabel summary = new JLabel("Upgrade to unlock offline downloads, ad-free playback, and premium audio quality.");
         summary.setForeground(Color.WHITE);
@@ -172,10 +182,23 @@ public class UserProfileView extends JPanel {
         JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         buttonRow.setBackground(CARD_BG);
         buttonRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-        JButton trialButton = makePrimaryButton("Start trial", PREMIUM);
-        trialButton.addActionListener(e -> showPremiumTrialScreen());
-        buttonRow.add(trialButton);
-        //buttonRow.add(planButton);
+
+        JButton purchaseButton = makePrimaryButton("Purchase premium", PREMIUM);
+        purchaseButton.addActionListener(e -> handlePurchasePremium());
+        buttonRow.add(purchaseButton);
+
+        if (controller.checkTrialEligibility()) {
+            JButton trialButton = makePrimaryButton("Start trial", PREMIUM);
+            trialButton.addActionListener(e -> controller.startTrial());
+            buttonRow.add(trialButton);
+        }
+
+        if (premiumUiState.showCancelButton()) {
+            JButton cancelButton = makePrimaryButton("Cancel premium", new Color(110, 110, 110));
+            cancelButton.setForeground(Color.WHITE);
+            cancelButton.addActionListener(e -> this.controller.cancelPremium());
+            buttonRow.add(cancelButton);
+        }
 
         premiumPanel.add(summary);
         premiumPanel.add(Box.createVerticalStrut(12));
@@ -201,8 +224,104 @@ public class UserProfileView extends JPanel {
         actions.add(Box.createVerticalStrut(10));
         actions.add(buildActionRow("Notifications", "Control push alerts and updates"));
 
+        if (shouldShowArtistRequestButton()) {
+            actions.add(Box.createVerticalStrut(10));
+            JButton artistRequestButton = makePrimaryButton("Request to become an artist", PREMIUM);
+            artistRequestButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+            artistRequestButton.addActionListener(e -> requestArtistAccess());
+            actions.add(artistRequestButton);
+        }
+
         section.add(actions);
         return section;
+    }
+
+    private User getCurrentUser() {
+        if (SessionService.Instance == null) {
+            return null;
+        }
+
+        var account = SessionService.Instance.getAccount();
+        return account instanceof User user ? user : null;
+    }
+
+    static PremiumUiState getPremiumUiState(User user) {
+        if (user == null) {
+            return new PremiumUiState("Current plan: Free", "Trial: not started", false, true, false);
+        }
+
+        if (user.isPremium()) {
+            return new PremiumUiState("Current plan: Premium", "Trial: active", false, true, true);
+        }
+
+        if (user.hasUsedPremiumTrial()) {
+            return new PremiumUiState("Current plan: Free", "Trial: used", false, true, false);
+        }
+
+        return new PremiumUiState("Current plan: Free", "Trial: available", true, true, false);
+    }
+
+    private boolean shouldShowArtistRequestButton() {
+        if (SessionService.Instance == null) {
+            return false;
+        }
+
+        var account = SessionService.Instance.getAccount();
+        return account != null && account.getAccountStatus() == Role.USER;
+    }
+
+    private void requestArtistAccess() {
+        if (!shouldShowArtistRequestButton()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please sign in as a regular user to request artist access.",
+                    "Artist request",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this,
+                "Your request to become an artist has been submitted for review.",
+                "Artist request",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void handlePurchasePremium() {
+        User user = getCurrentUser();
+        if (user == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Please sign in to purchase premium.",
+                    "Purchase premium",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        user.setPremium(true);
+        user.setPremiumTrialUsed(true);
+        
+        refresh();
+        JOptionPane.showMessageDialog(this,
+                "Premium purchase completed. Your account is now premium.",
+                "Purchase premium",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void handleCancelPremium() {
+        User user = getCurrentUser();
+        if (user == null) {
+            return;
+        }
+
+        user.setPremium(false);
+        user.setPremiumTrialUsed(true);
+        refresh();
+        JOptionPane.showMessageDialog(this,
+                "Your premium subscription has been canceled.",
+                "Cancel premium",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    static record PremiumUiState(String planText, String trialText, boolean showTrialButton, boolean showPurchaseButton,
+            boolean showCancelButton) {
     }
 
     private JPanel buildSectionContainer(String title) {
@@ -299,15 +418,23 @@ public class UserProfileView extends JPanel {
     }
 
     public void showPremiumTrialScreen() {
-        planStatusLabel.setText("Current plan: Free");
-        trialStatusLabel.setText("Trial: available");
+        User user = getCurrentUser();
+        if (user == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Please sign in to start a premium trial.",
+                    "Premium Trial",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        user.setPremium(true);
+        user.setPremiumTrialUsed(true);
+        refresh();
         JOptionPane.showMessageDialog(this,
                 "Premium trial opened. Enjoy an ad-free upgrade for a limited time.",
                 "Premium Trial",
                 JOptionPane.INFORMATION_MESSAGE);
     }
-
-    
 
     public void showTrialStartedMessage() {
         JOptionPane.showMessageDialog(this,

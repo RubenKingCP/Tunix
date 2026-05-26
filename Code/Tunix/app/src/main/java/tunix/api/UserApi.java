@@ -1,12 +1,22 @@
 package tunix.api;
 
 public class UserApi {
-    public boolean trialStarted(int userId) {
-        // Logic to start the trial for the user
-        return true; // Return true if trial started successfully
+    private final ApiClient api;
+    public UserApi(ApiClient api){
+        this.api = api;
     }
-    public boolean premiumStatusUpdated(int userId, boolean isPremium) {
+    public boolean trialStarted(int userId) {
+        return api.post("accounts/trial", userId, boolean.class).getData();
+        //return true; // Return true if trial started successfully
+    }
+    /*public boolean premiumStatusUpdated(int userId, boolean isPremium) {
         // Logic to update the user's premium status
         return true; // Return true if update was successful
-    }
+    }*/
+   public boolean buyPremium(int userId){
+        return true;
+   }
+   public boolean cancelPremium(int userId){
+        return true;
+   }
 }

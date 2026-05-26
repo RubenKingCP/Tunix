@@ -15,7 +15,7 @@ import tunix.service.auth.SessionService;
 public class LibraryService {
 
     public List<ILibraryAsset> getLibraryAssets() {
-        User you = (User) SessionService.Instance.getUser();
+        User you = (User) SessionService.Instance.getAccount();
 
         Artist artist = new Artist(3L,
                 "test artist",

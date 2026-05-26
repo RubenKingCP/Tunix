@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import tunix.api.ApiClient;
 import tunix.api.SongApiClient;
+import tunix.api.UserApi;
 import tunix.controller.AdminProfileController;
 import tunix.controller.ArtistController;
 import tunix.controller.ArtistProfileController;
@@ -26,6 +27,7 @@ import tunix.navigation.events.SwitchCenterScreenEvent;
 import tunix.navigation.events.SwitchProfileScreenEvent;
 import tunix.service.ArtistProfileService;
 import tunix.service.SongService;
+import tunix.service.UserService;
 import tunix.service.auth.SessionService;
 import tunix.ui.views.main.center.UploadSongView;
 import tunix.navigation.events.OpenArtistViewEvent;
@@ -102,7 +104,7 @@ public class MainPanel extends JPanel {
         });
 
         eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {
-            Account user = SessionService.Instance == null ? null : SessionService.Instance.getUser();
+            Account user = SessionService.Instance == null ? null : SessionService.Instance.getAccount();
             if (user == null) return;
 
             Role role = user.getAccountStatus();
@@ -126,7 +128,7 @@ public class MainPanel extends JPanel {
             return new MusicController(context.eventBus).getView();
         }
         if (controllerClass == UserProfileController.class) {
-            return new UserProfileController(context.eventBus).getView();
+            return new UserProfileController(context.eventBus, new UserService(new UserApi(context.apiClient))).getView();
         }
         if (controllerClass == AdminProfileController.class) {
             return new AdminProfileController().getView();

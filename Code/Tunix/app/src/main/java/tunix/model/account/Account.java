@@ -39,6 +39,7 @@ public abstract class Account{
         return accountStatus;
     }
 
+
     public static Account from(AccountResponse dto) {
 
     return switch (dto.getRole()) {
