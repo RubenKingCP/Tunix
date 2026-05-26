@@ -140,13 +140,13 @@ CREATE TABLE artist_request (
     user_id BIGINT NOT NULL,
 
     stage_name VARCHAR(150),
-    bio TEXT,
+    reason TEXT,
     profile_picture_url TEXT,
 
-    status ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
+    status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
 
     requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    reviewed_at DATETIME,
+    reviewed_at DATETIME NULL,
 
     FOREIGN KEY (user_id) REFERENCES user(id)
         ON DELETE CASCADE

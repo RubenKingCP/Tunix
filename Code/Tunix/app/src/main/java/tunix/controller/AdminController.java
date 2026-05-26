@@ -8,6 +8,7 @@ import tunix.service.AdminService;
 import tunix.service.ArtistRequestService;
 import tunix.service.SongService;
 import tunix.ui.views.admin.AdminView;
+import tunix.dto.enums.ArtistRequestStatus;
 import tunix.dto.request.SongRequest;
 import tunix.dto.response.SongResponse;
 import tunix.model.ArtistRequest;
@@ -33,7 +34,38 @@ public class AdminController {
     }
 
     public List<ArtistRequest> onArtistRequestsClicked() {
-        return artistRequestService.getArtistRequests();
+
+        List<ArtistRequest> req = artistRequestService.getArtistRequests();
+        System.out.println("==========================\nADMIN CONTROLLER CHECK\n=======================");
+        // 🔥 NULL CHECK
+        if (req == null) {
+            System.err.println("ArtistRequests = NULL");
+            return List.of();
+        }
+
+        // 🔥 SIZE CHECK
+        System.err.println("ArtistRequests size = " + req.size());
+
+        // 🔥 STATUS BREAKDOWN CHECK
+        long pending = req.stream()
+                .filter(r -> r != null && r.getStatus() == ArtistRequestStatus.Pending)
+                .count();
+
+        long nonPending = req.stream()
+                .filter(r -> r != null && r.getStatus() != ArtistRequestStatus.Pending)
+                .count();
+
+        System.err.println("Pending = " + pending);
+        System.err.println("Non-Pending = " + nonPending);
+
+        // 🔥 NULL STATUS CHECK
+        long nullStatus = req.stream()
+                .filter(r -> r == null || r.getStatus() == null)
+                .count();
+
+        System.err.println("Null or missing status = " + nullStatus);
+
+        return req;
     }
 
     public void showArtistRequestDetails(ArtistRequest artistRequest) {

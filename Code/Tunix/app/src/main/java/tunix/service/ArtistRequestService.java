@@ -8,7 +8,6 @@ import tunix.dto.request.ArtistApplicationRequest;
 import tunix.dto.response.ApiResponse;
 import tunix.dto.response.ArtistApplicationResponse;
 import tunix.model.ArtistRequest;
-import java.util.ArrayList;
 
 public class ArtistRequestService {
     private final ArtistRequestApiClient artistRequestApiClient;
@@ -18,16 +17,43 @@ public class ArtistRequestService {
 
     
     public List<ArtistRequest> getArtistRequests() {
-//        var response = artistRequestApiClient.getAllArtistRequests();
-//        if (!response.isSuccess()) {
-//            throw new RuntimeException(response.getMessage());
-//        }
-//        List<ArtistRequest> artistRequests = new ArrayList<>();
-//        for (ArtistRequestResponse item : response.getData()) {
-//            artistRequests.add(toModel(item));
-//        }
-//        return artistRequests;
 
+        System.err.println("Reached ArtistRequestService for all artist requests");
+
+        try {
+            var response = artistRequestApiClient.getAllArtistRequests();
+
+            System.err.println("ArtistRequestService: response received");
+            System.err.println("SUCCESS FLAG = " + response.isSuccess());
+
+            if (!response.isSuccess()) {
+                System.err.println("Backend returned failure: " + response.getMessage());
+                return mockArtistRequests();
+            }
+
+            if (response.getData() == null) {
+                System.err.println("DATA is null");
+                return mockArtistRequests();
+            }
+
+            System.err.println("DATA SIZE = " + response.getData().size());
+            response.getData().forEach(d ->
+            System.err.println("STATUS FROM API = " + d.getStatus())
+        );
+            return response.getData()
+                    .stream()
+                    .map(this::toModel)
+                    .toList();
+
+        } catch (Exception e) {
+            System.err.println("API FAILED FULL STACKTRACE:");
+            e.printStackTrace();
+        }
+
+        return mockArtistRequests();
+    }
+
+    private List<ArtistRequest> mockArtistRequests() {
     return List.of(
         new ArtistRequest(101, ArtistRequestStatus.Pending, "I want to share my music."),
         new ArtistRequest(102, ArtistRequestStatus.Pending, "Independent producer seeking platform."),
@@ -37,23 +63,38 @@ public class ArtistRequestService {
     );
 }
 
-    public ArtistRequest toModel(ArtistApplicationResponse dto) {
+    private ArtistRequest toModel(ArtistApplicationResponse dto) {
 
-        return new ArtistRequest(0, null, null);
+        ArtistRequestStatus status;
+
+        try {
+            status = ArtistRequestStatus.valueOf(
+                dto.getStatus().trim().toUpperCase()
+            );
+        } catch (Exception e) {
+            System.err.println("Invalid status from API: " + dto.getStatus());
+            status = ArtistRequestStatus.Pending; // safe fallback
+        }
+
+        return new ArtistRequest(
+            dto.getApplicantId().intValue(),   // or requestId depending on your model
+            status,
+            dto.getReason()
+        );
     }
 
     public boolean approveArtistRequest(int requestId) {
         // Code to approve artist request via API call
         ApiResponse<ArtistApplicationResponse> response = artistRequestApiClient.approveArtistRequest(requestId);
         // Handle error success
-        return true;
+        return response.isSuccess();
     }
 
     public boolean rejectArtistRequest(int requestId) {
         // Code to reject artist request via API call
         ApiResponse<ArtistApplicationResponse> response = artistRequestApiClient.approveArtistRequest(requestId);
         // Handle error success
-        return true;
+        return response.isSuccess();
     }
 
     public void makeRequest(int userId, String stageName, String message){

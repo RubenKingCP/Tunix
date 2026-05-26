@@ -14,47 +14,65 @@ public class ArtistRequestEntity {
     @Column(name = "request_id")
     private Long requestId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(name = "stage_name")
+    @Column(name = "stage_name", length = 150)
     private String stageName;
 
-    @Column(name = "bio", columnDefinition = "TEXT")
-    private String bio;
+    // IMPORTANT: matches DTO field "reason"
+    @Column(name = "reason", columnDefinition = "TEXT")
+    private String reason;
 
     @Column(name = "profile_picture_url", columnDefinition = "TEXT")
     private String profilePictureUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private RequestStatus status;
 
-    @Column(name = "requested_at")
+    @Column(name = "requested_at", updatable = false)
     private LocalDateTime requestedAt;
 
     @Column(name = "reviewed_at")
     private LocalDateTime reviewedAt;
 
-    public ArtistRequestEntity() {
-    }
+    public ArtistRequestEntity() {}
 
-    public ArtistRequestEntity(UserEntity user, String stageName, String bio, String profilePictureUrl) {
+    public ArtistRequestEntity(UserEntity user,
+                               String stageName,
+                               String reason,
+                               String profilePictureUrl) {
         this.user = user;
         this.stageName = stageName;
-        this.bio = bio;
+        this.reason = reason;
         this.profilePictureUrl = profilePictureUrl;
         this.status = RequestStatus.PENDING;
         this.requestedAt = LocalDateTime.now();
     }
 
-    public Long getRequestId() {
-        return requestId;
+    @PrePersist
+    public void onCreate() {
+        if (status == null) status = RequestStatus.PENDING;
+        if (requestedAt == null) requestedAt = LocalDateTime.now();
     }
 
-    public void setRequestId(Long requestId) {
-        this.requestId = requestId;
+    // business logic
+    public void approve() {
+        this.status = RequestStatus.APPROVED;
+        this.reviewedAt = LocalDateTime.now();
+    }
+
+    public void reject() {
+        this.status = RequestStatus.REJECTED;
+        this.reviewedAt = LocalDateTime.now();
+    }
+
+    // getters
+
+    public Long getRequestId() {
+        return requestId;
     }
 
     public UserEntity getUser() {
@@ -69,16 +87,12 @@ public class ArtistRequestEntity {
         return stageName;
     }
 
-    public void setStageName(String stageName) {
-        this.stageName = stageName;
+    public String getReason() {
+        return reason;
     }
 
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     public String getProfilePictureUrl() {
@@ -93,33 +107,11 @@ public class ArtistRequestEntity {
         return status;
     }
 
-    public void setStatus(RequestStatus status) {
-        this.status = status;
-    }
-
     public LocalDateTime getRequestedAt() {
         return requestedAt;
     }
 
-    public void setRequestedAt(LocalDateTime requestedAt) {
-        this.requestedAt = requestedAt;
-    }
-
     public LocalDateTime getReviewedAt() {
         return reviewedAt;
-    }
-
-    public void setReviewedAt(LocalDateTime reviewedAt) {
-        this.reviewedAt = reviewedAt;
-    }
-
-    public void approve() {
-        this.status = RequestStatus.APPROVED;
-        this.reviewedAt = LocalDateTime.now();
-    }
-
-    public void reject() {
-        this.status = RequestStatus.REJECTED;
-        this.reviewedAt = LocalDateTime.now();
     }
 }

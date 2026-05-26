@@ -17,8 +17,9 @@ public class ArtistRequestApiClient {
     }
 
     public ApiResponse<List<ArtistApplicationResponse>> getAllArtistRequests() {
+        System.out.println("ArtistRequestApiClient: Sending fetch requests");
         return apiClient.get(
-                "/artist-requests",
+                "/artist-requests/getAll",
                 new TypeReference<ApiResponse<List<ArtistApplicationResponse>>>() {}
         );
     }

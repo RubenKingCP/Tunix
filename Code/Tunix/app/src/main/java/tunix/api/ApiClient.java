@@ -10,6 +10,8 @@ import java.net.http.HttpResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class ApiClient {
     private final HttpClient httpClient;
@@ -20,6 +22,10 @@ public class ApiClient {
         this.httpClient = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
         this.baseUrl = baseUrl;
+
+            // ✅ FIX FOR LocalDateTime
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     // POST
@@ -40,39 +46,26 @@ public class ApiClient {
         }
     }
 
-    // GET
-    public <T> ApiResponse<T> get(String path, Class<T> dataType) {
-        System.err.println("Request get reached\n");
+    public <T> ApiResponse<T> get(String path, TypeReference<ApiResponse<T>> typeRef) {
         try {
+            System.out.println("ApiClient: GET " + path);
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(baseUrl + path))
-                    .header("Content-Type", "application/json")
                     .GET()
                     .build();
-            return sendAndParse(request, dataType);
+
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.println("RAW RESPONSE: " + response.body());
+
+            return objectMapper.readValue(response.body(), typeRef);
+
         } catch (Exception e) {
             throw new RuntimeException("GET failed: " + path, e);
         }
     }
-
-    // GET for lists
-    public <T> ApiResponse<T> get(String path, TypeReference<ApiResponse<T>> typeRef) {
-    try {
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + path))
-                .GET()
-                .build();
-
-        HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return objectMapper.readValue(response.body(), typeRef);
-
-    } catch (Exception e) {
-        throw new RuntimeException("GET failed", e);
-    }
-}
 
     // DELETE
     public <T> ApiResponse<T> delete(String path, Class<T> dataType) {
@@ -128,4 +121,15 @@ public class ApiClient {
 
         return apiResponse;
     }
+
+    private <T> ApiResponse<T> sendAndParseGeneric(HttpRequest request,
+                                              TypeReference<ApiResponse<T>> typeRef) throws Exception {
+
+    HttpResponse<String> response =
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+    System.out.println("RAW RESPONSE: " + response.body());
+
+    return objectMapper.readValue(response.body(), typeRef);
+}
 }
