@@ -68,9 +68,19 @@ public class ArtistRequestService {
         ArtistRequestStatus status;
 
         try {
-            status = ArtistRequestStatus.valueOf(
-                dto.getStatus().trim().toUpperCase()
-            );
+                    switch (dto.getStatus().trim().toUpperCase()) {
+            case "APPROVED":
+                status = ArtistRequestStatus.Approved;
+                break;
+            case "REJECTED":
+                status = ArtistRequestStatus.Rejected;
+                break;
+            case "PENDING":
+                status = ArtistRequestStatus.Pending;
+                break;
+            default:
+                status = ArtistRequestStatus.Pending;
+}
         } catch (Exception e) {
             System.err.println("Invalid status from API: " + dto.getStatus());
             status = ArtistRequestStatus.Pending; // safe fallback
