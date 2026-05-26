@@ -2,6 +2,8 @@ package tunix.ui.views.admin;
 
 import tunix.controller.AdminController;
 import tunix.dto.enums.ArtistRequestStatus;
+import tunix.dto.request.SongRequest;
+import tunix.dto.response.SongResponse;
 import tunix.model.ArtistRequest;
 import tunix.model.musicContent.Song;
 
@@ -179,17 +181,26 @@ public class AdminView extends JPanel {
     }
 
     private void selectTab(String card) {
-        cardLayout.show(contentArea, card);
+    cardLayout.show(contentArea, card);
 
-        boolean songsActive = "Songs".equals(card);
-        tabSongs.putClientProperty("selected", songsActive);
-        tabApplications.putClientProperty("selected", !songsActive);
-        tabSongs.setForeground(songsActive ? TEXT_PRIMARY : TEXT_MUTED);
-        tabApplications.setForeground(!songsActive ? TEXT_PRIMARY : TEXT_MUTED);
-        tabSongs.repaint();
-        tabApplications.repaint();
-    }
+    boolean songsActive = "Songs".equals(card);
+    tabSongs.putClientProperty("selected", songsActive);
+    tabApplications.putClientProperty("selected", !songsActive);
+    tabSongs.setForeground(songsActive ? TEXT_PRIMARY : TEXT_MUTED);
+    tabApplications.setForeground(!songsActive ? TEXT_PRIMARY : TEXT_MUTED);
+    tabSongs.repaint();
+    tabApplications.repaint();
 
+    if (songsActive) {
+    List<Song> updatedSongs = adminController.onSongsClicked();
+    songsPanel.removeAll();
+    for (Song s : updatedSongs) songsPanel.add(new SongGUI(s));
+    songsPanel.revalidate();
+    songsPanel.repaint();
+} else {
+    onArtistRequestsClicked();
+}
+}
     // ── Scroll wrapper ────────────────────────────────────────────────────────
 
     private JScrollPane wrapScroll(JPanel inner) {

@@ -8,7 +8,10 @@ import tunix.service.AdminService;
 import tunix.service.ArtistRequestService;
 import tunix.service.SongService;
 import tunix.ui.views.admin.AdminView;
+import tunix.dto.request.SongRequest;
+import tunix.dto.response.SongResponse;
 import tunix.model.ArtistRequest;
+import tunix.model.musicContent.Song;
 
 public class AdminController {
     private final AdminView adminView;
@@ -18,12 +21,12 @@ public class AdminController {
     private final EventBus eventBus;
 
     public AdminController(EventBus eventBus, AdminService adminService, ArtistRequestService artistRequestService, SongService songService) {
-        this.eventBus = eventBus;
-        this.adminView = new AdminView(this);
-        this.adminService = adminService;
-        this.artistRequestService = artistRequestService;
-        this.songService = songService;
-    }
+    this.eventBus = eventBus;
+    this.adminService = adminService;
+    this.artistRequestService = artistRequestService;
+    this.songService = songService;
+    this.adminView = new AdminView(this); // moved to last
+}
 
     public AdminView getView() {
         return adminView;
@@ -43,6 +46,10 @@ public class AdminController {
         } else {
             adminView.showMessage("Approve fail");
         }
+    }
+
+    public List<Song> onSongsClicked(){
+        return songService.getSongs();
     }
 
     public void onRejectArtistRequestClicked(int requestId) {
