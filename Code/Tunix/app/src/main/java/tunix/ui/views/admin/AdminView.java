@@ -330,9 +330,9 @@ public class AdminView extends JPanel {
             card.setOpaque(false);
             card.setBorder(new EmptyBorder(10, 14, 10, 14));
 
-            card.add(colorThumb("A" + application.getApplicantId()), BorderLayout.WEST);
+            card.add(colorThumb(String.valueOf(application.getStageName().charAt(0))), BorderLayout.WEST);
 
-            JLabel label = new JLabel("Applicant #" + application.getApplicantId());
+            JLabel label = new JLabel(application.getStageName());
             label.setFont(FONT_BODY);
             label.setForeground(TEXT_PRIMARY);
             label.setBorder(new EmptyBorder(0, 14, 0, 0));

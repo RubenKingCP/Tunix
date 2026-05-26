@@ -55,11 +55,11 @@ public class ArtistRequestService {
 
     private List<ArtistRequest> mockArtistRequests() {
     return List.of(
-        new ArtistRequest(101, ArtistRequestStatus.Pending, "I want to share my music."),
-        new ArtistRequest(102, ArtistRequestStatus.Pending, "Independent producer seeking platform."),
-        new ArtistRequest(103, ArtistRequestStatus.Pending, "Singer-songwriter looking to grow audience."),
-        new ArtistRequest(104, ArtistRequestStatus.Pending, "DJ wanting to upload original mixes."),
-        new ArtistRequest(105, ArtistRequestStatus.Pending, "Band looking to distribute our tracks.")
+        new ArtistRequest(101, "Mpamphs", ArtistRequestStatus.Pending, "I want to share my music."),
+        new ArtistRequest(102, "Marianna", ArtistRequestStatus.Pending, "Independent producer seeking platform."),
+        new ArtistRequest(103, "Kostas", ArtistRequestStatus.Pending, "Singer-songwriter looking to grow audience."),
+        new ArtistRequest(104, "Eirhrnh", ArtistRequestStatus.Pending, "DJ wanting to upload original mixes."),
+        new ArtistRequest(105, "Pavlos", ArtistRequestStatus.Pending, "Band looking to distribute our tracks.")
     );
 }
 
@@ -77,7 +77,8 @@ public class ArtistRequestService {
         }
 
         return new ArtistRequest(
-            dto.getApplicantId().intValue(),   // or requestId depending on your model
+            dto.getApplicantId().intValue(),
+            dto.getStageName(),   // or requestId depending on your model
             status,
             dto.getReason()
         );
