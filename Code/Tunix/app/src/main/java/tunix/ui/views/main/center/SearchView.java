@@ -299,8 +299,7 @@ public class SearchView extends JPanel {
     private static String tagText(LibraryAssetType type) {
         return switch (type) {
             case SONG -> "Song";
-            case ALBUM -> "Album";
-            case ARTIST -> "Artist";
+            case Album -> "Album";
             case PLAYLIST -> "Playlist";
         };
     }
@@ -361,8 +360,6 @@ public class SearchView extends JPanel {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Color bg = "Song".equalsIgnoreCase(getText()) ? TAG_SONG
                     : "Album".equalsIgnoreCase(getText()) ? TAG_ALBUM
-                    :  "Artist".equalsIgnoreCase(getText())
-                    ? new Color(0x1A263A)
                     : TAG_PLAYLIST;
             g2.setColor(bg);
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);

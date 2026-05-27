@@ -1,12 +1,8 @@
 package tunix.model.account;
 
-import java.util.List;
-import tunix.dto.enums.LibraryAssetType;
-import tunix.model.ILibraryAsset;
-import tunix.model.musicContent.Song;
 import tunix.dto.enums.Role;
 
-public class Artist extends Account implements ILibraryAsset{
+public class Artist extends Account {
 
     private String biography;
     private int followersCount;
@@ -69,20 +65,5 @@ public class Artist extends Account implements ILibraryAsset{
 
     public void setVerified(boolean verified) {
         this.verified = verified;
-    }
-
-    @Override
-    public int getId() {
-        return getLongId();
-    }
-
-    @Override
-    public LibraryAssetType getType() {
-        return LibraryAssetType.ARTIST;
-    }
-
-    @Override
-    public List<Song> getDisplaySongs() {
-        return null;
     }
 }

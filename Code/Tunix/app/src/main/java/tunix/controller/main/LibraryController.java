@@ -11,9 +11,6 @@ import tunix.navigation.events.LibraryPlaylistClicked;
 import tunix.service.LibraryService;
 import tunix.service.PlaylistService;
 import tunix.ui.views.main.LibraryView;
-import tunix.model.account.Artist;
-import tunix.navigation.events.OpenArtistViewEvent;
-
 
 public class LibraryController {
     private final LibraryService libraryService;
@@ -53,10 +50,4 @@ public class LibraryController {
     public void songClicked() {
 
     }
-    
-    public void artistClicked(Artist artist) {
-    appContext.eventBus.publish(
-            new OpenArtistViewEvent(artist)
-    );
-}
 }
