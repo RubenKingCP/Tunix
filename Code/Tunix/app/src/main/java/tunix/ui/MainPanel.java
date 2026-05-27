@@ -13,14 +13,12 @@ import tunix.dto.enums.Role;
 import tunix.model.AppContext;
 import tunix.model.account.Account;
 import tunix.navigation.ScreenRegistry;
-import tunix.navigation.events.EventBus;
 import tunix.navigation.events.*;
 import tunix.service.*;
-import tunix.service.SongService;
-import tunix.service.UserService;
 import tunix.service.auth.SessionService;
 import tunix.ui.views.main.center.UploadSongView;
-import tunix.navigation.events.OpenArtistViewEvent;
+import tunix.model.musicContent.Album;
+import tunix.ui.views.main.center.AlbumView;
 
 public class MainPanel extends JPanel {
 
@@ -58,7 +56,16 @@ public class MainPanel extends JPanel {
         eventBus.subscribe(SwitchCenterScreenEvent.class,
                 e -> showController(e.getControllerClass()));
 
+        eventBus.subscribe(OpenAlbumViewEvent.class, event -> {
 
+            Album album = event.getAlbum();
+
+            AlbumView albumView = new AlbumView(album);
+
+            register(AlbumView.class, albumView);
+
+            show(AlbumView.class);
+        });
         //TODO: Figure what the fuck is happening here
         eventBus.subscribe(LibraryPlaylistClicked.class, e -> {
             showController(MusicController.class);

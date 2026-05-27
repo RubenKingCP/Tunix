@@ -28,8 +28,11 @@ import javax.swing.border.EmptyBorder;
 
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
+import tunix.model.musicContent.Album;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.LibraryPlaylistClicked;
+import tunix.navigation.events.OpenAlbumViewEvent;
+
 
 public class SearchView extends JPanel {
 
@@ -188,8 +191,19 @@ public class SearchView extends JPanel {
 
         addHoverEffect(panel);
         panel.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseClicked(MouseEvent e) {
+
+                if (asset instanceof Album album) {
+
+                    if (eventBus != null) {
+                        eventBus.publish(new OpenAlbumViewEvent(album));
+                    }
+
+                    return;
+                }
+
                 openResult(asset);
             }
         });

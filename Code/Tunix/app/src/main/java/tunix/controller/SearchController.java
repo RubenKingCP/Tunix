@@ -10,13 +10,16 @@ import tunix.service.SearchService;
 import tunix.ui.views.main.center.SearchView;
 
 public class SearchController {
+
     private final SearchService service;
     private final EventBus eventBus;
-    private SearchView view;
+    private final SearchView view;
 
     public SearchController(SearchService service, EventBus eventBus) {
         this.service = service;
         this.eventBus = eventBus;
+
+        // Keep ONE persistent view instance
         this.view = new SearchView(List.of(), eventBus);
     }
 
@@ -25,8 +28,13 @@ public class SearchController {
     }
 
     public List<ILibraryAsset> search(String query, String type) {
+
         List<ILibraryAsset> results = service.search(query, type);
-        this.view = new SearchView(results, eventBus);
+
+        // Update existing registered panel instead of replacing it
+        view.setResults(results);
+        view.refresh();
+
         return results;
     }
 }
