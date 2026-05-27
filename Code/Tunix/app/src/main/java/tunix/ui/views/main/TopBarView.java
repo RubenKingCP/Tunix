@@ -54,7 +54,7 @@ public class TopBarView extends JPanel {
         add(searchField);
 
         // ── Search type selector ───────────────────────────────────────────────
-        String[] searchTypes = new String[]{"Song", "Playlist", "Album"};
+        String[] searchTypes = new String[]{"Song", "Playlist", "Album", "Artist"};
         String[] selectedSearchType = new String[]{searchTypes[0]};
         JButton searchTypeButton = createSearchTypeButton(selectedSearchType[0]);
         JPopupMenu searchTypeMenu = createSearchTypeMenu(searchTypes, selectedSearchType, searchTypeButton);

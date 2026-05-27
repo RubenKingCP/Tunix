@@ -48,6 +48,20 @@ public class SearchService {
                     new Artist(2L, "Dummy Creator", "dummy.creator@example.com", "Dummy creator bio", 0, false)));
         }
 
+        if ("artist".equals(normalizedType)) {
+            String artistName = query == null || query.trim().isEmpty()
+                    ? "Dummy Artist"
+                    : query.trim();
+
+            return List.of(new Artist(
+                    10L,
+                    artistName,
+                    "artist@example.com",
+                    "Artist search result for " + artistName + ".",
+                    1200,
+                    true));
+        }
+
         if ("album".equals(normalizedType)) {
             // return List.of();
             Artist artist = new Artist(3L, "Dummy Album Artist", "dummy.album.artist@example.com", "Dummy album artist bio", 0, false);
