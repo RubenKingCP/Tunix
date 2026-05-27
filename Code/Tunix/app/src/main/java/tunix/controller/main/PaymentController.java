@@ -1,6 +1,9 @@
 package tunix.controller.main;
 
+import java.awt.Window;
+
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import tunix.service.PaymentService;
 import tunix.service.PaymentService.PaymentResult;
@@ -10,6 +13,7 @@ public class PaymentController {
 
     private final PaymentView paymentView;
     private final PaymentService paymentService;
+    private boolean paymentSucceeded;
 
     public PaymentController(
             PaymentView paymentView,
@@ -17,6 +21,12 @@ public class PaymentController {
 
         this.paymentView = paymentView;
         this.paymentService = paymentService;
+
+        initialize();
+    }
+    public PaymentController(){
+        this.paymentView = new PaymentView();
+        this.paymentService = new PaymentService();
 
         initialize();
     }
@@ -46,6 +56,8 @@ public class PaymentController {
                 paymentView.getPostcode(),
                 paymentView.getCountry());
 
+        paymentSucceeded = result.isSuccess();
+
         if (result.isSuccess()) {
 
             JOptionPane.showMessageDialog(
@@ -62,6 +74,11 @@ public class PaymentController {
                     "Payment Successful",
                     JOptionPane.INFORMATION_MESSAGE);
 
+            Window window = SwingUtilities.getWindowAncestor(paymentView);
+            if (window != null) {
+                window.dispose();
+            }
+
         } else {
 
             JOptionPane.showMessageDialog(
@@ -70,6 +87,14 @@ public class PaymentController {
                     "Payment Failed",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    // =========================================================
+    // Popup Flow
+    // =========================================================
+    public boolean showPaymentPopup() {
+        paymentView.createDialog().setVisible(true);
+        return paymentSucceeded;
     }
 
     // =========================================================

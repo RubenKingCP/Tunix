@@ -2,6 +2,7 @@ package tunix.controller;
 
 import javax.swing.JPanel;
 
+import tunix.controller.main.PaymentController;
 import tunix.navigation.events.*;
 import tunix.service.ArtistRequestService;
 import tunix.service.UserService;
@@ -34,7 +35,14 @@ public class UserProfileController {
         //return true; // Return true if trial started successfully
     }
 
-    public boolean purchasePremiumPlan(){
+    public boolean purchasePremiumPlan() {
+        PaymentController paymentController = new PaymentController();
+        boolean paymentSucceeded = paymentController.showPaymentPopup();
+
+        if (!paymentSucceeded) {
+            return false;
+        }
+
         return service.buyPremium(SessionService.Instance.getUser().getLongId());
     }
 

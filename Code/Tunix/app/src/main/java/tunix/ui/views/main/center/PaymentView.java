@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -13,7 +14,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -361,20 +362,23 @@ public class PaymentView extends JPanel {
     // =========================================================
     // Standalone Test
     // =========================================================
+    public JDialog createDialog() {
+        JDialog dialog = new JDialog((java.awt.Frame) null,
+                "Tunix - Payment",
+                Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setSize(900, 700);
+        dialog.setLocationRelativeTo(null);
+        dialog.setResizable(true);
+
+        dialog.setLayout(new BorderLayout());
+        dialog.add(this, BorderLayout.CENTER);
+
+        return dialog;
+    }
+
     public void display() {
-
-        SwingUtilities.invokeLater(() -> {
-
-            JFrame frame = new JFrame("Tunix - Payment");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(900, 700);
-            frame.setLocationRelativeTo(null);
-
-            frame.setLayout(new BorderLayout());
-            frame.add(new PaymentView(), BorderLayout.CENTER);
-
-            frame.setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> createDialog().setVisible(true));
     }
     // =========================================================
 // Getters

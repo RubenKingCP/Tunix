@@ -9,6 +9,7 @@ participant TopBarView
 participant TopBarController
 participant SearchView
 participant SearchController
+participant SearchService
 participant PlaylistService
 participant PlaylistApi
 participant ApiService
@@ -26,12 +27,13 @@ User -> TopBarView : clicks on "Search"
 TopBarView -> TopBarController : search(query,searchType)
 deactivate TopBarView
 activate TopBarController
-TopBarController -> PlaylistService : searchPlaylistByName(query)
-deactivate TopBarController
+TopBarController -> SearchService : searchPlaylistByName(query)
+activate SearchService
+SearchService -> PlaylistService : searchPlaylistByName(query)
 activate PlaylistService
 PlaylistService -> PlaylistApi : searchPlaylistByName(query)
 activate PlaylistApi
-PlaylistApi -> ApiService : post("playlist/getByName", query)
+PlaylistApi -> ApiService : post("Playlist/getByName", query)
 activate ApiService
 ApiService -> PlaylistBackendController : searchPlaylistByName(query)
 activate PlaylistBackendController
@@ -49,9 +51,12 @@ ApiService --> PlaylistApi : return results
 deactivate ApiService
 PlaylistApi --> PlaylistService : return results
 deactivate PlaylistApi
-PlaylistService --> TopBarController : return results
+PlaylistService --> SearchService : return results
 deactivate PlaylistService
+SearchService --> TopBarController : return results
+deactivate SearchService
 TopBarController -> EventBus : publish SwitchMainScreenEvent, SearchController
+deactivate TopBarController
 activate EventBus
 EventBus -> MainPanel : switchMainScreen(SearchController)
 deactivate EventBus
