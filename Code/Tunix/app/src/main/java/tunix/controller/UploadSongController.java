@@ -6,11 +6,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 import tunix.dto.request.SongRequest;
-import tunix.model.account.Artist;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.SongUploadedEvent;
 import tunix.service.SongService;
-import tunix.service.auth.SessionService;
 import tunix.ui.views.main.center.UploadSongView;
 
 public class UploadSongController {

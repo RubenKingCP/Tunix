@@ -29,7 +29,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -42,7 +41,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import tunix.controller.main.LibraryController;
-import tunix.controller.main.LibraryController.OpenSongViewEvent;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.ILibraryAsset;
@@ -75,7 +73,6 @@ public class LibraryView extends JPanel {
     private List<ILibraryAsset> libraryAssets = List.of();
 
 
-    //TODO: Add constrcutr to view
     public LibraryView() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(BG);

@@ -151,3 +151,74 @@ CREATE TABLE artist_request (
     FOREIGN KEY (user_id) REFERENCES user(id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE library (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    account_id BIGINT NOT NULL UNIQUE,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (account_id) REFERENCES account(account_id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE library_song (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    library_id BIGINT NOT NULL,
+    song_id BIGINT NOT NULL,
+
+    FOREIGN KEY (library_id) REFERENCES library(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (song_id) REFERENCES song(id)
+        ON DELETE CASCADE,
+
+    UNIQUE(library_id, song_id)
+);
+
+CREATE TABLE library_album (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    library_id BIGINT NOT NULL,
+    album_id BIGINT NOT NULL,
+
+    FOREIGN KEY (library_id) REFERENCES library(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (album_id) REFERENCES album(id)
+        ON DELETE CASCADE,
+
+    UNIQUE(library_id, album_id)
+);
+
+CREATE TABLE library_playlist (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    library_id BIGINT NOT NULL,
+    playlist_id BIGINT NOT NULL,
+
+    FOREIGN KEY (library_id) REFERENCES library(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (playlist_id) REFERENCES playlist(id)
+        ON DELETE CASCADE,
+
+    UNIQUE(library_id, playlist_id)
+);
+
+CREATE TABLE library_artist (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    library_id BIGINT NOT NULL,
+    artist_id BIGINT NOT NULL,
+
+    FOREIGN KEY (library_id) REFERENCES library(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (artist_id) REFERENCES artist(id)
+        ON DELETE CASCADE,
+
+    UNIQUE(library_id, artist_id)
+);

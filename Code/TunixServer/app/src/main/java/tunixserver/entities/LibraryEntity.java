@@ -5,12 +5,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "library")
+@Getter
+@Setter
 public class LibraryEntity {
 
     @Id
@@ -18,15 +16,9 @@ public class LibraryEntity {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", unique = true)
-    private UserEntity user;
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    private AccountEntity account;
 
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-    }
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

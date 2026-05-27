@@ -2,8 +2,6 @@ package tunix.service;
 
 import java.sql.Date;
 import java.util.List;
-
-import tunix.dto.enums.Role;
 import tunix.model.ILibraryAsset;
 import tunix.model.account.Artist;
 import tunix.model.account.User;

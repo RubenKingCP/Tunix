@@ -77,7 +77,7 @@ public class MainPanel extends JPanel {
                 musicView.setAsset(event.getAlbum());
             }
         });
-        //TODO: Figure what the fuck is happening here
+
         eventBus.subscribe(LibraryPlaylistClicked.class, e -> {
             showController(MusicController.class);
 
