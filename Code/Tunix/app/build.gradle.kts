@@ -39,7 +39,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("tunix.app.AppLauncher")
 }
 
 tasks.test {
