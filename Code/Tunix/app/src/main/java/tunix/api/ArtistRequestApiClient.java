@@ -42,6 +42,7 @@ public class ArtistRequestApiClient {
     }
 
     public ApiResponse<ArtistApplicationResponse> makeRequest(ArtistApplicationRequest req) {
+        System.out.println("ArtistRequestApiClient: Check for data existence:" + req.getUserId() + '\n' + req.getStageName() + '\n' + req.getReason());
         return apiClient.post(
                 "/artist-requests/make",
                 req,

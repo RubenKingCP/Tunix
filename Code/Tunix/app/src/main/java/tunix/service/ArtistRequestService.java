@@ -108,7 +108,8 @@ public class ArtistRequestService {
         return response.isSuccess();
     }
 
-    public void makeRequest(int userId, String stageName, String message){
+    public void makeRequest(Long userId, String stageName, String message){
+        System.out.println("ArtistRequestService: Creating artist request for: \nuserId: " + userId + "\nStage Name: " + stageName + "\nReason: " + message);
         artistRequestApiClient.makeRequest(new ArtistApplicationRequest(userId,stageName,message));
     }
 }

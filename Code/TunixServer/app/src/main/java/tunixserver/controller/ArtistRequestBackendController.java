@@ -3,11 +3,13 @@ package tunixserver.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import tunixserver.dto.request.ArtistApplicationRequest;
 import tunixserver.dto.response.ApiResponse;
 import tunixserver.dto.response.ArtistRequestResponse;
 import tunixserver.service.ArtistRequestBackendService;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/artist-requests")
@@ -88,6 +90,30 @@ public class ArtistRequestBackendController {
                     new ApiResponse<>(
                             false,
                             "Failed to reject request: " + e.getMessage(),
+                            null
+                    )
+            );
+        }
+    }
+    
+    @PostMapping("/make")
+    public ResponseEntity<ApiResponse<Void>> createArtistRequest(
+            @RequestBody ArtistApplicationRequest dto) {
+
+        System.out.println("ArtistRequestBackend: Creating artist request for user " + dto.getUserId());
+        System.out.println("Get request data for check: \n" + dto.getStageName() + "\n" + dto.getReason() + '\n' + dto.getUserId());
+        try {
+            ApiResponse<Void> response =
+                    artistRequestBackendService.createArtistRequest(dto);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            false,
+                            "Failed to create request: " + e.getMessage(),
                             null
                     )
             );

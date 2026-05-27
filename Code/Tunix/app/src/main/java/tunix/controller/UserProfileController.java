@@ -47,6 +47,6 @@ public class UserProfileController {
     }
 
     public void requestArtistStatus(String stageName, String bio) {
-        artistRequestService.makeRequest(SessionService.Instance.getAccount().getLongId(), stageName, bio);
+        artistRequestService.makeRequest(Long.valueOf(SessionService.Instance.getAccount().getLongId()), stageName, bio);
     }
 }

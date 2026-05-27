@@ -1,4 +1,4 @@
-package tunix.dto.request;
+package tunixserver.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +14,4 @@ public class ArtistApplicationRequest {
     private Long userId;
     private String stageName;
     private String reason;
-
-
 }
