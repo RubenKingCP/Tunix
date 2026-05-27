@@ -19,7 +19,6 @@ import tunix.service.*;
 import tunix.service.auth.SessionService;
 import tunix.ui.views.main.center.UploadSongView;
 import tunix.model.musicContent.Album;
-import tunix.ui.views.main.center.AlbumView;
 import tunix.ui.views.main.center.MusicView;
 
 public class MainPanel extends JPanel {
