@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import tunix.api.AdminApi;
+import tunix.model.ArtistRequest;
 
 public class AdminService {
     private AdminApi api;
@@ -46,5 +47,9 @@ public class AdminService {
 
     public String postRemoveSongById(int songId) {
         return ""; // idk, something like "DELETE FROM song WHERE id = songId;" ??
+    }
+
+    public String getProfilePic (ArtistRequest ar) {
+        return ""; // idk, something like "SELECT profile_picture_url WHERE user_id = ar.applicantId;" ??
     }
 }

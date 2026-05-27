@@ -8,6 +8,8 @@ import tunix.model.ArtistRequest;
 import tunix.model.musicContent.Song;
 
 import java.util.List;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -283,20 +285,37 @@ public class AdminView extends JPanel {
         // profile picture centered via a wrapper
         JPanel profilePic = new JPanel() {
             @Override protected void paintComponent(Graphics g) {
-                // this is the part where we get the profile pic
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // clip to circle first — applies to both image and placeholder
+                g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, 80, 80));
+
+                if (adminController.getProfilePic(ar) != null) {
+                    try {
+                        Image img = ImageIO.read(new java.net.URL(adminController.getProfilePic(ar)));
+                        g2.drawImage(img, 0, 0, 80, 80, null);
+                    } catch (Exception ex) {
+                        drawPlaceholder(g2, ar.getStageName());
+                    }
+                } else {
+                    drawPlaceholder(g2, ar.getStageName());
+                }
+
+                g2.dispose();
+            }
+
+            private void drawPlaceholder(Graphics2D g2, String stageName) {
                 g2.setColor(BG_CARD);
                 g2.fillOval(0, 0, 80, 80);
                 g2.setColor(TEXT_MUTED);
                 g2.setFont(new Font("SansSerif", Font.BOLD, 28));
                 FontMetrics fm = g2.getFontMetrics();
-                String initial = ar.getStageName() == null ? "?" :
-                        String.valueOf(ar.getStageName().charAt(0)).toUpperCase();
+                String initial = stageName == null ? "?" :
+                        String.valueOf(stageName.charAt(0)).toUpperCase();
                 g2.drawString(initial,
                         (80 - fm.stringWidth(initial)) / 2,
                         (80 - fm.getHeight()) / 2 + fm.getAscent());
-                g2.dispose();
             }
         };
         profilePic.setPreferredSize(new Dimension(80, 80));

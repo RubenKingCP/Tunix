@@ -103,4 +103,8 @@ public class AdminController {
     public void onLogoutButtonClicked() {
         eventBus.publish(new LogoutEvent());
     }
+
+    public String getProfilePic(ArtistRequest ar) {
+        return adminService.getProfilePic(ar);
+    }
 }
