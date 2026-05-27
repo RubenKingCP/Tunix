@@ -43,7 +43,6 @@ public class PaymentView extends JPanel {
     private JTextField postcodeField;
 
     private JComboBox<String> countryDropdown;
-    private JComboBox<String> planDropdown;
 
     private JButton payButton;
 
@@ -70,7 +69,7 @@ public class PaymentView extends JPanel {
         content.add(buildHeader());
         content.add(Box.createVerticalStrut(24));
 
-        content.add(buildSubscriptionSection());
+        content.add(buildPremiumSummaryCard());
         content.add(Box.createVerticalStrut(24));
 
         content.add(buildPaymentSection());
@@ -118,29 +117,40 @@ public class PaymentView extends JPanel {
     }
 
     // =========================================================
-    // Subscription Section
+    // Premium Summary
     // =========================================================
-    private JPanel buildSubscriptionSection() {
+    private JPanel buildPremiumSummaryCard() {
 
-        JPanel section = buildSection("Subscription Plan");
+        JPanel section = buildSection("Subscription");
 
         JPanel card = createCard();
 
-        JLabel label = new JLabel("Choose your plan");
-        label.setForeground(TEXT);
-        label.setFont(new Font("SansSerif", Font.BOLD, 13));
+        JLabel title = new JLabel("Tunix Premium");
+        title.setForeground(TEXT);
+        title.setFont(new Font("SansSerif", Font.BOLD, 18));
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        planDropdown = new JComboBox<>(new String[] {
-                "Premium Individual - €9.99/month",
-                "Premium Student - €4.99/month",
-                "Premium Family - €14.99/month"
-        });
+        JLabel price = new JLabel("€9.99 / month");
+        price.setForeground(ACCENT);
+        price.setFont(new Font("SansSerif", Font.BOLD, 22));
+        price.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        styleComboBox(planDropdown);
+        JLabel features = new JLabel(
+                "<html>"
+                        + "• Ad-free listening<br>"
+                        + "• Download Songs<br>"
+                        + "• Unlimited skips<br>"
+                        + "</html>");
 
-        card.add(label);
-        card.add(Box.createVerticalStrut(10));
-        card.add(planDropdown);
+        features.setForeground(MUTED);
+        features.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        features.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        card.add(title);
+        card.add(Box.createVerticalStrut(8));
+        card.add(price);
+        card.add(Box.createVerticalStrut(16));
+        card.add(features);
 
         section.add(card);
 
