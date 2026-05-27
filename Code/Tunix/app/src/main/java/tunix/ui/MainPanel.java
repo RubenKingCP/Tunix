@@ -70,13 +70,13 @@ public class MainPanel extends JPanel {
 
         eventBus.subscribe(OpenAlbumViewEvent.class, event -> {
 
-            Album album = event.getAlbum();
+            showController(MusicController.class);
 
-            AlbumView albumView = new AlbumView(album);
+            JPanel panel = registry.get(MusicController.class);
 
-            register(AlbumView.class, albumView);
-
-            show(AlbumView.class);
+            if (panel instanceof MusicView musicView) {
+                musicView.setAsset(event.getAlbum());
+            }
         });
         //TODO: Figure what the fuck is happening here
         eventBus.subscribe(LibraryPlaylistClicked.class, e -> {

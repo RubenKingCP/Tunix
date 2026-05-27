@@ -15,6 +15,8 @@ import tunix.ui.views.main.LibraryView;
 import tunix.model.account.Artist;
 import tunix.model.musicContent.Song;
 import tunix.navigation.events.OpenArtistViewEvent;
+import tunix.navigation.events.OpenAlbumViewEvent;
+import tunix.model.musicContent.Album;
 
 
 public class LibraryController {
@@ -48,8 +50,8 @@ public class LibraryController {
         appContext.eventBus.publish(new LibraryPlaylistClicked(asset));
     }
 
-    public void albumClicked() {
-
+    public void albumClicked(Album album) {
+        appContext.eventBus.publish(new OpenAlbumViewEvent(album));
     }
     public void songClicked(Song song) {
         appContext.eventBus.publish(new OpenSongViewEvent(song));

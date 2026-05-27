@@ -48,6 +48,7 @@ import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.ILibraryAsset;
 import tunix.model.account.Artist;
 import tunix.model.musicContent.Song;
+import tunix.model.musicContent.Album;
 
 
 public class LibraryView extends JPanel {
@@ -887,7 +888,7 @@ public class LibraryView extends JPanel {
             libraryController.playlistClicked(asset);
         } else if (type == LibraryAssetType.ALBUM) {
             System.out.println("Album Clicked");
-            libraryController.albumClicked();
+            libraryController.albumClicked((Album) asset);
         } else if (type == LibraryAssetType.SONG) {
             System.out.println("Song Clicked");
             libraryController.songClicked((Song) asset);
