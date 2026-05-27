@@ -78,6 +78,7 @@ public class LibraryService {
                 chillVibes,
                 morningHits,
                 am,
+                artist,
                 currents,
                 doIWantToKnow,
                 letItHappen,

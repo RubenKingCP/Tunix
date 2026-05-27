@@ -74,32 +74,22 @@ public class MainPanel extends JPanel {
             if (musicPanel instanceof tunix.ui.views.main.center.MusicView musicView) {
                 musicView.setAsset(e.getPlaylist());
             }
-            eventBus.subscribe(OpenArtistViewEvent.class, event -> {
-                showController(ArtistController.class);
-
-                JPanel panel = registry.get(ArtistController.class);
-
-                if (panel instanceof tunix.ui.views.main.center.ArtistView view) {
-
-                    if (artistController == null) {
-                        artistController = new ArtistController();
-                    }
-
-                    artistController.loadArtist(
-                            event.getArtist(),
-                            java.util.List.of(),
-                            java.util.List.of()
-                    );
-
-                    view.setArtistData(
-                            event.getArtist(),
-                            java.util.List.of(),
-                            java.util.List.of()
-                    );
-                }
-            });
         });
+        eventBus.subscribe(OpenArtistViewEvent.class, event -> {
 
+            showController(ArtistController.class);
+
+            JPanel panel = registry.get(ArtistController.class);
+
+            if (panel instanceof tunix.ui.views.main.center.ArtistView view) {
+
+                view.setArtistData(
+                        event.getArtist(),
+                        java.util.List.of(),
+                        java.util.List.of()
+                );
+            }
+        });
         eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {
             Account user = SessionService.Instance == null ? null : SessionService.Instance.getAccount();
             if (user == null) return;
@@ -129,6 +119,9 @@ public class MainPanel extends JPanel {
         }
         if (controllerClass == AdminProfileController.class) {
             return new AdminProfileController().getView();
+        }
+        if (controllerClass == ArtistController.class) {
+            return new ArtistController().getView();
         }
         if (controllerClass == ArtistProfileController.class) {
             return new ArtistProfileController(new ArtistProfileService(context.eventBus), context.eventBus).getView();

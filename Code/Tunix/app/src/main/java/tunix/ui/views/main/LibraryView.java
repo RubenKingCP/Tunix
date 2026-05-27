@@ -45,6 +45,8 @@ import tunix.controller.main.LibraryController;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.ILibraryAsset;
+import tunix.model.account.Artist;
+
 
 public class LibraryView extends JPanel {
 
@@ -411,12 +413,20 @@ public class LibraryView extends JPanel {
         return visible;
     }
 
-    private boolean matchesFilter(ILibraryAsset asset) {
-        if (activeFilter.equals("All")) {
-            return true;
+        private boolean matchesFilter(ILibraryAsset asset) {
+
+            if (activeFilter.equals("All")) {
+                return true;
+            }
+
+            return switch (activeFilter) {
+                case "Artists" -> asset.getType() == LibraryAssetType.ARTIST;
+                case "Albums" -> asset.getType() == LibraryAssetType.ALBUM;
+                case "Songs" -> asset.getType() == LibraryAssetType.SONG;
+                case "Playlists" -> asset.getType() == LibraryAssetType.PLAYLIST;
+                default -> true;
+            };
         }
-        return asset.getType().equals(activeFilter.substring(0, activeFilter.length() - 1));
-    }
 
     private Comparator<ILibraryAsset> getComparator() {
         return switch (sortMode) {
@@ -867,12 +877,16 @@ public class LibraryView extends JPanel {
         if(type == LibraryAssetType.PLAYLIST) {
             System.out.println("Playlist Clicked");
             libraryController.playlistClicked(asset);
-        } else if (type == LibraryAssetType.Album) {
+        } else if (type == LibraryAssetType.ALBUM) {
             System.out.println("Album Clicked");
             libraryController.albumClicked();
         } else if (type == LibraryAssetType.SONG) {
             System.out.println("Song Clicked");
             libraryController.songClicked();
+        }
+        else if (type == LibraryAssetType.ARTIST) {
+        System.out.println("Artist Clicked");
+        libraryController.artistClicked((Artist) asset);
         }
     }
 }
