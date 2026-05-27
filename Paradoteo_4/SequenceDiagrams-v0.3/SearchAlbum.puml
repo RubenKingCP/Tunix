@@ -9,6 +9,7 @@ participant TopBarView
 participant TopBarController
 participant SearchView
 participant SearchController
+participant SearchService
 participant AlbumService
 participant AlbumApi
 participant ApiService
@@ -26,8 +27,9 @@ User -> TopBarView : clicks on "Search"
 TopBarView -> TopBarController : search(query,searchType)
 deactivate TopBarView
 activate TopBarController
-TopBarController -> AlbumService : searchAlbumByName(query)
-deactivate TopBarController
+TopBarController -> SearchService : searchAlbumByName(query)
+activate SearchService
+SearchService -> AlbumService : searchAlbumByName(query)
 activate AlbumService
 AlbumService -> AlbumApi : searchAlbumByName(query)
 activate AlbumApi
@@ -49,9 +51,12 @@ ApiService --> AlbumApi : return results
 deactivate ApiService
 AlbumApi --> AlbumService : return results
 deactivate AlbumApi
-AlbumService --> TopBarController : return results
+AlbumService --> SearchService : return results
 deactivate AlbumService
+SearchService --> TopBarController : return results
+deactivate SearchService
 TopBarController -> EventBus : publish SwitchMainScreenEvent, SearchController
+deactivate TopBarController
 activate EventBus
 EventBus -> MainPanel : switchMainScreen(SearchController)
 deactivate EventBus
