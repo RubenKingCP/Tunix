@@ -43,4 +43,8 @@ public class AdminService {
     public List<String> getSongWarnings(int songId){
         return new LinkedList<String>();
     }
+
+    public String postRemoveSongById(int songId) {
+        return ""; // idk, something like "DELETE FROM song WHERE id = songId;" ??
+    }
 }
