@@ -1,8 +1,13 @@
 package tunix.model.account;
 
-import tunix.dto.enums.Role;
+import java.util.List;
 
-public class Artist extends Account {
+import tunix.dto.enums.LibraryAssetType;
+import tunix.dto.enums.Role;
+import tunix.model.ILibraryAsset;
+import tunix.model.musicContent.Song;
+
+public class Artist extends Account implements ILibraryAsset {
 
     private String biography;
     private int followersCount;
@@ -33,6 +38,21 @@ public class Artist extends Account {
 
     public String getSubtitle() {
         return followersCount + " followers";
+    }
+
+    @Override
+    public int getId() {
+        return id.intValue();
+    }
+
+    @Override
+    public LibraryAssetType getType() {
+        return LibraryAssetType.ARTIST;
+    }
+
+    @Override
+    public List<Song> getDisplaySongs() {
+        return List.of();
     }
 
     public boolean isCircularAvatar() {

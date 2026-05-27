@@ -44,6 +44,7 @@ public class SearchView extends JPanel {
     private static final Color TAG_SONG = new Color(0x1A1A2E);
     private static final Color TAG_ALBUM = new Color(0x1A2E1A);
     private static final Color TAG_PLAYLIST = new Color(0x2E1A1A);
+    private static final Color TAG_ARTIST = new Color(0x1E3A8A);
 
     private static final Font FONT_TITLE = new Font("SansSerif", Font.BOLD, 22);
     private static final Font FONT_SECTION = new Font("SansSerif", Font.BOLD, 16);
@@ -301,6 +302,7 @@ public class SearchView extends JPanel {
             case SONG -> "Song";
             case Album -> "Album";
             case PLAYLIST -> "Playlist";
+            case ARTIST -> "Artist";
         };
     }
 
@@ -360,6 +362,7 @@ public class SearchView extends JPanel {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Color bg = "Song".equalsIgnoreCase(getText()) ? TAG_SONG
                     : "Album".equalsIgnoreCase(getText()) ? TAG_ALBUM
+                    : "Artist".equalsIgnoreCase(getText()) ? TAG_ARTIST
                     : TAG_PLAYLIST;
             g2.setColor(bg);
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);

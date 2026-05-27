@@ -76,7 +76,7 @@ public class AppLauncher {
         // =========================
         // ADMIN (placeholder)
         // =========================
-        AdminPanel adminPanel = new AdminPanel(new AdminController(eventBus, new AdminService(new AdminApi()), new ArtistRequestService(new ArtistRequestApiClient(apiClient)), new SongService(eventBus, new SongApiClient(apiClient))));
+        AdminPanel adminPanel = new AdminPanel(new AdminController(eventBus, new AdminService(new AdminApi(context.apiClient)), new ArtistRequestService(new ArtistRequestApiClient(apiClient)), new SongService(eventBus, new SongApiClient(apiClient))));
 
         // =========================
         // REGISTER SCREENS
