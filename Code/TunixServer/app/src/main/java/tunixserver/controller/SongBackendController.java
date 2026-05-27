@@ -2,7 +2,11 @@ package tunixserver.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -31,4 +35,31 @@ public class SongBackendController {
             return ResponseEntity.ok(new ApiResponse<>(false, "Failed to upload song: " + e.getMessage(), null));
         }
     }
-}
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<SongResponse>>> getAllSongs() {
+
+        try {
+
+            List<SongResponse> songs = songService.getAllSongs();
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            true,
+                            "Songs fetched successfully",
+                            songs
+                    )
+            );
+
+        } catch (Exception e) {
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            false,
+                            "Failed to fetch songs: " + e.getMessage(),
+                            null
+                    )
+            );
+        }
+    }
+    }

@@ -1,5 +1,9 @@
 package tunix.api;
 
+import java.util.List;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import tunix.dto.request.SongRequest;
 import tunix.dto.response.ApiResponse;
 import tunix.dto.response.SongResponse;
@@ -19,4 +23,9 @@ public class SongApiClient {
     public ApiResponse<SongResponse> getSongsByName(String query) {
         return apiClient.post("/songs/name",query,SongResponse.class);
     } 
+
+    public ApiResponse<List<SongResponse>> getSongs() {
+        System.out.println("SongApiClient: Sending request to api client");
+        return apiClient.get("/songs/all", new TypeReference<ApiResponse<List<SongResponse>>>() {});
+    }
 }

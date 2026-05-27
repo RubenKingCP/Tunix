@@ -43,7 +43,7 @@ public class ArtistRequestService {
             return response.getData()
                     .stream()
                     .map(this::toModel)
-                    .toList();
+                    .toList(); 
 
         } catch (Exception e) {
             System.err.println("API FAILED FULL STACKTRACE:");

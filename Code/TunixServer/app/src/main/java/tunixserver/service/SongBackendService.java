@@ -1,10 +1,14 @@
 package tunixserver.service;
 
 import tunixserver.dto.request.SongRequest;
+import tunixserver.dto.response.SongResponse;
 import tunixserver.entities.ArtistEntity;
 import tunixserver.entities.SongEntity;
+import tunixserver.mapper.SongMapper;
 import tunixserver.repository.ArtistBackendRepository;
 import tunixserver.repository.SongBackendRepository;
+
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -46,5 +50,18 @@ public class SongBackendService {
 
         // 4. Save to DB
         return songRepository.save(song);
+    }
+
+    public List<SongResponse> getAllSongs() {
+        System.out.println("SongBackendService: Reached get all songs");
+        List<SongEntity> songs = songRepository.findAll();
+
+        if(songs.isEmpty()) {
+            return List.of();
+        } 
+
+        return songs.stream()
+                .map(SongMapper::toResponse)
+                .toList();
     }
 }
