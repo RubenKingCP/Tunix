@@ -35,7 +35,7 @@ public class Album implements ILibraryAsset{
 
     @Override
     public LibraryAssetType getType() {
-        return LibraryAssetType.Album;
+        return LibraryAssetType.ALBUM;
     }
 
     @Override
