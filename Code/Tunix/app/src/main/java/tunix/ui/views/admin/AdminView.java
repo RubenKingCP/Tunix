@@ -11,6 +11,10 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
@@ -55,6 +59,11 @@ public class AdminView extends JPanel {
 
     // ── display() ─────────────────────────────────────────────────────────────
 
+    public void displaySongs(List<Song> songs) {
+        if (songs != null)
+            for (Song s : songs) songsPanel.add(new SongGUI(s));
+    }
+
     public void display() {
         setLayout(new BorderLayout());
         setBackground(BG_PRIMARY);
@@ -84,8 +93,7 @@ public class AdminView extends JPanel {
         add(contentArea, BorderLayout.CENTER);
 
         // populate if data already set
-        if (songs != null)
-            for (Song s : songs) songsPanel.add(new SongGUI(s));
+        displaySongs(songs);
 
         if (artistRequests != null)
             for (ArtistRequest a : artistRequests)
@@ -261,7 +269,135 @@ public class AdminView extends JPanel {
         artistApplicationsPanel.repaint();
     }
 
-    private void showArtistRequestDetails(ArtistRequest artistRequest) {}
+    private void showArtistRequestDetails(ArtistRequest ar) {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this),
+                "Artist Request Details", true);
+        dialog.setBackground(BG_PRIMARY);
+        dialog.setResizable(false);
+
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setBackground(BG_PRIMARY);
+        content.setBorder(BorderFactory.createEmptyBorder(32, 32, 32, 32));
+
+        // profile picture centered via a wrapper
+        JPanel profilePic = new JPanel() {
+            @Override protected void paintComponent(Graphics g) {
+                // this is the part where we get the profile pic
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(BG_CARD);
+                g2.fillOval(0, 0, 80, 80);
+                g2.setColor(TEXT_MUTED);
+                g2.setFont(new Font("SansSerif", Font.BOLD, 28));
+                FontMetrics fm = g2.getFontMetrics();
+                String initial = ar.getStageName() == null ? "?" :
+                        String.valueOf(ar.getStageName().charAt(0)).toUpperCase();
+                g2.drawString(initial,
+                        (80 - fm.stringWidth(initial)) / 2,
+                        (80 - fm.getHeight()) / 2 + fm.getAscent());
+                g2.dispose();
+            }
+        };
+        profilePic.setPreferredSize(new Dimension(80, 80));
+        profilePic.setMaximumSize(new Dimension(80, 80));
+        profilePic.setMinimumSize(new Dimension(80, 80));
+        profilePic.setOpaque(false);
+
+        JPanel picWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        picWrapper.setOpaque(false);
+        picWrapper.setAlignmentX(Component.LEFT_ALIGNMENT);
+        picWrapper.add(profilePic);
+
+        content.add(picWrapper);
+        content.add(Box.createVerticalStrut(12));
+
+        // stage name as header, "Artist" as subtitle — centered below pic
+        JLabel stageName = new JLabel(ar.getStageName() == null ? "Unknown" : ar.getStageName());
+        stageName.setFont(new Font("SansSerif", Font.BOLD, 20));
+        stageName.setForeground(TEXT_PRIMARY);
+        stageName.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel subtitle = new JLabel("Artist");
+        subtitle.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        subtitle.setForeground(TEXT_MUTED);
+        subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JPanel nameBlock = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 2));
+        nameBlock.setOpaque(false);
+        nameBlock.setAlignmentX(Component.LEFT_ALIGNMENT);
+        nameBlock.setLayout(new BoxLayout(nameBlock, BoxLayout.Y_AXIS));
+
+        JPanel stageNameWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        stageNameWrapper.setOpaque(false);
+        stageNameWrapper.add(stageName);
+
+        JPanel subtitleWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        subtitleWrapper.setOpaque(false);
+        subtitleWrapper.add(subtitle);
+
+        nameBlock.add(stageNameWrapper);
+        nameBlock.add(Box.createVerticalStrut(4));
+        nameBlock.add(subtitleWrapper);
+
+        content.add(nameBlock);
+        content.add(Box.createVerticalStrut(24));
+        content.add(buildReasonRow(ar.getReason()));
+
+        dialog.setContentPane(content);
+        dialog.setSize(420, 380);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    private JPanel buildDetailRow(String label, String value) {
+        JPanel row = new JPanel(new BorderLayout(16, 0));
+        row.setOpaque(false);
+        row.setAlignmentX(Component.LEFT_ALIGNMENT);
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 24));
+
+        JLabel labelComp = new JLabel(label);
+        labelComp.setFont(FONT_BTN);
+        labelComp.setForeground(TEXT_MUTED);
+        labelComp.setPreferredSize(new Dimension(100, 20));
+
+        JLabel valueComp = new JLabel(value == null ? "N/A" : value);
+        valueComp.setFont(FONT_BODY);
+        valueComp.setForeground(TEXT_PRIMARY);
+
+        row.add(labelComp, BorderLayout.WEST);
+        row.add(valueComp, BorderLayout.CENTER);
+        return row;
+    }
+
+    private JPanel buildReasonRow(String reason) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setOpaque(false);
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT); // consistent with other rows
+
+        JLabel label = new JLabel("Reason");
+        label.setFont(FONT_BTN);
+        label.setForeground(TEXT_MUTED);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JTextArea area = new JTextArea(reason == null ? "N/A" : reason);
+        area.setFont(FONT_BODY);
+        area.setForeground(TEXT_PRIMARY);
+        area.setBackground(BG_CARD);
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+        area.setEditable(false);
+        area.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        // let it stretch to fill the full width instead of capping at 312
+        area.setAlignmentX(Component.LEFT_ALIGNMENT);
+        area.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+
+        panel.add(label);
+        panel.add(Box.createVerticalStrut(6));
+        panel.add(area);
+        return panel;
+    }
 
     public void onArtistRequestShowDetailsClicked(ArtistRequest ar) { showArtistRequestDetails(ar); }
 
@@ -313,6 +449,7 @@ public class AdminView extends JPanel {
 
     private class ApplicationGUI extends JPanel {
         public ApplicationGUI(ArtistRequest application) {
+            final ArtistRequest ar = application;
             setLayout(new BorderLayout());
             setOpaque(false);
             setMaximumSize(new Dimension(Integer.MAX_VALUE, 64));
@@ -322,13 +459,31 @@ public class AdminView extends JPanel {
                 @Override protected void paintComponent(Graphics g) {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setColor(BG_CARD);
+                    g2.setColor(getBackground() != null ? getBackground() : BG_CARD);
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
                     g2.dispose();
                 }
             };
             card.setOpaque(false);
             card.setBorder(new EmptyBorder(10, 14, 10, 14));
+            card.setBackground(BG_CARD);
+            card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            card.addMouseListener(new MouseAdapter() {
+                @Override public void mouseEntered(MouseEvent e) {
+                    card.setBackground(new Color(0x2A, 0x2A, 0x2A));
+                    card.repaint();
+                }
+                @Override public void mouseExited(MouseEvent e) {
+                    card.setBackground(BG_CARD);
+                    card.repaint();
+                }
+                @Override public void mouseClicked(MouseEvent e) {
+                    if (e.getSource() == card) {
+                        onArtistRequestShowDetailsClicked(application);
+                    }
+                }
+            });
 
             card.add(colorThumb(String.valueOf(application.getStageName().charAt(0))), BorderLayout.WEST);
 

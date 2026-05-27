@@ -96,8 +96,8 @@ public class AdminController {
         //Code to remove media
         adminService.postRemoveSongById(songId);
         // Code to refresh admin song view to stop showing removed songs
-        List<Song> updatedSongs = adminService.getAllSongs();
-        adminView.displaySongs(updatedSongs);
+        List<Song> updatedSongs = onSongsClicked();
+         adminView.displaySongs(updatedSongs);
     }
 
     public void onLogoutButtonClicked() {
