@@ -9,8 +9,6 @@ import tunix.service.ArtistRequestService;
 import tunix.service.SongService;
 import tunix.ui.views.admin.AdminView;
 import tunix.dto.enums.ArtistRequestStatus;
-import tunix.dto.request.SongRequest;
-import tunix.dto.response.SongResponse;
 import tunix.model.ArtistRequest;
 import tunix.model.musicContent.Song;
 

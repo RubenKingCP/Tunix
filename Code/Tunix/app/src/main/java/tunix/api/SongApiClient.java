@@ -1,5 +1,7 @@
 package tunix.api;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -19,10 +21,16 @@ public class SongApiClient {
         System.out.println("SongApiClient: Sending request to api client");
         return apiClient.post("/songs/upload", songRequest, SongResponse.class);
     }
-    //How the fuck do we get multiple songs in one response??
-    public ApiResponse<SongResponse> getSongsByName(String query) {
-        return apiClient.post("/songs/name",query,SongResponse.class);
-    } 
+    
+    public ApiResponse<List<SongResponse>> getSongsByName(String query) {
+
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+
+        return apiClient.get(
+                "/songs/name?query=" + encodedQuery,
+                new TypeReference<ApiResponse<List<SongResponse>>>() {}
+        );
+    }
 
     public ApiResponse<List<SongResponse>> getSongs() {
         System.out.println("SongApiClient: Sending request to api client");

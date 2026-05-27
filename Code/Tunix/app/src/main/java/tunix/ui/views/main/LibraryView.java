@@ -46,6 +46,7 @@ import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.ILibraryAsset;
 import tunix.model.account.Artist;
 import tunix.model.musicContent.Song;
+import tunix.service.auth.SessionService;
 import tunix.model.musicContent.Album;
 
 
@@ -816,7 +817,7 @@ public class LibraryView extends JPanel {
                 return;
             }
 
-            PlaylistCreateRequest request = new PlaylistCreateRequest(name, descField.getText().trim(), chosenCoverPath[0]);
+            PlaylistCreateRequest request = new PlaylistCreateRequest(name, descField.getText().trim(), chosenCoverPath[0], Long.valueOf(SessionService.Instance.getAccount().getLongId()));
             createPlaylist(request);
             dialog.dispose();
         });
@@ -878,6 +879,7 @@ public class LibraryView extends JPanel {
     }
 
     public void onPlaylistCreateConfirmClicked(PlaylistCreateRequest playlistRequest) {
+        System.out.println("LibraryView: Create playlist Button clicked");
         if (libraryController != null) {
             libraryController.createPlaylist(playlistRequest);
         }

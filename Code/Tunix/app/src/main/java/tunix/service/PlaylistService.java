@@ -4,6 +4,7 @@ import java.util.List;
 
 import tunix.api.PlaylistApiClient;
 import tunix.dto.response.ApiResponse;
+import tunix.dto.response.PlaylistResponse;
 import tunix.model.ILibraryAsset;
 import tunix.dto.request.PlaylistCreateRequest;
 import tunix.dto.response.AddSongResponse;
@@ -41,14 +42,8 @@ public class PlaylistService {
     }
 
     public boolean createPlaylist(PlaylistCreateRequest playlistRequest, List<ILibraryAsset> libraryAssets) {
-        if (!checkDuplicateName(playlistRequest, libraryAssets)){
-            playlistApiClient.createPlaylist(playlistRequest);
-            return true;
-        } else return false;
-    }
-
-    public boolean checkDuplicateName(PlaylistCreateRequest playlistRequest, List<ILibraryAsset> libraryAssets) {
-        // Placeholder for check
-        return false;
+        System.out.println("PlaylistService: create Playlist Message send");
+        ApiResponse<PlaylistResponse> response = playlistApiClient.createPlaylist(playlistRequest);
+        return response.isSuccess();
     }
 }

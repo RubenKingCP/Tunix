@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tunixserver.dto.request.PlaylistCreateRequest;
 import tunixserver.dto.response.ApiResponse;
 import tunixserver.dto.response.PlaylistResponse;
+import tunixserver.entities.PlaylistEntity;
 import tunixserver.service.PlaylistBackendService;
 
 @RestController
@@ -39,8 +40,28 @@ public class PlaylistBackendController {
     public ResponseEntity<ApiResponse<PlaylistResponse>> createPlaylist(
             @RequestBody PlaylistCreateRequest playlistCreateRequest) {
 
-        playlistBackendService.createPlaylist(playlistCreateRequest);
+        try {
+            System.out.println("PlaylistBackendController: Got request\nPlaylistBackendController Request: "
+                    + playlistCreateRequest.getTitle());
 
-        return ResponseEntity.ok(new ApiResponse<PlaylistResponse>(true, "Playlist created", null));
+            PlaylistEntity playlist = playlistBackendService.createPlaylist(playlistCreateRequest);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            true,
+                            "Playlist created successfully",
+                            PlaylistResponse.fromEntity(playlist)
+                    )
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            false,
+                            "Failed to create playlist: " + e.getMessage(),
+                            null
+                    )
+            );
+        }
     }
 }

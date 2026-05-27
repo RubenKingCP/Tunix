@@ -3,9 +3,13 @@ package tunix.service;
 import java.sql.Date;
 import java.util.List;
 
+import javax.print.DocFlavor.STRING;
+
 import tunix.api.AlbumApi;
 import tunix.api.PlaylistApiClient;
 import tunix.api.SongApiClient;
+import tunix.dto.response.ApiResponse;
+import tunix.dto.response.SongResponse;
 import tunix.model.ILibraryAsset;
 import tunix.model.account.Artist;
 import tunix.model.musicContent.Album;
@@ -22,6 +26,35 @@ public class SearchService {
     }
 
     public List<ILibraryAsset> search(String query, String type) {
+
+        String normalizedType = type == null ? "" : type.trim().toLowerCase();
+
+        try {
+            if ("song".equals(normalizedType)) {
+
+                ApiResponse<List<SongResponse>> response =
+                        songApiClient.getSongsByName(query);
+
+                if (response != null && response.isSuccess() && response.getData() != null) {
+                    return response.getData()
+                            .stream()
+                            .map(this::toSong)
+                            .toList();
+                }
+
+                return List.of();
+            }
+
+            return List.of();
+
+        } catch (Exception e) {
+            System.err.println("Search error for type=" + normalizedType + ", query=" + query);
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
+    public List<ILibraryAsset> searchDummy(String query, String type) {
         String normalizedType = type == null ? "" : type.trim().toLowerCase();
 
         if ("song".equals(normalizedType)) {
@@ -83,5 +116,26 @@ public class SearchService {
 
         System.err.println("Search for this type has not been implemented yet");
         return List.of();
+    }
+
+    public ILibraryAsset toSong(SongResponse response) {
+
+        Artist artist = new Artist(
+                Long.valueOf(response.getArtistId()),
+                response.getArtistName(),
+                null,
+                null,
+                0,
+                false
+        );
+
+        return new Song(
+                response.getTitle(),
+                response.getId(),
+                artist,
+                response.getDuration(),
+                response.getFilePathUrl(),
+                response.getCoverImageUrl()
+        );
     }
 }

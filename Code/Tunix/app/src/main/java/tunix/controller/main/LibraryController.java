@@ -42,6 +42,7 @@ public class LibraryController {
     }
 
     public void createPlaylist(PlaylistCreateRequest playlistRequest) {
+        System.out.println("LibraryControler: PlaylistCreationButtonClicked"  );
         List<ILibraryAsset> assets = libraryService.getLibraryAssets();
         playlistService.createPlaylist(playlistRequest, assets);
     }

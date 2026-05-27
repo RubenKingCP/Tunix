@@ -8,6 +8,8 @@ import tunixserver.entities.PlaylistEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +18,7 @@ public class PlaylistResponse {
     private Long id;
     private String title;
     private Long creatorId;
+    @JsonProperty("isPublic")
     private boolean isPublic;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -34,5 +37,10 @@ public class PlaylistResponse {
                         .map(SongResponse::fromEntity)
                         .toList()
         );
+    }
+
+    @JsonProperty("isPublic")
+    public boolean isPublic() {
+        return isPublic;
     }
 }

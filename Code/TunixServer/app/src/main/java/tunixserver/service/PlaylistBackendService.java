@@ -66,11 +66,15 @@ public class PlaylistBackendService {
         AccountEntity creator = accountBackendRepository.findById(request.getCreatorId())
                 .orElseThrow(() -> new RuntimeException("Creator not found"));
 
-        List<AccountEntity> coauthors = new ArrayList<>();
+        //CHECK DUPLICATE NAME FOR SAME CREATOR
+        playlistBackendRepository.findByTitleAndCreator_AccountId(
+                request.getTitle(),
+                request.getCreatorId()
+        ).ifPresent(p -> {
+            throw new RuntimeException("Playlist with this name already exists");
+        });
 
-        if (request.getCoauthorIds() != null && !request.getCoauthorIds().isEmpty()) {
-            coauthors = accountBackendRepository.findAllById(request.getCoauthorIds());
-        }
+        List<AccountEntity> coauthors = new ArrayList<>();
 
         PlaylistEntity playlist = new PlaylistEntity();
         playlist.setTitle(request.getTitle());
@@ -82,4 +86,5 @@ public class PlaylistBackendService {
 
         return playlistBackendRepository.save(playlist);
     }
+    
 }
