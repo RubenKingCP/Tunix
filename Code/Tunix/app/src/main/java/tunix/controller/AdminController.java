@@ -92,12 +92,25 @@ public class AdminController {
         }
     }
 
-    public void onRemoveSongClicked(int songId){
-        //Code to remove media
+    public boolean onRemoveSongClicked(int songId){
         adminService.postRemoveSongById(songId);
-        // Code to refresh admin song view to stop showing removed songs
         List<Song> updatedSongs = onSongsClicked();
-         adminView.displaySongs(updatedSongs);
+        adminView.displaySongs(updatedSongs);
+        return true;
+    }
+
+    public boolean onIssueStrikeClicked(int artistId, String reason) {
+        boolean success = adminService.postIssueWarning(artistId);
+        String note = reason == null || reason.isBlank() ? "" : " Reason: " + reason;
+        adminView.showMessage(success ? "Strike issued successfully." + note : "Failed to issue strike.");
+        return success;
+    }
+
+    public boolean onIssueBanClicked(int artistId, String reason) {
+        boolean success = adminService.postBan(artistId);
+        String note = reason == null || reason.isBlank() ? "" : " Reason: " + reason;
+        adminView.showMessage(success ? "Ban issued successfully." + note : "Failed to issue ban.");
+        return success;
     }
 
     public void onLogoutButtonClicked() {
