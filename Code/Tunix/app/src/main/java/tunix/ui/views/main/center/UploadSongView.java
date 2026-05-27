@@ -387,28 +387,5 @@ public class UploadSongView extends JPanel {
     // STANDALONE TEST
     //-------------------------------------------------
 
-    public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(() -> {
-
-            JFrame frame = new JFrame(
-                    "Tunix - Upload Song"
-            );
-
-            frame.setDefaultCloseOperation(
-                    JFrame.EXIT_ON_CLOSE
-            );
-
-            UploadSongView view =
-                    new UploadSongView();
-
-            frame.setContentPane(view);
-
-            frame.setSize(700, 500);
-
-            frame.setLocationRelativeTo(null);
-
-            frame.setVisible(true);
-        });
-    }
+   
 }

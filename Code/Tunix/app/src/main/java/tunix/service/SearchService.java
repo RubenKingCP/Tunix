@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 import tunix.api.AlbumApi;
+import tunix.api.ArtistApi;
 import tunix.api.PlaylistApiClient;
 import tunix.api.SongApiClient;
 import tunix.model.ILibraryAsset;
@@ -15,10 +16,14 @@ import tunix.model.musicContent.Song;
 public class SearchService {
     private final SongApiClient songApiClient;
     private final PlaylistApiClient playlistApiClient;
+    private final AlbumApi albumApi;
+    private final ArtistApi artistApi;
 
-    public SearchService(SongApiClient songApiClient, PlaylistApiClient playlistApiClient, AlbumApi albumApi) {
+    public SearchService(SongApiClient songApiClient, PlaylistApiClient playlistApiClient, AlbumApi albumApi, ArtistApi artistApi) {
         this.playlistApiClient = playlistApiClient;
         this.songApiClient = songApiClient;
+        this.albumApi = albumApi;
+        this.artistApi = artistApi;
     }
 
     public List<ILibraryAsset> search(String query, String type) {
