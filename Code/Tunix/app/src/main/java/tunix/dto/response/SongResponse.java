@@ -1,19 +1,25 @@
 package tunix.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import tunix.model.account.Artist;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class SongResponse {
 
-    private Long songId;
+    private Long id;
+
     private String title;
-    private Artist artist;
+
+    private Long artistId;
+
+    private String artistName;
+
     private int duration;
+
     private String filePathUrl;
+
     private String coverImageUrl;
 }

@@ -24,17 +24,6 @@ public class Song implements ILibraryAsset {
         this.coverImageUrl = coverImageUrl;
     }
 
-    public static Song fromDto(SongResponse dto, Artist artist) {
-        return new Song(
-                dto.getTitle(),
-                dto.getSongId(),
-                artist,
-                dto.getDuration(),
-                dto.getFilePathUrl(),
-                dto.getCoverImageUrl()
-        );
-    }
-
     @Override
     public String getTitle() {
         return title;
