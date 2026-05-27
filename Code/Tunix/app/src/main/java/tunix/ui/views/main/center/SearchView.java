@@ -449,5 +449,15 @@ public class SearchView extends JPanel {
         }
     }
 
- 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Tunix – Search");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(900, 620);
+            frame.setLocationRelativeTo(null);
+            frame.getContentPane().setBackground(new Color(0x121212));
+            frame.add(new SearchView(List.of()));
+            frame.setVisible(true);
+        });
+    }
 }
