@@ -376,4 +376,44 @@ public class PaymentView extends JPanel {
             frame.setVisible(true);
         });
     }
+    // =========================================================
+// Getters
+// =========================================================
+
+public String getCardholderName() {
+    return cardholderField.getText();
+}
+
+public String getCardNumber() {
+    return cardNumberField.getText();
+}
+
+public String getExpiry() {
+    return expiryField.getText();
+}
+
+public String getCvv() {
+    return cvvField.getText();
+}
+
+public String getAddress() {
+    return addressField.getText();
+}
+
+public String getCity() {
+    return cityField.getText();
+}
+
+public String getPostcode() {
+    return postcodeField.getText();
+}
+
+public String getCountry() {
+    Object selected = countryDropdown.getSelectedItem();
+    return selected == null ? "" : selected.toString();
+}
+
+public JButton getPayButton() {
+    return payButton;
+}
 }
