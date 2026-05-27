@@ -11,7 +11,7 @@ participant UserProfileView
 participant UserProfileController
 participant ArtistRequestService
 participant ArtistRequestApiClient
-participant ApiService
+participant ApiClient
 participant ArtistRequestBackendController
 participant ArtistRequestBackendService
 participant ArtistRequestBackendRepository
@@ -49,9 +49,9 @@ UserProfileController -> ArtistRequestService : submitArtistApplication(formData
 activate ArtistRequestService
 ArtistRequestService -> ArtistRequestApiClient : submitArtistApplication(formData)
 activate ArtistRequestApiClient
-ArtistRequestApiClient -> ApiService : post(artistRequest/submit, formData)
-activate ApiService
-ApiService -> ArtistRequestBackendController : submitArtistApplication(formData)
+ArtistRequestApiClient -> ApiClient : post(artistRequest/submit, formData)
+activate ApiClient
+ApiClient -> ArtistRequestBackendController : submitArtistApplication(formData)
 activate ArtistRequestBackendController
 ArtistRequestBackendController -> ArtistRequestBackendService : submitArtistApplication(formData)
 activate ArtistRequestBackendService
@@ -61,10 +61,10 @@ ArtistRequestBackendRepository --> ArtistRequestBackendService : return success
 deactivate ArtistRequestBackendRepository
 ArtistRequestBackendService --> ArtistRequestBackendController : return success
 deactivate ArtistRequestBackendService
-ArtistRequestBackendController --> ApiService : return success
+ArtistRequestBackendController --> ApiClient : return success
 deactivate ArtistRequestBackendController
-ApiService --> ArtistRequestApiClient : return success
-deactivate ApiService
+ApiClient --> ArtistRequestApiClient : return success
+deactivate ApiClient
 ArtistRequestApiClient --> ArtistRequestService : return success
 deactivate ArtistRequestApiClient
 ArtistRequestService --> UserProfileController : return success

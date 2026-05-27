@@ -8,7 +8,7 @@ participant AdminDashdoardView
 participant AdminDashdoardController
 participant ArtistRequestService
 participant ArtistRequestApiClient
-participant ApiService
+participant ApiClient
 participant ArtistRequestBackendController
 participant ArtistRequestBackendService
 participant ArtistRequestBackendRepository
@@ -23,9 +23,9 @@ AdminDashdoardController -> ArtistRequestService : getApplicationDetails(applica
 activate ArtistRequestService
 ArtistRequestService -> ArtistRequestApiClient : getApplicationDetails(applicationId)
 activate ArtistRequestApiClient
-ArtistRequestApiClient -> ApiService : post(artistRequest/getRequests, applicationId)
-activate ApiService
-ApiService -> ArtistRequestBackendController : getApplicationDetails(applicationId)
+ArtistRequestApiClient -> ApiClient : post(artistRequest/getRequests, applicationId)
+activate ApiClient
+ApiClient -> ArtistRequestBackendController : getApplicationDetails(applicationId)
 activate ArtistRequestBackendController
 ArtistRequestBackendController -> ArtistRequestBackendService : getApplicationDetails(applicationId)
 activate ArtistRequestBackendService
@@ -35,10 +35,10 @@ ArtistRequestBackendRepository --> ArtistRequestBackendService : return applicat
 deactivate ArtistRequestBackendRepository
 ArtistRequestBackendService --> ArtistRequestBackendController : return application details
 deactivate ArtistRequestBackendService
-ArtistRequestBackendController --> ApiService : return application details
+ArtistRequestBackendController --> ApiClient : return application details
 deactivate ArtistRequestBackendController
-ApiService --> ArtistRequestApiClient : return application details
-deactivate ApiService
+ApiClient --> ArtistRequestApiClient : return application details
+deactivate ApiClient
 ArtistRequestApiClient --> AdminDashdoardController : return application details
 deactivate ArtistRequestApiClient
 AdminDashdoardController -> AdminDashdoardView : showApplicationDetails(applicationDetails)
@@ -54,9 +54,9 @@ AdminDashdoardController -> ArtistRequestService : saveResponse(adminRes, applic
 activate ArtistRequestService
 ArtistRequestService -> ArtistRequestApiClient : saveResponse(adminRes, applicationId)
 activate ArtistRequestApiClient
-ArtistRequestApiClient -> ApiService : post(artistRequest/saveRequest, adminRes, applicationId)
-activate ApiService
-ApiService -> ArtistRequestBackendController : getApplicationDetails(applicationId)
+ArtistRequestApiClient -> ApiClient : post(artistRequest/saveRequest, adminRes, applicationId)
+activate ApiClient
+ApiClient -> ArtistRequestBackendController : getApplicationDetails(applicationId)
 activate ArtistRequestBackendController
 ArtistRequestBackendController -> ArtistRequestBackendService : saveResponse(adminRes, applicationId)
 activate ArtistRequestBackendService
@@ -66,10 +66,10 @@ ArtistRequestBackendRepository --> ArtistRequestBackendService : return success
 deactivate ArtistRequestBackendRepository
 ArtistRequestBackendService --> ArtistRequestBackendController : return success
 deactivate ArtistRequestBackendService
-ArtistRequestBackendController --> ApiService : return success
+ArtistRequestBackendController --> ApiClient : return success
 deactivate ArtistRequestBackendController
-ApiService --> ArtistRequestApiClient : return success
-deactivate ApiService
+ApiClient --> ArtistRequestApiClient : return success
+deactivate ApiClient
 ArtistRequestApiClient --> AdminDashdoardController : return success
 deactivate ArtistRequestApiClient
 

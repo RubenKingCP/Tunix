@@ -12,7 +12,7 @@ participant SearchController
 participant SearchService
 participant ArtistService
 participant ArtistApi
-participant ApiService
+participant ApiClient
 participant ArtistBackendController
 participant ArtistBackendService
 participant ArtistBackendRepository
@@ -33,9 +33,9 @@ SearchService -> ArtistService : searchArtistByName(query)
 activate ArtistService
 ArtistService -> ArtistApi : searchArtistByName(query)
 activate ArtistApi
-ArtistApi -> ApiService : post("Artist/getByName", query)
-activate ApiService
-ApiService -> ArtistBackendController : searchArtistByName(query)
+ArtistApi -> ApiClient : post("Artist/getByName", query)
+activate ApiClient
+ApiClient -> ArtistBackendController : searchArtistByName(query)
 activate ArtistBackendController
 ArtistBackendController -> ArtistBackendService : searchArtistByName(query)
 activate ArtistBackendService
@@ -45,10 +45,10 @@ ArtistBackendRepository --> ArtistBackendService : return results
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return results
 deactivate ArtistBackendService
-ArtistBackendController --> ApiService : return results
+ArtistBackendController --> ApiClient : return results
 deactivate ArtistBackendController
-ApiService --> ArtistApi : return results
-deactivate ApiService
+ApiClient --> ArtistApi : return results
+deactivate ApiClient
 ArtistApi --> ArtistService : return results
 deactivate ArtistApi
 ArtistService --> SearchService : return results

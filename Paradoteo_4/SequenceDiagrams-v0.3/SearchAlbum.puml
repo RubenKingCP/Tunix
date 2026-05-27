@@ -12,7 +12,7 @@ participant SearchController
 participant SearchService
 participant AlbumService
 participant AlbumApi
-participant ApiService
+participant ApiClient
 participant AlbumBackendController
 participant AlbumBackendService
 participant AlbumBackendRepository
@@ -33,9 +33,9 @@ SearchService -> AlbumService : searchAlbumByName(query)
 activate AlbumService
 AlbumService -> AlbumApi : searchAlbumByName(query)
 activate AlbumApi
-AlbumApi -> ApiService : post("album/getByName", query)
-activate ApiService
-ApiService -> AlbumBackendController : searchAlbumByName(query)
+AlbumApi -> ApiClient : post("album/getByName", query)
+activate ApiClient
+ApiClient -> AlbumBackendController : searchAlbumByName(query)
 activate AlbumBackendController
 AlbumBackendController -> AlbumBackendService : searchAlbumByName(query)
 activate AlbumBackendService
@@ -45,10 +45,10 @@ AlbumBackendRepository --> AlbumBackendService : return results
 deactivate AlbumBackendRepository
 AlbumBackendService --> AlbumBackendController : return results
 deactivate AlbumBackendService
-AlbumBackendController --> ApiService : return results
+AlbumBackendController --> ApiClient : return results
 deactivate AlbumBackendController
-ApiService --> AlbumApi : return results
-deactivate ApiService
+ApiClient --> AlbumApi : return results
+deactivate ApiClient
 AlbumApi --> AlbumService : return results
 deactivate AlbumApi
 AlbumService --> SearchService : return results

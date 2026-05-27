@@ -10,7 +10,7 @@ participant PaymentService
 participant BankApi
 participant UserService
 participant UserApi
-participant ApiService
+participant ApiClient
 participant UserBackendController
 participant UserBackendService
 participant UserBackendRepository
@@ -32,9 +32,9 @@ UserProfileController -> UserService : updateUserSubscription(userId,true)
 activate UserService
 UserService -> UserApi : updateUserSubscription(userId,true)
 activate UserApi
-UserApi -> ApiService : post(user/updateSubscription,userId,true)
-activate ApiService
-ApiService -> UserBackendController : updateUserSubscription(userId,true)
+UserApi -> ApiClient : post(user/updateSubscription,userId,true)
+activate ApiClient
+ApiClient -> UserBackendController : updateUserSubscription(userId,true)
 activate UserBackendController
 UserBackendController -> UserBackendService : updateUserSubscription(userId,true)
 activate UserBackendService
@@ -44,10 +44,10 @@ UserBackendRepository --> UserBackendService : return success
 deactivate UserBackendRepository
 UserBackendService --> UserBackendController : return success
 deactivate UserBackendService
-UserBackendController --> ApiService : return success
+UserBackendController --> ApiClient : return success
 deactivate UserBackendController 
-ApiService --> UserApi : return success
-deactivate ApiService
+ApiClient --> UserApi : return success
+deactivate ApiClient
 UserApi --> UserService : return success
 deactivate UserApi
 UserService --> UserProfileController : return success

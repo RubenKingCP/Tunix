@@ -8,7 +8,7 @@ participant MusicView
 participant MusicController
 participant PlaylistService
 participant PlaylistApi
-participant ApiService
+participant ApiClient
 participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistBackendRepository
@@ -37,9 +37,9 @@ alt isOwner
     activate PlaylistService
     PlaylistService -> PlaylistApi : removeSongFromPlaylist(playlistId, songId)
     activate PlaylistApi
-    PlaylistApi -> ApiService : post(playlist/removeSong, playlistId, songId)
-    activate ApiService
-    ApiService -> PlaylistBackendController : removeSongFromPlaylist(playlistId, songId)
+    PlaylistApi -> ApiClient : post(playlist/removeSong, playlistId, songId)
+    activate ApiClient
+    ApiClient -> PlaylistBackendController : removeSongFromPlaylist(playlistId, songId)
     activate PlaylistBackendController
     PlaylistBackendController -> PlaylistBackendService : removeSongFromPlaylist(playlistId, songId)
     activate PlaylistBackendService
@@ -49,10 +49,10 @@ alt isOwner
     deactivate PlaylistBackendRepository
     PlaylistBackendService --> PlaylistBackendController : return succes/fail
     deactivate PlaylistBackendService
-    PlaylistBackendController --> ApiService : return succes/fail
+    PlaylistBackendController --> ApiClient : return succes/fail
     deactivate PlaylistBackendController
-    ApiService --> PlaylistApi : return succes/fail
-    deactivate ApiService
+    ApiClient --> PlaylistApi : return succes/fail
+    deactivate ApiClient
     PlaylistApi --> PlaylistService : return succes/fail
     deactivate PlaylistApi
     PlaylistService --> MusicController : return succes/fail

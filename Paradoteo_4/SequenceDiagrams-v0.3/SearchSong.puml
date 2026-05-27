@@ -12,7 +12,7 @@ participant SearchController
 participant SearchService
 participant SongService
 participant SongApi
-participant ApiService
+participant ApiClient
 participant SongBackendController
 participant SongBackendService
 participant SongBackendRepository
@@ -33,9 +33,9 @@ SearchService -> SongService : searchSongByName(query)
 activate SongService
 SongService -> SongApi : searchSongByName(query)
 activate SongApi
-SongApi -> ApiService : post("Song/getByName", query)
-activate ApiService
-ApiService -> SongBackendController : searchSongByName(query)
+SongApi -> ApiClient : post("Song/getByName", query)
+activate ApiClient
+ApiClient -> SongBackendController : searchSongByName(query)
 activate SongBackendController
 SongBackendController -> SongBackendService : searchSongByName(query)
 activate SongBackendService
@@ -45,10 +45,10 @@ SongBackendRepository --> SongBackendService : return results
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : return results
 deactivate SongBackendService
-SongBackendController --> ApiService : return results
+SongBackendController --> ApiClient : return results
 deactivate SongBackendController
-ApiService --> SongApi : return results
-deactivate ApiService
+ApiClient --> SongApi : return results
+deactivate ApiClient
 SongApi --> SongService : return results
 deactivate SongApi
 SongService --> SearchService : return results

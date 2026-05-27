@@ -10,7 +10,7 @@ participant MusicView
 participant MusicController
 participant PlaylistService
 participant PlaylistApiClient
-participant ApiService
+participant ApiClient
 participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistBackendRepository
@@ -37,9 +37,9 @@ MusicController -> PlaylistService : getPlaylistById(playlistId)
 activate PlaylistService
 PlaylistService -> PlaylistApiClient : getPlaylistById(playlistId)
 activate PlaylistApiClient
-PlaylistApiClient -> ApiService : post("/playlists/getById", playlistId)
-activate ApiService
-ApiService -> PlaylistBackendController : post("/playlists/getById", playlistId)
+PlaylistApiClient -> ApiClient : post("/playlists/getById", playlistId)
+activate ApiClient
+ApiClient -> PlaylistBackendController : post("/playlists/getById", playlistId)
 activate PlaylistBackendController
 PlaylistBackendController -> PlaylistBackendService : getPlaylistById(playlistId)
 activate PlaylistBackendService
@@ -49,10 +49,10 @@ PlaylistBackendRepository --> PlaylistBackendService : return playlist data
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : return playlist data
 deactivate PlaylistBackendService
-PlaylistBackendController --> ApiService : return playlist data
+PlaylistBackendController --> ApiClient : return playlist data
 deactivate PlaylistBackendController
-ApiService --> PlaylistApiClient : return playlist data
-deactivate ApiService
+ApiClient --> PlaylistApiClient : return playlist data
+deactivate ApiClient
 PlaylistApiClient --> PlaylistService : return playlist data
 deactivate PlaylistApiClient
 PlaylistService --> MusicController : return playlist data

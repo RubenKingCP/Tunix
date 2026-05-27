@@ -12,7 +12,7 @@ participant SearchController
 participant SearchService
 participant PlaylistService
 participant PlaylistApi
-participant ApiService
+participant ApiClient
 participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistBackendRepository
@@ -33,9 +33,9 @@ SearchService -> PlaylistService : searchPlaylistByName(query)
 activate PlaylistService
 PlaylistService -> PlaylistApi : searchPlaylistByName(query)
 activate PlaylistApi
-PlaylistApi -> ApiService : post("Playlist/getByName", query)
-activate ApiService
-ApiService -> PlaylistBackendController : searchPlaylistByName(query)
+PlaylistApi -> ApiClient : post("Playlist/getByName", query)
+activate ApiClient
+ApiClient -> PlaylistBackendController : searchPlaylistByName(query)
 activate PlaylistBackendController
 PlaylistBackendController -> PlaylistBackendService : searchPlaylistByName(query)
 activate PlaylistBackendService
@@ -45,10 +45,10 @@ PlaylistBackendRepository --> PlaylistBackendService : return results
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : return results
 deactivate PlaylistBackendService
-PlaylistBackendController --> ApiService : return results
+PlaylistBackendController --> ApiClient : return results
 deactivate PlaylistBackendController
-ApiService --> PlaylistApi : return results
-deactivate ApiService
+ApiClient --> PlaylistApi : return results
+deactivate ApiClient
 PlaylistApi --> PlaylistService : return results
 deactivate PlaylistApi
 PlaylistService --> SearchService : return results

@@ -8,7 +8,7 @@ participant UserProfileView
 participant UserProfileController
 participant UserService
 participant UserApi
-participant ApiService
+participant ApiClient
 participant UserBackendController
 participant UserBackendService
 participant UserBackendRepository
@@ -22,9 +22,9 @@ UserProfileController -> UserService : updatePremiumStatus(userId,false)
 activate UserService
 UserService -> UserApi : updatePremiumStatus(userId,false)
 activate UserApi
-UserApi -> ApiService : post(user/updatePremiumStatus,userId,false)
-activate ApiService
-ApiService -> UserBackendController : updatePremiumStatus(userId,false)
+UserApi -> ApiClient : post(user/updatePremiumStatus,userId,false)
+activate ApiClient
+ApiClient -> UserBackendController : updatePremiumStatus(userId,false)
 activate UserBackendController
 UserBackendController -> UserBackendService : updatePremiumStatus(userId,false)
 activate UserBackendService
@@ -34,10 +34,10 @@ UserBackendRepository --> UserBackendService : return success
 deactivate UserBackendRepository
 UserBackendService -> UserBackendController : return success
 deactivate UserBackendService
-UserBackendController --> ApiService : return success
+UserBackendController --> ApiClient : return success
 deactivate UserBackendController
-ApiService --> UserApi : return success
-deactivate ApiService
+ApiClient --> UserApi : return success
+deactivate ApiClient
 UserApi --> UserService : return success
 deactivate UserApi
 UserService --> UserProfileController : return success

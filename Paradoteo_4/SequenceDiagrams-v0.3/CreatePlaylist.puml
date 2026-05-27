@@ -8,7 +8,7 @@ participant LibraryView
 participant LibraryController
 participant PlaylistService
 participant PlaylistApi
-participant ApiService
+participant ApiClient
 participant PlaylistBackendController
 participant PlaylistBackendService
 participant PlaylistBackendRepository
@@ -30,10 +30,10 @@ LibraryController -> PlaylistService : checkForDuplicateSong(playlistId, songId)
 activate PlaylistService
 PlaylistService -> PlaylistApi : checkForDuplicateSong(playlistId, songId)
 activate PlaylistApi
-PlaylistApi -> ApiService : post(playlist/checkForDuplicatePlaylist, playlistId)
+PlaylistApi -> ApiClient : post(playlist/checkForDuplicatePlaylist, playlistId)
 'will need to find an alternative to send both ids with one argument
-activate ApiService
-ApiService -> PlaylistBackendController : checkForDuplicateSong(playlistId, songId)
+activate ApiClient
+ApiClient -> PlaylistBackendController : checkForDuplicateSong(playlistId, songId)
 activate PlaylistBackendController
 PlaylistBackendController -> PlaylistBackendService : checkForDuplicateSong(playlistId, songId)
 activate PlaylistBackendService
@@ -43,10 +43,10 @@ PlaylistBackendRepository --> PlaylistBackendService : hasDuplicate
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : hasDuplicate
 deactivate PlaylistBackendService
-PlaylistBackendController --> ApiService : hasDuplicate
+PlaylistBackendController --> ApiClient : hasDuplicate
 deactivate PlaylistBackendController
-ApiService --> PlaylistApi : hasDuplicate
-deactivate ApiService
+ApiClient --> PlaylistApi : hasDuplicate
+deactivate ApiClient
 PlaylistApi --> PlaylistService : hasDuplicate
 deactivate PlaylistApi
 PlaylistService --> LibraryController : hasDuplicate
@@ -60,10 +60,10 @@ LibraryController -> PlaylistService : createPlaylist(playlistId)
 activate PlaylistService
 PlaylistService -> PlaylistApi : createPlaylist(playlistId)
 activate PlaylistApi
-PlaylistApi -> ApiService : post(playlist/create, playlistId)
+PlaylistApi -> ApiClient : post(playlist/create, playlistId)
 'will need to find an alternative to send both ids with one argument
-activate ApiService
-ApiService -> PlaylistBackendController : createPlaylist(playlistId)
+activate ApiClient
+ApiClient -> PlaylistBackendController : createPlaylist(playlistId)
 activate PlaylistBackendController
 PlaylistBackendController -> PlaylistBackendService : createPlaylist(playlistId)
 activate PlaylistBackendService
@@ -73,10 +73,10 @@ PlaylistBackendRepository --> PlaylistBackendService : success
 deactivate PlaylistBackendRepository
 PlaylistBackendService --> PlaylistBackendController : success
 deactivate PlaylistBackendService
-PlaylistBackendController --> ApiService : success
+PlaylistBackendController --> ApiClient : success
 deactivate PlaylistBackendController
-ApiService --> PlaylistApi : success
-deactivate ApiService
+ApiClient --> PlaylistApi : success
+deactivate ApiClient
 PlaylistApi --> PlaylistService : success
 deactivate PlaylistApi
 PlaylistService --> LibraryController : success

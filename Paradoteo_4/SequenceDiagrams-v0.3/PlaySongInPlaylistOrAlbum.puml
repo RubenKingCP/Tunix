@@ -10,7 +10,7 @@ participant MusicPlayerView
 participant MusicPlayerController
 participant SongService
 participant SongApiClient
-participant ApiService
+participant ApiClient
 participant SongBackendController
 participant SongBackendService
 participant SongBackendRepository
@@ -41,9 +41,9 @@ MusicPlayerController -> SongService : getSongById(songId)
 activate SongService
 SongService -> SongApiClient : getSongById(songId)
 activate SongApiClient
-SongApiClient -> ApiService : post(/songs/getById, songId)
-activate ApiService
-ApiService -> SongBackendController : getSongById(songId)
+SongApiClient -> ApiClient : post(/songs/getById, songId)
+activate ApiClient
+ApiClient -> SongBackendController : getSongById(songId)
 activate SongBackendController
 SongBackendService -> SongBackendRepository : getSongById(songId)
 activate SongBackendRepository
@@ -51,10 +51,10 @@ SongBackendRepository --> SongBackendService : return song
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : return song
 deactivate SongBackendService
-SongBackendController --> ApiService : return song
+SongBackendController --> ApiClient : return song
 deactivate SongBackendController
-ApiService --> SongApiClient : return song
-deactivate ApiService
+ApiClient --> SongApiClient : return song
+deactivate ApiClient
 SongApiClient --> SongService : return song
 deactivate SongApiClient
 SongService --> MusicPlayerController : return song

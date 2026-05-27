@@ -10,7 +10,7 @@ participant PaymentController
 participant PaymentService
 participant BankApi
 participant UserApi
-participant ApiService
+participant ApiClient
 participant UserBackendController
 participant UserBackendService
 participant UserBackendRepository
@@ -42,9 +42,9 @@ activate PaymentService
 
 PaymentService -> UserApi : saveBankCredentials(credentials)
 activate UserApi
-UserApi -> ApiService : post(user/saveBankCredentials, credentials)
-activate ApiService
-ApiService -> UserBackendController : saveBankCredentials(credentials)
+UserApi -> ApiClient : post(user/saveBankCredentials, credentials)
+activate ApiClient
+ApiClient -> UserBackendController : saveBankCredentials(credentials)
 activate UserBackendController
 UserBackendController -> UserBackendService : saveBankCredentials(credentials)
 activate UserBackendService
@@ -54,10 +54,10 @@ UserBackendRepository --> UserBackendService : return success
 deactivate UserBackendRepository
 UserBackendService --> UserBackendController : return success
 deactivate UserBackendService
-UserBackendController --> ApiService : return success
+UserBackendController --> ApiClient : return success
 deactivate UserBackendController
-ApiService --> UserApi : return success
-deactivate ApiService
+ApiClient --> UserApi : return success
+deactivate ApiClient
 UserApi --> PaymentService : return success
 deactivate UserApi
 end

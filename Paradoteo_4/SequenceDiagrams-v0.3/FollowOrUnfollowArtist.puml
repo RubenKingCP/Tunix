@@ -15,7 +15,7 @@ participant ArtistFollowService
 participant ArtistFollowApi
 participant UserService
 participant UserApi
-participant ApiService
+participant ApiClient
 participant ArtistFollowBackendController
 participant ArtistFollowBackendService
 participant ArtistFollowBackendRepository
@@ -48,9 +48,9 @@ ArtistProfileController -> ArtistService : getArtistDataAndFollowStatus(artistId
 activate ArtistService
 ArtistService -> ArtistApi : getArtistDataAndFollowStatus(artistId,userId)
 activate ArtistApi
-ArtistApi -> ApiService : post(artist/getProfileAndFollow, artistId,userId)
-activate ApiService
-ApiService -> ArtistBackendController : getArtistDataAndFollowStatus(artistId,userId)
+ArtistApi -> ApiClient : post(artist/getProfileAndFollow, artistId,userId)
+activate ApiClient
+ApiClient -> ArtistBackendController : getArtistDataAndFollowStatus(artistId,userId)
 activate ArtistBackendController
 ArtistBackendController -> ArtistBackendService : getArtistDataAndFollowStatus(artistId,userId)
 activate ArtistBackendService
@@ -60,10 +60,10 @@ ArtistBackendRepository --> ArtistBackendService : return artist data and follow
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return artist data and follow status
 deactivate ArtistBackendService
-ArtistBackendController --> ApiService : return artist data and follow status
+ArtistBackendController --> ApiClient : return artist data and follow status
 deactivate ArtistBackendController
-ApiService --> ArtistApi : return artist data and follow status
-deactivate ApiService
+ApiClient --> ArtistApi : return artist data and follow status
+deactivate ApiClient
 ArtistApi --> ArtistService : return artist data and follow status
 deactivate ArtistApi
 ArtistService --> ArtistProfileController : return artist data and follow status
@@ -82,9 +82,9 @@ ArtistProfileController -> ArtistFollowService : updateFollowStatus(newFollowSta
 activate ArtistFollowService
 ArtistFollowService -> ArtistFollowApi : updateFollowStatus(newFollowStatus,artistId,userId)
 activate ArtistFollowApi
-ArtistFollowApi -> ApiService : post(artistFollow/updateFollowStatus, artistId,userId,newFollowStatus)
-activate ApiService
-ApiService -> ArtistFollowBackendController : updateFollowStatus(newFollowStatus,artistId,userId)
+ArtistFollowApi -> ApiClient : post(artistFollow/updateFollowStatus, artistId,userId,newFollowStatus)
+activate ApiClient
+ApiClient -> ArtistFollowBackendController : updateFollowStatus(newFollowStatus,artistId,userId)
 activate ArtistFollowBackendController
 ArtistFollowBackendController -> ArtistFollowBackendService : updateFollowStatus(newFollowStatus,artistId,userId)
 activate ArtistFollowBackendService
@@ -94,10 +94,10 @@ ArtistFollowBackendRepository --> ArtistFollowBackendService : return success/fa
 deactivate ArtistFollowBackendRepository
 ArtistFollowBackendService --> ArtistFollowBackendController : return success/fail
 deactivate ArtistFollowBackendService
-ArtistFollowBackendController --> ApiService : return success/fail
+ArtistFollowBackendController --> ApiClient : return success/fail
 deactivate ArtistFollowBackendController
-ApiService --> ArtistFollowApi : return success/fail
-deactivate ApiService
+ApiClient --> ArtistFollowApi : return success/fail
+deactivate ApiClient
 ArtistFollowApi --> ArtistFollowService : return success/fail
 deactivate ArtistFollowApi
 ArtistFollowService --> ArtistProfileController : return success/fail

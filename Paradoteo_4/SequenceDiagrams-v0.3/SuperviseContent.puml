@@ -10,7 +10,7 @@ participant SongService
 participant SongApi
 participant ArtistService
 participant ArtistApi
-participant ApiService
+participant ApiClient
 participant SongBackendController
 participant SongBackendService
 participant SongBackendRepository
@@ -27,9 +27,9 @@ AdminDashboardController -> ArtistService : getArtistStrikes(artistId)
 activate ArtistService
 ArtistService -> ArtistApi : getArtistStrikes(artistId)
 activate ArtistApi
-ArtistApi -> ApiService : post(artist/getStrikes,artistId)
-activate ApiService
-ApiService -> ArtistBackendController : getArtistStrikes(artistId)
+ArtistApi -> ApiClient : post(artist/getStrikes,artistId)
+activate ApiClient
+ApiClient -> ArtistBackendController : getArtistStrikes(artistId)
 activate ArtistBackendController
 ArtistBackendController -> ArtistBackendService : getArtistStrikes(artistId)
 activate ArtistBackendService
@@ -39,10 +39,10 @@ ArtistBackendRepository --> ArtistBackendService : return strikes
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return strikes
 deactivate ArtistBackendService
-ArtistBackendController --> ApiService : return strikes
+ArtistBackendController --> ApiClient : return strikes
 deactivate ArtistBackendController
-ApiService --> ArtistApi : return strikes
-deactivate ApiService
+ApiClient --> ArtistApi : return strikes
+deactivate ApiClient
 ArtistApi --> ArtistService : return strikes
 deactivate ArtistApi
 ArtistService --> AdminDashboardController : return strikes
@@ -57,9 +57,9 @@ AdminDashboardController -> ArtistService : giveArtistStrike(artistId,strikeInfo
 activate ArtistService
 ArtistService -> ArtistApi : giveArtistStrike(artistId,strikeInfo)
 activate ArtistApi
-ArtistApi -> ApiService : post(artist/giveStrike,artistId,strikeInfo)
-activate ApiService
-ApiService -> ArtistBackendController : giveArtistStrike(artistId,strikeInfo)
+ArtistApi -> ApiClient : post(artist/giveStrike,artistId,strikeInfo)
+activate ApiClient
+ApiClient -> ArtistBackendController : giveArtistStrike(artistId,strikeInfo)
 activate ArtistBackendController
 ArtistBackendController -> ArtistBackendService : giveArtistStrike(artistId,strikeInfo)
 activate ArtistBackendService
@@ -69,10 +69,10 @@ ArtistBackendRepository --> ArtistBackendService : return success
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return success
 deactivate ArtistBackendService
-ArtistBackendController --> ApiService : return success
+ArtistBackendController --> ApiClient : return success
 deactivate ArtistBackendController
-ApiService --> ArtistApi : return success
-deactivate ApiService
+ApiClient --> ArtistApi : return success
+deactivate ApiClient
 ArtistApi --> ArtistService : return success
 deactivate ArtistApi
 ArtistService --> AdminDashboardController : return success
@@ -84,9 +84,9 @@ AdminDashboardController -> ArtistService : banArtist(artistId)
 activate ArtistService
 ArtistService -> ArtistApi : banArtist(artistId)
 activate ArtistApi
-ArtistApi -> ApiService : post(artist/banArtist,artistId)
-activate ApiService
-ApiService -> ArtistBackendController : banArtist(artistId)
+ArtistApi -> ApiClient : post(artist/banArtist,artistId)
+activate ApiClient
+ApiClient -> ArtistBackendController : banArtist(artistId)
 activate ArtistBackendController
 ArtistBackendController -> ArtistBackendService : banArtist(artistId)
 activate ArtistBackendService
@@ -96,10 +96,10 @@ ArtistBackendRepository --> ArtistBackendService : return success
 deactivate ArtistBackendRepository
 ArtistBackendService --> ArtistBackendController : return success
 deactivate ArtistBackendService
-ArtistBackendController --> ApiService : return success
+ArtistBackendController --> ApiClient : return success
 deactivate ArtistBackendController
-ApiService --> ArtistApi : return success
-deactivate ApiService
+ApiClient --> ArtistApi : return success
+deactivate ApiClient
 ArtistApi --> ArtistService : return success
 deactivate ArtistApi
 ArtistService --> AdminDashboardController : return success
@@ -109,9 +109,9 @@ AdminDashboardController -> SongService : removeSong(songId)
 activate SongService
 SongService -> SongApi : removeSong(songId)
 activate SongApi
-SongApi -> ApiService : post(song/removeSong,songId)
-activate ApiService
-ApiService -> SongBackendController : removeSong(songId)
+SongApi -> ApiClient : post(song/removeSong,songId)
+activate ApiClient
+ApiClient -> SongBackendController : removeSong(songId)
 activate SongBackendController
 SongBackendController -> SongBackendService : removeSong(songId)
 activate SongBackendService
@@ -121,10 +121,10 @@ SongBackendRepository --> SongBackendService : return success
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : return success
 deactivate SongBackendService
-SongBackendController --> ApiService : return success
+SongBackendController --> ApiClient : return success
 deactivate SongBackendController
-ApiService --> SongApi : return success
-deactivate ApiService
+ApiClient --> SongApi : return success
+deactivate ApiClient
 SongApi --> SongService : return success
 deactivate SongApi
 SongService --> AdminDashboardController : return success

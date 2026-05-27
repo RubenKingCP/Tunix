@@ -9,7 +9,7 @@ participant ArtistProfileController
 participant FilesystemService
 participant SongService
 participant SongApi
-participant ApiService
+participant ApiClient
 participant SongBackendController
 participant SongBackendService
 participant SongBackendRepository
@@ -31,10 +31,10 @@ ArtistProfileController -> SongService : checkForDuplicateName(songName)
 activate SongService
 SongService -> SongApi : checkForDuplicateName(songName)
 activate SongApi
-SongApi -> ApiService : post(song/checkForDuplicateName, songName)
+SongApi -> ApiClient : post(song/checkForDuplicateName, songName)
 'will need to find an alternative to send both ids with one argument
-activate ApiService
-ApiService -> SongBackendController : checkForDuplicateName(songName)
+activate ApiClient
+ApiClient -> SongBackendController : checkForDuplicateName(songName)
 activate SongBackendController
 SongBackendController -> SongBackendService : checkForDuplicateName(songName)
 activate SongBackendService
@@ -44,10 +44,10 @@ SongBackendRepository --> SongBackendService : hasDuplicate
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : hasDuplicate
 deactivate SongBackendService
-SongBackendController --> ApiService : hasDuplicate
+SongBackendController --> ApiClient : hasDuplicate
 deactivate SongBackendController
-ApiService --> SongApi : hasDuplicate
-deactivate ApiService
+ApiClient --> SongApi : hasDuplicate
+deactivate ApiClient
 SongApi --> SongService : hasDuplicate
 deactivate SongApi
 SongService --> ArtistProfileController : hasDuplicate
@@ -58,10 +58,10 @@ ArtistProfileController -> SongService : uploadSong(song)
 activate SongService
 SongService -> SongApi : uploadSong(song)
 activate SongApi
-SongApi -> ApiService : post(song/upload, song)
+SongApi -> ApiClient : post(song/upload, song)
 'will need to find an alternative to send both ids with one argument
-activate ApiService
-ApiService -> SongBackendController : uploadSong(song)
+activate ApiClient
+ApiClient -> SongBackendController : uploadSong(song)
 activate SongBackendController
 SongBackendController -> SongBackendService : uploadSong(song)
 activate SongBackendService
@@ -71,10 +71,10 @@ SongBackendRepository --> SongBackendService : success
 deactivate SongBackendRepository
 SongBackendService --> SongBackendController : success
 deactivate SongBackendService
-SongBackendController --> ApiService : success
+SongBackendController --> ApiClient : success
 deactivate SongBackendController
-ApiService --> SongApi : success
-deactivate ApiService
+ApiClient --> SongApi : success
+deactivate ApiClient
 SongApi --> SongService : success
 deactivate SongApi
 SongService --> ArtistProfileController : success
