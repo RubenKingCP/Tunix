@@ -19,7 +19,7 @@ public class PlaylistCreateRequest {
     public String getTitle() {
         return title;
     }
-
+ 
     public Long getCreatorId() {
         return creatorId;
     }

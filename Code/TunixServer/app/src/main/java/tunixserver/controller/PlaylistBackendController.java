@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tunixserver.dto.request.PlaylistCreateRequest;
 import tunixserver.dto.response.ApiResponse;
-import tunixserver.entities.PlaylistEntity;
+import tunixserver.dto.response.PlaylistResponse;
 import tunixserver.service.PlaylistBackendService;
 
 @RestController
@@ -36,13 +36,11 @@ public class PlaylistBackendController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Void>> createPlaylist(
+    public ResponseEntity<ApiResponse<PlaylistResponse>> createPlaylist(
             @RequestBody PlaylistCreateRequest playlistCreateRequest) {
 
-        PlaylistEntity playlist = playlistBackendService.createPlaylist(playlistCreateRequest);
+        playlistBackendService.createPlaylist(playlistCreateRequest);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ApiResponse.success());
+        return ResponseEntity.ok(new ApiResponse<PlaylistResponse>(true, "Playlist created", null));
     }
 }

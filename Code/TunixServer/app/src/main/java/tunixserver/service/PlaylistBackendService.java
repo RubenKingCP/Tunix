@@ -1,20 +1,29 @@
 package tunixserver.service;
 
 import tunixserver.dto.request.PlaylistCreateRequest;
+import tunixserver.entities.AccountEntity;
 import tunixserver.entities.PlaylistEntity;
 import tunixserver.entities.SongEntity;
+import tunixserver.repository.AccountBackendRepository;
 import tunixserver.repository.PlaylistBackendRepository;
 import tunixserver.repository.SongBackendRepository;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 @Service
 public class PlaylistBackendService {
     private final PlaylistBackendRepository playlistBackendRepository;
     private final SongBackendRepository songBackendRepository;
+    private final AccountBackendRepository accountBackendRepository;
 
-    public PlaylistBackendService(PlaylistBackendRepository playlistBackendRepository, SongBackendRepository songBackendRepository) {
+    public PlaylistBackendService(AccountBackendRepository accountBackendRepository, PlaylistBackendRepository playlistBackendRepository, SongBackendRepository songBackendRepository) {
         this.playlistBackendRepository = playlistBackendRepository;
         this.songBackendRepository = songBackendRepository;
+        this.accountBackendRepository = accountBackendRepository;
     }
 
     public boolean addSongToPlaylist(Long playlistId, Long songId) {
@@ -49,13 +58,28 @@ public class PlaylistBackendService {
                 return true; // Song already in playlist
             }
         }
-        return false; // Song not in playlist
+        return false; // Song not in playlist 
     } 
 
-    public PlaylistEntity createPlaylist(PlaylistCreateRequest playlistCreateRequest) {
-        // Code for this
-        // PlaylistEntity playlistEntity = playlistCreateRequest.toPlaylistEntity();
-        // playlistBackendRepository.save(playlistEntity);
-        return null;
+    public PlaylistEntity createPlaylist(PlaylistCreateRequest request) {
+
+        AccountEntity creator = accountBackendRepository.findById(request.getCreatorId())
+                .orElseThrow(() -> new RuntimeException("Creator not found"));
+
+        List<AccountEntity> coauthors = new ArrayList<>();
+
+        if (request.getCoauthorIds() != null && !request.getCoauthorIds().isEmpty()) {
+            coauthors = accountBackendRepository.findAllById(request.getCoauthorIds());
+        }
+
+        PlaylistEntity playlist = new PlaylistEntity();
+        playlist.setTitle(request.getTitle());
+        playlist.setCreator(creator);
+        playlist.setPublic(false);
+        playlist.setCreatedAt(LocalDateTime.now());
+        playlist.setUpdatedAt(LocalDateTime.now());
+        playlist.setCoauthors(coauthors);
+
+        return playlistBackendRepository.save(playlist);
     }
 }

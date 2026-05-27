@@ -1,6 +1,5 @@
 package tunixserver.service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -12,10 +11,8 @@ import tunixserver.dto.response.AccountResponse;
 import tunixserver.dto.response.UserResponse;
 import tunixserver.dto.response.ArtistResponse;
 import tunixserver.entities.AccountEntity;
-import tunixserver.entities.LibraryEntity;
 import tunixserver.entities.UserEntity;
 import tunixserver.repository.AccountBackendRepository;
-import tunixserver.repository.LibraryRepository;
 import tunixserver.repository.UserBackendRepository;
 
 @Service
@@ -23,14 +20,11 @@ public class UserBackendService {
 
     private final UserBackendRepository userRepo;
     private final AccountBackendRepository accountRepo;
-    private final LibraryRepository libraryRepository;
 
     public UserBackendService(UserBackendRepository userRepo,
-                              AccountBackendRepository accountRepo,
-                                LibraryRepository libraryRepository) {
+                              AccountBackendRepository accountRepo) {
         this.userRepo = userRepo;
         this.accountRepo = accountRepo;
-        this.libraryRepository = libraryRepository;
     }
 
     public AccountResponse registerUser(RegisterRequest req) {
@@ -43,8 +37,6 @@ public class UserBackendService {
                 .build();
 
         AccountEntity savedAccount = accountRepo.save(account);
-
-        createLibraryForAccount(savedAccount);
         
         UserEntity user = new UserEntity();
         user.setAccount(savedAccount);
@@ -89,17 +81,4 @@ public class UserBackendService {
                 artistResponse
         );
     }
-
-    public void createLibraryForAccount(AccountEntity account) {
-
-        if (libraryRepository.findByAccount(account).isPresent()) {
-                return;
-        }
-
-        LibraryEntity library = new LibraryEntity();
-        library.setAccount(account);
-        library.setCreatedAt(LocalDateTime.now());
-
-        libraryRepository.save(library);
-        }
 }
