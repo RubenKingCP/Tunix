@@ -1,6 +1,7 @@
 package tunixserver.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import tunixserver.entities.SongEntity;
 @RestController
 @RequestMapping("/songs")
 public class SongBackendController {
-    private final SongBackendService songService;
+    private final SongBackendService songService; 
 
     public SongBackendController(SongBackendService songService) {
         this.songService = songService;
@@ -62,4 +63,16 @@ public class SongBackendController {
             );
         }
     }
+
+    @GetMapping("/name")
+    public ResponseEntity<ApiResponse<List<SongResponse>>> getSongsByName(
+            @RequestParam String query
+    ) {
+
+        List<SongResponse> songs = songService.searchByName(query);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Songs found", songs)
+        );
     }
+}

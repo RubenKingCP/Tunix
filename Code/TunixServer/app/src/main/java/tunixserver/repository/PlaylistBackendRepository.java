@@ -8,5 +8,5 @@ import tunixserver.entities.PlaylistEntity;
 
 @Repository
 public interface PlaylistBackendRepository extends JpaRepository<PlaylistEntity, Long> {
-    Optional<PlaylistEntity> findByTitleAndCreator_AccountId(String title, Long creatorId);
+    Optional<PlaylistEntity> findByTitleAndCreator_AccountId(String title, Long creatorId); 
 }

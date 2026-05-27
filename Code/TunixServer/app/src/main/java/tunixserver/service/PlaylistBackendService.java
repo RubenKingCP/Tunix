@@ -84,7 +84,7 @@ public class PlaylistBackendService {
         playlist.setUpdatedAt(LocalDateTime.now());
         playlist.setCoauthors(coauthors);
 
-        return playlistBackendRepository.save(playlist);
+        return playlistBackendRepository.save(playlist); 
     }
     
 }

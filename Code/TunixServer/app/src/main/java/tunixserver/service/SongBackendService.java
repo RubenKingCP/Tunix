@@ -57,8 +57,17 @@ public class SongBackendService {
         List<SongEntity> songs = songRepository.findAll();
 
         if(songs.isEmpty()) {
-            return List.of();
+            return List.of(); 
         } 
+
+        return songs.stream()
+                .map(SongMapper::toResponse)
+                .toList();
+    }
+
+        public List<SongResponse> searchByName(String query) {
+
+        List<SongEntity> songs = songRepository.findByTitleContainingIgnoreCase(query);
 
         return songs.stream()
                 .map(SongMapper::toResponse)

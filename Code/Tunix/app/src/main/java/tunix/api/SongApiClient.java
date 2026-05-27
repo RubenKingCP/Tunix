@@ -23,7 +23,7 @@ public class SongApiClient {
     }
     
     public ApiResponse<List<SongResponse>> getSongsByName(String query) {
-
+        System.out.println("SongApiClient: Song search query");
         String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
 
         return apiClient.get(

@@ -3,7 +3,6 @@ package tunix.model.musicContent;
 import java.util.List;
 
 import tunix.dto.enums.LibraryAssetType;
-import tunix.dto.response.SongResponse;
 import tunix.model.ILibraryAsset;
 import tunix.model.account.Artist;
 

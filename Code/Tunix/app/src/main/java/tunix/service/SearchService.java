@@ -3,7 +3,7 @@ package tunix.service;
 import java.sql.Date;
 import java.util.List;
 
-import javax.print.DocFlavor.STRING;
+import org.checkerframework.checker.units.qual.s;
 
 import tunix.api.AlbumApi;
 import tunix.api.PlaylistApiClient;
@@ -26,116 +26,120 @@ public class SearchService {
     }
 
     public List<ILibraryAsset> search(String query, String type) {
-
+        System.out.println("SearchService: Reached search query: " + query + "\nSearchType: " + type);
         String normalizedType = type == null ? "" : type.trim().toLowerCase();
 
         try {
-            if ("song".equals(normalizedType)) {
+            switch (normalizedType) {
 
-                ApiResponse<List<SongResponse>> response =
-                        songApiClient.getSongsByName(query);
+                case "song": {
+                    ApiResponse<List<SongResponse>> response =
+                            songApiClient.getSongsByName(query);
 
-                if (response != null && response.isSuccess() && response.getData() != null) {
+                    if (response != null && response.isSuccess() && response.getData() != null) {
                     return response.getData()
-                            .stream()
-                            .map(this::toSong)
-                            .toList();
+                                .stream()
+                                .map(sr -> toSong(sr))
+                                .toList();
+                    }
+                }
+                case "playlist": {
+                    // playlistApiClient.getPlaylistsByName(query);
+                    return List.of();
                 }
 
-                return List.of();
+                case "artist": {
+                    // artistApiClient.getArtistsByName(query);
+                    return List.of();
+                }
+
+                case "album": {
+                    // albumApiClient.getAlbumsByName(query);
+                    return List.of();
+                }
+
+                default:
+                    return List.of();
             }
 
-            return List.of();
-
         } catch (Exception e) {
-            System.err.println("Search error for type=" + normalizedType + ", query=" + query);
+            System.err.println("Search failed for type=" + normalizedType + ", query=" + query);
             e.printStackTrace();
-            return List.of();
+
+            // =========================
+            // FALLBACK DUMMY DATA
+            // =========================
+            switch (normalizedType) {
+
+                case "song":
+                    return List.of(new Song(
+                            "Dummy Song",
+                            1L,
+                            new Artist(1L, "Dummy Artist", "dummy.artist@example.com", "Dummy artist bio", 0, false),
+                            180,
+                            "",
+                            ""
+                    ));
+
+                case "playlist":
+                    return List.of(new Playlist(
+                            "Dummy Playlist",
+                            1,
+                            new Artist(2L, "Dummy Creator", "dummy.creator@example.com", "Dummy creator bio", 0, false)
+                    ));
+
+                case "artist": {
+                    String artistName = (query == null || query.trim().isEmpty())
+                            ? "Dummy Artist"
+                            : query.trim();
+
+                    return List.of(new Artist(
+                            10L,
+                            artistName,
+                            "artist@example.com",
+                            "Artist search result for " + artistName + ".",
+                            1200,
+                            true
+                    ));
+                }
+
+                case "album": {
+                    Artist artist = new Artist(
+                            3L,
+                            "Dummy Album Artist",
+                            "dummy.album.artist@example.com",
+                            "Dummy album artist bio",
+                            0,
+                            false
+                    );
+
+                    Song dummySong = new Song(
+                            "Dummy Album Song",
+                            2L,
+                            artist,
+                            200,
+                            "",
+                            ""
+                    );
+
+                    Album dummyAlbum = new Album(
+                            "Dummy Album",
+                            1,
+                            artist,
+                            List.of(dummySong),
+                            Date.valueOf("2024-01-01")
+                    );
+
+                    return List.of(dummyAlbum);
+                }
+
+                default:
+                    return List.of();
+            }
         }
     }
 
-    public List<ILibraryAsset> searchDummy(String query, String type) {
-        String normalizedType = type == null ? "" : type.trim().toLowerCase();
-
-        if ("song".equals(normalizedType)) {
-            // ApiResponse<SongResponse> response = songApiClient.getSongsByName(query);
-            // if (response.isSuccess() && response.getData() != null) {
-            //     return List.of(response.getData().toSong());
-            // }
-            // return List.of();
-            return List.of(new Song(
-                    "Dummy Song",
-                    1L,
-                    new Artist(1L, "Dummy Artist", "dummy.artist@example.com", "Dummy artist bio", 0, false),
-                    180,
-                    "",
-                    ""));
-        }
-
-        if ("playlist".equals(normalizedType)) {
-            // playlistApiClient.getPlaylistsByName(query);
-            // return List.of();
-            return List.of(new Playlist(
-                    "Dummy Playlist",
-                    1,
-                    new Artist(2L, "Dummy Creator", "dummy.creator@example.com", "Dummy creator bio", 0, false)));
-        }
-
-        if ("artist".equals(normalizedType)) {
-            String artistName = query == null || query.trim().isEmpty()
-                    ? "Dummy Artist"
-                    : query.trim();
-
-            return List.of(new Artist(
-                    10L,
-                    artistName,
-                    "artist@example.com",
-                    "Artist search result for " + artistName + ".",
-                    1200,
-                    true));
-        }
-
-        if ("album".equals(normalizedType)) {
-            // return List.of();
-            Artist artist = new Artist(3L, "Dummy Album Artist", "dummy.album.artist@example.com", "Dummy album artist bio", 0, false);
-            Song dummySong = new Song(
-                    "Dummy Album Song",
-                    2l,
-                    artist,
-                    200,
-                    "",
-                    "");
-            Album dummyAlbum = new Album(
-                    "Dummy Album",
-                    1,
-                    artist,
-                    List.of(dummySong),
-                    Date.valueOf("2024-01-01"));
-            return List.of(dummyAlbum);
-        }
-
-        System.err.println("Search for this type has not been implemented yet");
-        return List.of();
-    }
-
-    public ILibraryAsset toSong(SongResponse response) {
-
-        Artist artist = new Artist(
-                Long.valueOf(response.getArtistId()),
-                response.getArtistName(),
-                null,
-                null,
-                0,
-                false
-        );
-
-        return new Song(
-                response.getTitle(),
-                response.getId(),
-                artist,
-                response.getDuration(),
-                response.getFilePathUrl(),
-                response.getCoverImageUrl()
-        );
+    public ILibraryAsset toSong(SongResponse songResponse) {
+        return new Song(songResponse.getTitle(), songResponse.getId(), new Artist(songResponse.getArtistId(), songResponse.getArtistName(), null, null, 0, false), songResponse.getDuration(), songResponse.getFilePathUrl(), null);
     }
 }
