@@ -808,6 +808,18 @@ public class LibraryView extends JPanel {
                 BorderFactory.createEmptyBorder(8, 20, 8, 20)));
         createBtn.setFont(new Font("Arial", Font.BOLD, 13));
         createBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        createBtn.addActionListener(e -> {
+            String name = nameField.getText().trim();
+            if (name.isEmpty() || name.equals("My Playlist #1")) {
+                nameField.requestFocus();
+                nameField.setForeground(Color.RED);
+                return;
+            }
+
+            PlaylistCreateRequest request = new PlaylistCreateRequest(name, descField.getText().trim(), chosenCoverPath[0]);
+            createPlaylist(request);
+            dialog.dispose();
+        });
         buttonRow.add(cancelButton);
         buttonRow.add(createBtn);
 
@@ -830,7 +842,11 @@ public class LibraryView extends JPanel {
         dialog.getContentPane().setBackground(BG);
         dialog.setVisible(true);
     }
-
+    private void createPlaylist(PlaylistCreateRequest request) {
+        if (libraryController != null) {
+            libraryController.createPlaylist(request);
+        }
+    }
     // Helper to keep field styling consistent
     private JTextField styledTextField(String placeholder) {
         JTextField field = new JTextField(placeholder);
