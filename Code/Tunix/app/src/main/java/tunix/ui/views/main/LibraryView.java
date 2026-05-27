@@ -42,10 +42,12 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import tunix.controller.main.LibraryController;
+import tunix.controller.main.LibraryController.OpenSongViewEvent;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.ILibraryAsset;
 import tunix.model.account.Artist;
+import tunix.model.musicContent.Song;
 
 
 public class LibraryView extends JPanel {
@@ -871,6 +873,12 @@ public class LibraryView extends JPanel {
         this.libraryController = libraryController;
     }
 
+    public void songClicked(ILibraryAsset asset) {
+    if (libraryController != null) {
+        libraryController.songClicked((Song) asset);
+    }
+    }
+
     public void onMusicAssetClick(ILibraryAsset asset) {
         LibraryAssetType type = asset.getType();
 
@@ -882,7 +890,7 @@ public class LibraryView extends JPanel {
             libraryController.albumClicked();
         } else if (type == LibraryAssetType.SONG) {
             System.out.println("Song Clicked");
-            libraryController.songClicked();
+            libraryController.songClicked((Song) asset);
         }
         else if (type == LibraryAssetType.ARTIST) {
         System.out.println("Artist Clicked");

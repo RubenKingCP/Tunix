@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import tunix.api.*;
 import tunix.controller.*;
+import tunix.controller.main.LibraryController.OpenSongViewEvent;
 import tunix.controller.main.center.MusicController;
 import tunix.dto.enums.Role;
 import tunix.model.AppContext;
@@ -19,16 +20,18 @@ import tunix.service.auth.SessionService;
 import tunix.ui.views.main.center.UploadSongView;
 import tunix.model.musicContent.Album;
 import tunix.ui.views.main.center.AlbumView;
+import tunix.ui.views.main.center.MusicView;
 
 public class MainPanel extends JPanel {
 
     private ArtistController artistController;
     private final JPanel centerRouter = new JPanel(new CardLayout());
     private final CardLayout layout = (CardLayout) centerRouter.getLayout();
-
     private final ScreenRegistry registry;
     private final AppContext context;
     private final SearchController searchController;
+    private MusicController musicController;
+    
 
     public MainPanel(JPanel topBar,
                      JPanel libraryPanel,
@@ -55,6 +58,15 @@ public class MainPanel extends JPanel {
     private void subscribe(EventBus eventBus) {
         eventBus.subscribe(SwitchCenterScreenEvent.class,
                 e -> showController(e.getControllerClass()));
+        
+        eventBus.subscribe(OpenSongViewEvent.class, event -> {
+            showController(MusicController.class);
+
+            JPanel panel = registry.get(MusicController.class);
+            if (panel instanceof MusicView musicView) {
+                musicView.setSong(event.getSong());
+            }
+        });
 
         eventBus.subscribe(OpenAlbumViewEvent.class, event -> {
 
@@ -112,7 +124,10 @@ public class MainPanel extends JPanel {
             return searchController.getView();
         }
         if (controllerClass == MusicController.class) {
-            return new MusicController(context.eventBus).getView();
+            if (musicController == null) {
+                musicController = new MusicController(context.eventBus);
+            }
+            return musicController.getView();
         }
         if (controllerClass == UserProfileController.class) {
             return new UserProfileController(context.eventBus, new UserService(new UserApi(context.apiClient)),new ArtistRequestService(new ArtistRequestApiClient(context.apiClient))).getView();

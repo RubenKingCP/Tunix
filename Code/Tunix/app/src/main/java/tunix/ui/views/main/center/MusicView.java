@@ -47,7 +47,7 @@ public class MusicView extends JPanel {
     public MusicView() {
         initGui();
     }
-
+    
     public void initGui() {
         removeAll();
 
@@ -380,5 +380,24 @@ public class MusicView extends JPanel {
 
     public void setController(MusicController controller) {
         this.controller = controller;
+    }
+    public void setSong(Song song) {
+        if (song == null) return;
+
+        this.musicAsset = song;
+
+        Playlist singleSongPlaylist = new Playlist(
+                song.getTitle(),
+                song.getId(),
+                song.getArtist()
+        );
+
+        singleSongPlaylist.addSong(song);
+
+        this.playlist = singleSongPlaylist;
+
+        initGui();
+        revalidate();
+        repaint();
     }
 }

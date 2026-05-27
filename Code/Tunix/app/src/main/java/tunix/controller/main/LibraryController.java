@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import tunix.controller.main.center.MusicController;
 import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.AppContext;
 import tunix.model.ILibraryAsset;
@@ -12,6 +13,7 @@ import tunix.service.LibraryService;
 import tunix.service.PlaylistService;
 import tunix.ui.views.main.LibraryView;
 import tunix.model.account.Artist;
+import tunix.model.musicContent.Song;
 import tunix.navigation.events.OpenArtistViewEvent;
 
 
@@ -49,9 +51,20 @@ public class LibraryController {
     public void albumClicked() {
 
     }
+    public void songClicked(Song song) {
+        appContext.eventBus.publish(new OpenSongViewEvent(song));
+    }
+    public final class OpenSongViewEvent {
 
-    public void songClicked() {
+        private final Song song;
 
+        public OpenSongViewEvent(Song song) {
+            this.song = song;
+        }
+
+        public Song getSong() {
+            return song;
+        }
     }
     
     public void artistClicked(Artist artist) {
@@ -59,4 +72,5 @@ public class LibraryController {
             new OpenArtistViewEvent(artist)
     );
 }
+   private MusicController musicController;
 }
