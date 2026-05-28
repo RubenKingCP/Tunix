@@ -1,3 +1,4 @@
+
 package tunix.ui.views.main.center;
 
 import java.awt.BorderLayout;
@@ -48,22 +49,36 @@ public class MusicView extends JPanel {
     private ILibraryAsset musicAsset;
     private MusicController controller;
     private Playlist playlist;
+
+    // kept for compatibility but no longer used for playlists
     private LibraryView libraryPanel;
 
-    public MusicView(MusicController controller, LibraryView libraryPanel) {
+    public MusicView(
+            MusicController controller,
+            LibraryView libraryPanel) {
+
         this.controller = controller;
         this.libraryPanel = libraryPanel;
+
         initGui();
     }
 
     public void initGui() {
+
         removeAll();
 
         playlist = buildPlaylistForAsset(musicAsset);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
         setBackground(Color.DARK_GRAY);
-        setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
+
+        setBorder(
+                BorderFactory.createEmptyBorder(
+                        24,
+                        24,
+                        24,
+                        24));
 
         add(buildHeader());
         add(buildActionsBar());
@@ -74,8 +89,11 @@ public class MusicView extends JPanel {
     }
 
     public void setAsset(ILibraryAsset asset) {
+
         this.musicAsset = asset;
+
         this.playlist = buildPlaylistForAsset(asset);
+
         initGui();
     }
 
@@ -83,23 +101,35 @@ public class MusicView extends JPanel {
         initGui();
     }
 
-    private Playlist buildPlaylistForAsset(ILibraryAsset asset) {
+    private Playlist buildPlaylistForAsset(
+            ILibraryAsset asset) {
 
         var currentUser =
                 SessionService.Instance == null
                         ? null
                         : SessionService.Instance.getAccount();
 
-        Playlist builtPlaylist = new Playlist(
-                asset == null ? "Testing" : asset.getTitle(),
-                asset == null ? 1 : asset.getId(),
-                currentUser);
+        Playlist builtPlaylist =
+                new Playlist(
+                        asset == null
+                                ? "Testing"
+                                : asset.getTitle(),
+
+                        asset == null
+                                ? 1
+                                : asset.getId(),
+
+                        currentUser);
 
         List<Song> songs =
-                asset == null ? List.of() : asset.getDisplaySongs();
+                asset == null
+                        ? List.of()
+                        : asset.getDisplaySongs();
 
         if (songs == null || songs.isEmpty()) {
+
             builtPlaylist.addSong(createDummySong());
+
             return builtPlaylist;
         }
 
@@ -111,6 +141,7 @@ public class MusicView extends JPanel {
     }
 
     private Song createDummySong() {
+
         return new Song(
                 "Demo Song",
                 1L,
@@ -129,7 +160,8 @@ public class MusicView extends JPanel {
     private String getArtistName() {
 
         if (musicAsset != null
-                && musicAsset.getType() == LibraryAssetType.PLAYLIST) {
+                && musicAsset.getType()
+                == LibraryAssetType.PLAYLIST) {
 
             return playlist.getCreator() == null
                     ? "Guest"
@@ -139,7 +171,9 @@ public class MusicView extends JPanel {
         if (!playlist.getPlaylistItems().isEmpty()) {
 
             Song firstSong =
-                    playlist.getPlaylistItems().get(0).getSong();
+                    playlist.getPlaylistItems()
+                            .get(0)
+                            .getSong();
 
             if (firstSong != null
                     && firstSong.getArtist() != null) {
@@ -160,13 +194,20 @@ public class MusicView extends JPanel {
 
     private JPanel buildHeader() {
 
-        JPanel header = new JPanel(new BorderLayout(24, 0));
+        JPanel header =
+                new JPanel(new BorderLayout(24, 0));
 
         header.setBackground(Color.DARK_GRAY);
+
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        header.add(buildPlaylistCoverThumb(), BorderLayout.WEST);
-        header.add(buildPlaylistInfo(), BorderLayout.CENTER);
+        header.add(
+                buildPlaylistCoverThumb(),
+                BorderLayout.WEST);
+
+        header.add(
+                buildPlaylistInfo(),
+                BorderLayout.CENTER);
 
         return header;
     }
@@ -184,10 +225,13 @@ public class MusicView extends JPanel {
         Graphics2D g2 = placeholder.createGraphics();
 
         g2.setColor(new Color(0x3A3A3A));
+
         g2.fillRect(0, 0, size, size);
 
         g2.setColor(new Color(0x606060));
-        g2.setFont(new Font("Dialog", Font.PLAIN, 48));
+
+        g2.setFont(
+                new Font("Dialog", Font.PLAIN, 48));
 
         FontMetrics fm = g2.getFontMetrics();
 
@@ -207,7 +251,9 @@ public class MusicView extends JPanel {
 
         JPanel info = new JPanel();
 
-        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+        info.setLayout(
+                new BoxLayout(info, BoxLayout.Y_AXIS));
+
         info.setBackground(Color.DARK_GRAY);
 
         JLabel playlistName =
@@ -217,12 +263,17 @@ public class MusicView extends JPanel {
                                 : musicAsset.getTitle());
 
         playlistName.setForeground(Color.WHITE);
-        playlistName.setFont(new Font("Dialog", Font.BOLD, 28));
 
-        JLabel artist = new JLabel(getArtistName());
+        playlistName.setFont(
+                new Font("Dialog", Font.BOLD, 28));
+
+        JLabel artist =
+                new JLabel(getArtistName());
 
         artist.setForeground(Color.LIGHT_GRAY);
-        artist.setFont(new Font("Dialog", Font.PLAIN, 14));
+
+        artist.setFont(
+                new Font("Dialog", Font.PLAIN, 14));
 
         JLabel details =
                 new JLabel(
@@ -231,14 +282,22 @@ public class MusicView extends JPanel {
                                 : musicAsset.getSubtitle());
 
         details.setForeground(Color.LIGHT_GRAY);
-        details.setFont(new Font("Dialog", Font.PLAIN, 12));
+
+        details.setFont(
+                new Font("Dialog", Font.PLAIN, 12));
 
         info.add(Box.createVerticalGlue());
+
         info.add(playlistName);
+
         info.add(Box.createVerticalStrut(8));
+
         info.add(artist);
+
         info.add(Box.createVerticalStrut(8));
+
         info.add(details);
+
         info.add(Box.createVerticalGlue());
 
         return info;
@@ -247,27 +306,58 @@ public class MusicView extends JPanel {
     private JPanel buildActionsBar() {
 
         JPanel bar =
-                new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 0));
+                new JPanel(
+                        new FlowLayout(
+                                FlowLayout.LEFT,
+                                16,
+                                0));
 
         bar.setBackground(Color.DARK_GRAY);
+
         bar.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         bar.setBorder(
-                BorderFactory.createEmptyBorder(24, 0, 24, 0));
+                BorderFactory.createEmptyBorder(
+                        24,
+                        0,
+                        24,
+                        0));
 
-        JButton playButton = buildCirclePlayButton();
-        JButton shuffleButton = buildActionButton("⇄");
-        JButton saveButton = buildActionButton("♡");
-        JButton downloadButton = buildActionButton("↓");
-        JButton addSongButton = buildActionButton("+");
-        JButton optionsButton = buildActionButton("⋯");
+        JButton playButton =
+                buildCirclePlayButton();
 
-        playButton.addActionListener(e -> onPlayClicked());
-        shuffleButton.addActionListener(e -> onShuffleClicked());
-        saveButton.addActionListener(e -> onSaveClicked());
-        downloadButton.addActionListener(e -> onDownloadClicked());
-        addSongButton.addActionListener(e -> onAddSongClicked());
-        optionsButton.addActionListener(e -> onOptionsClicked());
+        JButton shuffleButton =
+                buildActionButton("⇄");
+
+        JButton saveButton =
+                buildActionButton("♡");
+
+        JButton downloadButton =
+                buildActionButton("↓");
+
+        JButton addSongButton =
+                buildActionButton("+");
+
+        JButton optionsButton =
+                buildActionButton("⋯");
+
+        playButton.addActionListener(
+                e -> onPlayClicked());
+
+        shuffleButton.addActionListener(
+                e -> onShuffleClicked());
+
+        saveButton.addActionListener(
+                e -> onSaveClicked());
+
+        downloadButton.addActionListener(
+                e -> onDownloadClicked());
+
+        addSongButton.addActionListener(
+                e -> onAddSongClicked());
+
+        optionsButton.addActionListener(
+                e -> onOptionsClicked());
 
         bar.add(playButton);
         bar.add(shuffleButton);
@@ -286,7 +376,8 @@ public class MusicView extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
 
-                Graphics2D g2 = (Graphics2D) g.create();
+                Graphics2D g2 =
+                        (Graphics2D) g.create();
 
                 g2.setRenderingHint(
                         RenderingHints.KEY_ANTIALIASING,
@@ -297,12 +388,18 @@ public class MusicView extends JPanel {
                                 ? new Color(0xDDDDDD)
                                 : Color.WHITE);
 
-                g2.fillOval(0, 0, getWidth(), getHeight());
+                g2.fillOval(
+                        0,
+                        0,
+                        getWidth(),
+                        getHeight());
 
                 g2.setColor(Color.BLACK);
+
                 g2.setFont(getFont());
 
-                FontMetrics fm = g2.getFontMetrics();
+                FontMetrics fm =
+                        g2.getFontMetrics();
 
                 int x =
                         (getWidth()
@@ -322,11 +419,16 @@ public class MusicView extends JPanel {
             }
         };
 
-        button.setPreferredSize(new Dimension(52, 52));
-        button.setFont(new Font("Dialog", Font.BOLD, 18));
+        button.setPreferredSize(
+                new Dimension(52, 52));
+
+        button.setFont(
+                new Font("Dialog", Font.BOLD, 18));
 
         button.setContentAreaFilled(false);
+
         button.setBorderPainted(false);
+
         button.setFocusPainted(false);
 
         button.setCursor(
@@ -341,28 +443,38 @@ public class MusicView extends JPanel {
         JButton button = new JButton(label);
 
         button.setFocusPainted(false);
+
         button.setBorderPainted(false);
+
         button.setContentAreaFilled(false);
 
         button.setForeground(new Color(0xAAAAAA));
-        button.setFont(new Font("Dialog", Font.PLAIN, 26));
+
+        button.setFont(
+                new Font("Dialog", Font.PLAIN, 26));
 
         button.setCursor(
                 java.awt.Cursor.getPredefinedCursor(
                         java.awt.Cursor.HAND_CURSOR));
 
-        button.addMouseListener(new MouseAdapter() {
+        button.addMouseListener(
+                new MouseAdapter() {
 
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setForeground(Color.WHITE);
-            }
+                    @Override
+                    public void mouseEntered(
+                            MouseEvent e) {
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setForeground(new Color(0xAAAAAA));
-            }
-        });
+                        button.setForeground(Color.WHITE);
+                    }
+
+                    @Override
+                    public void mouseExited(
+                            MouseEvent e) {
+
+                        button.setForeground(
+                                new Color(0xAAAAAA));
+                    }
+                });
 
         return button;
     }
@@ -394,13 +506,18 @@ public class MusicView extends JPanel {
             rows[pos][1] = song.getTitle();
             rows[pos][2] = song.getSubtitle();
 
-            int minutes = song.getDuration() / 60;
-            int seconds =
-                    song.getDuration() - (minutes * 60);
+            int minutes =
+                    song.getDuration() / 60;
 
-            rows[pos][3] = minutes + ":" + seconds;
+            int seconds =
+                    song.getDuration()
+                            - (minutes * 60);
+
+            rows[pos][3] =
+                    minutes + ":" + seconds;
 
             rows[pos][4] = "↓";
+
             rows[pos][5] = "⋯";
         }
 
@@ -416,20 +533,26 @@ public class MusicView extends JPanel {
         };
 
         table.setBackground(Color.DARK_GRAY);
+
         table.setForeground(Color.WHITE);
 
-        table.setFont(new Font("Dialog", Font.PLAIN, 14));
+        table.setFont(
+                new Font("Dialog", Font.PLAIN, 14));
 
         table.setRowHeight(48);
 
         table.setShowGrid(false);
 
-        table.setIntercellSpacing(new Dimension(0, 0));
+        table.setIntercellSpacing(
+                new Dimension(0, 0));
 
-        table.setSelectionBackground(new Color(0x3A3A3A));
+        table.setSelectionBackground(
+                new Color(0x3A3A3A));
+
         table.setSelectionForeground(Color.WHITE);
 
-        JTableHeader header = table.getTableHeader();
+        JTableHeader header =
+                table.getTableHeader();
 
         header.setDefaultRenderer(
                 new javax.swing.table.DefaultTableCellRenderer() {
@@ -455,7 +578,8 @@ public class MusicView extends JPanel {
 
                         label.setBackground(Color.DARK_GRAY);
 
-                        label.setForeground(Color.LIGHT_GRAY);
+                        label.setForeground(
+                                Color.LIGHT_GRAY);
 
                         label.setFont(
                                 new Font(
@@ -476,22 +600,6 @@ public class MusicView extends JPanel {
                 });
 
         table.getColumnModel()
-                .getColumn(0)
-                .setPreferredWidth(40);
-
-        table.getColumnModel()
-                .getColumn(1)
-                .setPreferredWidth(400);
-
-        table.getColumnModel()
-                .getColumn(2)
-                .setPreferredWidth(200);
-
-        table.getColumnModel()
-                .getColumn(3)
-                .setPreferredWidth(60);
-
-        table.getColumnModel()
                 .getColumn(4)
                 .setPreferredWidth(40);
 
@@ -499,7 +607,8 @@ public class MusicView extends JPanel {
                 .getColumn(5)
                 .setPreferredWidth(40);
 
-        javax.swing.table.DefaultTableCellRenderer actionRenderer =
+        javax.swing.table.DefaultTableCellRenderer
+                actionRenderer =
                 new javax.swing.table.DefaultTableCellRenderer() {
 
                     @Override
@@ -524,7 +633,8 @@ public class MusicView extends JPanel {
                         label.setHorizontalAlignment(
                                 SwingConstants.CENTER);
 
-                        label.setBackground(Color.DARK_GRAY);
+                        label.setBackground(
+                                Color.DARK_GRAY);
 
                         label.setForeground(
                                 new Color(0xAAAAAA));
@@ -547,89 +657,99 @@ public class MusicView extends JPanel {
                 .getColumn(5)
                 .setCellRenderer(actionRenderer);
 
-        table.addMouseListener(new MouseAdapter() {
+        table.addMouseListener(
+                new MouseAdapter() {
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
+                    @Override
+                    public void mouseClicked(
+                            MouseEvent e) {
 
-                int row = table.rowAtPoint(e.getPoint());
-                int col = table.columnAtPoint(e.getPoint());
+                        int row =
+                                table.rowAtPoint(
+                                        e.getPoint());
 
-                if (row < 0 || col < 0) {
-                    return;
-                }
+                        int col =
+                                table.columnAtPoint(
+                                        e.getPoint());
 
-                PlaylistItem item = playlistItems.get(row);
+                        if (row < 0 || col < 0) {
+                            return;
+                        }
 
-                Song song = item.getSong();
+                        PlaylistItem item =
+                                playlistItems.get(row);
 
-                if (col == 4) {
-                    return;
-                }
+                        Song song =
+                                item.getSong();
 
-                if (col == 5) {
+                        // DOWNLOAD
+                        if (col == 4) {
+                            return;
+                        }
 
-                    JPopupMenu menu = new JPopupMenu();
+                        // ADD TO PLAYLIST
+                        if (col == 5) {
 
-                    if (libraryPanel == null) {
-                        JOptionPane.showMessageDialog(
-                                MusicView.this,
-                                "Library panel unavailable.");
-                        return;
-                    }
+                            JPopupMenu menu =
+                                    new JPopupMenu();
 
-                    List<ILibraryAsset> assets =
-                            libraryPanel.getCurrentLibraryAssets();
+                            List<Playlist> playlists =
+                                    controller
+                                            .getCachedPlaylists();
 
-                    if (assets == null) {
-                        return;
-                    }
+                            if (playlists == null
+                                    || playlists.isEmpty()) {
 
-                    for (ILibraryAsset asset : assets) {
+                                JOptionPane.showMessageDialog(
+                                        MusicView.this,
+                                        "No playlists available.");
 
-                        if (asset.getType()
-                                == LibraryAssetType.PLAYLIST) {
+                                return;
+                            }
 
-                            JMenuItem mi =
-                                    new JMenuItem(
-                                            asset.getTitle());
+                            for (Playlist playlist
+                                    : playlists) {
 
-                            mi.addActionListener(ev -> {
+                                JMenuItem mi =
+                                        new JMenuItem(
+                                                playlist.getTitle());
 
-                                try {
+                                mi.addActionListener(ev -> {
 
-                                    controller.addSongToPlaylist(
-                                            asset.getId(),
-                                            song.getId());
+                                    boolean success =
+                                            controller
+                                                    .addSongToPlaylist(
+                                                            playlist.getId(),
+                                                            song.getId());
 
-                                    JOptionPane.showMessageDialog(
-                                            MusicView.this,
-                                            "Added \""
-                                                    + song.getTitle()
-                                                    + "\" to \""
-                                                    + asset.getTitle()
-                                                    + "\"");
+                                    if (success) {
 
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+                                        JOptionPane.showMessageDialog(
+                                                MusicView.this,
+                                                "Added \""
+                                                        + song.getTitle()
+                                                        + "\" to \""
+                                                        + playlist.getTitle()
+                                                        + "\"");
 
-                                    JOptionPane.showMessageDialog(
-                                            MusicView.this,
-                                            "Failed to add song to playlist.");
-                                }
-                            });
+                                    } else {
 
-                            menu.add(mi);
+                                        JOptionPane.showMessageDialog(
+                                                MusicView.this,
+                                                "Failed to add song.");
+                                    }
+                                });
+
+                                menu.add(mi);
+                            }
+
+                            menu.show(
+                                    table,
+                                    e.getX(),
+                                    e.getY());
                         }
                     }
-
-                    menu.show(
-                            table,
-                            e.getX(),
-                            e.getY());
-                }
-            }
-        });
+                });
 
         JScrollPane scrollPane =
                 new JScrollPane(table);
@@ -642,19 +762,22 @@ public class MusicView extends JPanel {
         scrollPane.setBorder(
                 BorderFactory.createEmptyBorder());
 
-        scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        scrollPane.setAlignmentX(
+                Component.LEFT_ALIGNMENT);
 
         styleScrollBar(scrollPane);
 
         return scrollPane;
     }
 
-    private void styleScrollBar(JScrollPane scrollPane) {
+    private void styleScrollBar(
+            JScrollPane scrollPane) {
 
         JScrollBar bar =
                 scrollPane.getVerticalScrollBar();
 
-        bar.setPreferredSize(new Dimension(6, 0));
+        bar.setPreferredSize(
+                new Dimension(6, 0));
 
         bar.setUI(new BasicScrollBarUI() {
 
@@ -662,19 +785,31 @@ public class MusicView extends JPanel {
             protected void configureScrollBarColors() {
 
                 thumbColor =
-                        new Color(180, 180, 180, 160);
+                        new Color(
+                                180,
+                                180,
+                                180,
+                                160);
 
                 trackColor =
-                        new Color(50, 50, 50, 255);
+                        new Color(
+                                50,
+                                50,
+                                50,
+                                255);
             }
 
             @Override
-            protected JButton createDecreaseButton(int o) {
+            protected JButton createDecreaseButton(
+                    int o) {
+
                 return invisibleButton();
             }
 
             @Override
-            protected JButton createIncreaseButton(int o) {
+            protected JButton createIncreaseButton(
+                    int o) {
+
                 return invisibleButton();
             }
 
@@ -682,7 +817,8 @@ public class MusicView extends JPanel {
 
                 JButton b = new JButton();
 
-                b.setPreferredSize(new Dimension(0, 0));
+                b.setPreferredSize(
+                        new Dimension(0, 0));
 
                 return b;
             }
@@ -738,7 +874,9 @@ public class MusicView extends JPanel {
     public void onOptionsClicked() {
     }
 
-    public void setController(MusicController controller) {
+    public void setController(
+            MusicController controller) {
+
         this.controller = controller;
     }
 
@@ -763,3 +901,4 @@ public class MusicView extends JPanel {
         initGui();
     }
 }
+
