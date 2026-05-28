@@ -400,6 +400,7 @@ public class MusicView extends JPanel {
                         mi.addActionListener(ev -> {
                             JOptionPane.showMessageDialog(MusicView.this,
                                     "Added \"" + song.getTitle() + "\" to \"" + name + "\"");
+                            controller.addSongToPlaylist(libraryPanel.getAssetByName(name).getId(), song.getId());
                         });
                         menu.add(mi);
                     }
@@ -418,6 +419,7 @@ public class MusicView extends JPanel {
         styleScrollBar(scrollPane);
         return scrollPane;
     }
+
 
     protected List<String> getAvailablePlaylistNames() {
         List<ILibraryAsset> assets = libraryPanel.getCurrentLibraryAssets();

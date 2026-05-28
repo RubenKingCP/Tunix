@@ -136,7 +136,7 @@ public class MainPanel extends JPanel {
         }
         if (controllerClass == MusicController.class) {
             if (musicController == null) {
-                musicController = new MusicController(context.eventBus, (LibraryView)registry.get(LibraryView.class));
+                musicController = new MusicController(context.eventBus, (LibraryView)registry.get(LibraryView.class),new PlaylistService(new PlaylistApiClient(context.apiClient)));
             }
             return musicController.getView();
         }

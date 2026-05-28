@@ -901,6 +901,14 @@ public class LibraryView extends JPanel {
         libraryController.songClicked((Song) asset);
     }
     }
+    public ILibraryAsset getAssetByName(String name) {
+        for (ILibraryAsset asset : libraryAssets) {
+            if (asset.getTitle().equalsIgnoreCase(name)) {
+                return asset;
+            }
+        }
+        return null;
+    }
 
     public void onMusicAssetClick(ILibraryAsset asset) {
         LibraryAssetType type = asset.getType();
