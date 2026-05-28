@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import tunix.navigation.events.EventBus;
+import tunix.model.ILibraryAsset;
 import tunix.model.musicContent.Playlist;
 import tunix.model.musicContent.Song;
 import tunix.service.PlaylistService;
@@ -47,6 +48,19 @@ public class MusicController {
         return playlistService.addSongToPlaylist(
                 playlistId,
                 song);
+    }
+
+    public ILibraryAsset fetchFreshAsset(ILibraryAsset asset) {
+        if (asset == null) {
+            return null;
+        }
+
+        if (asset.getType() == tunix.dto.enums.LibraryAssetType.PLAYLIST) {
+            Playlist fresh = playlistService.getPlaylistById(asset.getId());
+            return fresh != null ? fresh : asset;
+        }
+
+        return asset;
     }
 
     public List<Playlist> getCachedPlaylists() {

@@ -30,8 +30,7 @@ public class PlaylistApiClient {
 
     public ApiResponse<AddSongResponse> addSongToPlaylist(int playlistId, int songId) {
         // Logic to call the API to add the song to the playlist
-        // Backend exposes: POST /playlists/{playlistId}/add/{songId}
-        return apiClient.post("/playlists/" + playlistId + "/add/" + songId, null, AddSongResponse.class);
+        return apiClient.post("/playlists/" + playlistId + "/add/" + songId, new AddSongRequest(songId), AddSongResponse.class);
     }
 
     public ApiResponse<PlaylistResponse> createPlaylist(PlaylistCreateRequest playlistCreateRequest) {

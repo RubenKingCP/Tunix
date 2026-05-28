@@ -50,15 +50,11 @@ public class MusicView extends JPanel {
     private MusicController controller;
     private Playlist playlist;
 
-    // kept for compatibility but no longer used for playlists
-    private LibraryView libraryPanel;
-
     public MusicView(
             MusicController controller,
             LibraryView libraryPanel) {
 
         this.controller = controller;
-        this.libraryPanel = libraryPanel;
 
         initGui();
     }
@@ -66,10 +62,15 @@ public class MusicView extends JPanel {
     public void initGui() {
 
         removeAll();
-                // Ensure playlists are loaded into the cache before rendering UI/menu actions
-                if (controller != null) {
-                        controller.ensurePlaylistsLoaded();
-                }
+
+        // Ensure playlists are loaded into the cache before rendering UI/menu actions
+        if (controller != null) {
+            controller.ensurePlaylistsLoaded();
+        }
+
+        if (controller != null && musicAsset != null) {
+            musicAsset = controller.fetchFreshAsset(musicAsset);
+        }
 
         playlist = buildPlaylistForAsset(musicAsset);
 
@@ -719,28 +720,31 @@ public class MusicView extends JPanel {
                                                 playlist.getTitle());
 
                                 mi.addActionListener(ev -> {
+                                    try {
+                                        boolean success =
+                                                controller
+                                                        .addSongToPlaylist(
+                                                                playlist.getId(),
+                                                                song);
 
-                                    boolean success =
-                                            controller
-                                                    .addSongToPlaylist(
-                                                            playlist.getId(),
-                                                            song);
-
-                                    if (success) {
-
+                                        if (success) {
+                                            JOptionPane.showMessageDialog(
+                                                    MusicView.this,
+                                                    "Added \""
+                                                            + song.getTitle()
+                                                            + "\" to \""
+                                                            + playlist.getTitle()
+                                                            + "\"");
+                                        } else {
+                                            JOptionPane.showMessageDialog(
+                                                    MusicView.this,
+                                                    "Failed to add song. Check console for details.");
+                                        }
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
                                         JOptionPane.showMessageDialog(
                                                 MusicView.this,
-                                                "Added \""
-                                                        + song.getTitle()
-                                                        + "\" to \""
-                                                        + playlist.getTitle()
-                                                        + "\"");
-
-                                    } else {
-
-                                        JOptionPane.showMessageDialog(
-                                                MusicView.this,
-                                                "Failed to add song.");
+                                                "Failed to add song: " + ex.getMessage());
                                     }
                                 });
 

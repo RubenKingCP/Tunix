@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import java.lang.reflect.ParameterizedType;
 
 public class ApiClient {
 
@@ -55,6 +56,7 @@ public class ApiClient {
             return sendAndParse(request, dataType);
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("POST failed: " + path, e);
         }
     }
@@ -155,18 +157,32 @@ public class ApiClient {
 
         System.out.println("RAW RESPONSE: " + response.body());
 
+        int status = response.statusCode();
         JsonNode root = objectMapper.readTree(response.body());
 
-        boolean success = root.get("success").asBoolean();
-        String message = root.get("message").asText();
-        JsonNode dataNode = root.get("data");
+        if (status >= 200 && status < 300) {
+            boolean success = root.has("success") && root.get("success").asBoolean();
+            String message = root.has("message") ? root.get("message").asText() : null;
+            JsonNode dataNode = root.get("data");
 
-        T data = null;
-        if (dataNode != null && !dataNode.isNull()) {
-            data = objectMapper.treeToValue(dataNode, dataType);
+            T data = null;
+            if (dataNode != null && !dataNode.isNull()) {
+                data = objectMapper.treeToValue(dataNode, dataType);
+            }
+
+            return new ApiResponse<>(success, message, data);
         }
 
-        return new ApiResponse<>(success, message, data);
+        String message = null;
+        if (root.has("message")) {
+            message = root.get("message").asText();
+        } else if (root.has("error")) {
+            message = root.get("error").asText();
+        } else {
+            message = "HTTP " + status + " - " + response.body();
+        }
+
+        return new ApiResponse<>(false, message, null);
     }
 
     // =========================
@@ -180,8 +196,33 @@ public class ApiClient {
         HttpResponse<String> response =
                 httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("RAW RESPONSE: " + response.body());
+        String body = response.body();
+        System.out.println("RAW RESPONSE: " + body);
 
-        return objectMapper.readValue(response.body(), typeReference);
+        int status = response.statusCode();
+        if (status >= 200 && status < 300) {
+            return objectMapper.readValue(body, typeReference);
+        }
+
+        JsonNode root = objectMapper.readTree(body);
+
+        String message;
+        if (root.has("message")) {
+            message = root.get("message").asText();
+        } else if (root.has("error")) {
+            message = root.get("error").asText();
+        } else {
+            message = "HTTP " + status + " - " + body;
+        }
+
+        if (typeReference.getType() instanceof ParameterizedType parameterizedType
+                && parameterizedType.getRawType() == ApiResponse.class) {
+            String wrapper = objectMapper.writeValueAsString(
+                    new ApiResponse<>(false, message, null)
+            );
+            return objectMapper.readValue(wrapper, typeReference);
+        }
+
+        throw new RuntimeException("Request failed: " + request.uri() + " - " + message);
     }
 }

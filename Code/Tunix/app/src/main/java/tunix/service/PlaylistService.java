@@ -35,7 +35,7 @@ public class PlaylistService {
                 songId
             );
 
-        if (response.isSuccess()) {
+        if (response != null && response.isSuccess()) {
 
             // update local cache: find matching playlist and add song if not present
             for (Playlist playlist : cachedPlaylists) {
@@ -55,13 +55,15 @@ public class PlaylistService {
             }
 
         } else {
-
-            System.out.println(
-                    "Failed: " + response.getMessage()
-            );
+            System.out.println("PlaylistService.addSongToPlaylist failed.");
+            if (response == null) {
+                System.out.println("Response was null.");
+            } else {
+                System.out.println("Response success=" + response.isSuccess() + ", message=" + response.getMessage());
+            }
         }
 
-        return response.isSuccess();
+        return response != null && response.isSuccess();
     }
 
     public boolean createPlaylist(
@@ -98,6 +100,11 @@ public class PlaylistService {
         if (playlist != null) {
             cachedPlaylists.add(playlist);
         }
+    }
+
+    public Playlist getPlaylistById(int playlistId) {
+        ILibraryAsset asset = playlistApiClient.getById(playlistId);
+        return asset instanceof Playlist ? (Playlist) asset : null;
     }
 
     /**
