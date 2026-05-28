@@ -1,5 +1,7 @@
 package tunixserver.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,8 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import tunixserver.dto.request.AlbumRequest;
 import tunixserver.dto.response.AlbumResponse;
 import tunixserver.dto.response.ApiResponse;
+import tunixserver.dto.response.SongResponse;
 import tunixserver.entities.AlbumEntity;
 import tunixserver.service.AlbumBackendService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -39,5 +45,17 @@ public class AlbumBackendController {
         } catch (Exception e) {
             return ResponseEntity.ok(new ApiResponse<AlbumResponse>(false, "Failed to fetch album: " + e.getMessage(), null));
         }
+    }
+
+    @GetMapping("/name")
+    public ResponseEntity<ApiResponse<List<AlbumResponse>>> getSongsByName(
+            @RequestParam String query
+    ) {
+
+        List<AlbumResponse> albums = albumBackendService.searchByName(query);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Songs found", albums)
+        );
     }
 }

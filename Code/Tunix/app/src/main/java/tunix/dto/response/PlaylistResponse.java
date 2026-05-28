@@ -19,6 +19,7 @@ public class PlaylistResponse {
     private Long id;
     private String title;
     private Long creatorId;
+    private String creatorName;
     @JsonProperty("isPublic")
     private boolean isPublic;
 

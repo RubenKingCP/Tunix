@@ -1,9 +1,11 @@
 package tunixserver.service;
 
 import tunixserver.dto.request.PlaylistCreateRequest;
+import tunixserver.dto.response.PlaylistResponse;
 import tunixserver.entities.AccountEntity;
 import tunixserver.entities.PlaylistEntity;
 import tunixserver.entities.SongEntity;
+import tunixserver.mapper.PlaylistResponseMapper;
 import tunixserver.repository.AccountBackendRepository;
 import tunixserver.repository.PlaylistBackendRepository;
 import tunixserver.repository.SongBackendRepository;
@@ -85,6 +87,15 @@ public class PlaylistBackendService {
         playlist.setCoauthors(coauthors);
 
         return playlistBackendRepository.save(playlist); 
+    }
+
+    public List<PlaylistResponse> searchByName(String queryString) {
+
+        List<PlaylistEntity> playlists = playlistBackendRepository.findByTitleContainingIgnoreCase(queryString);
+
+        return playlists.stream()
+                        .map(PlaylistResponseMapper::fromEntity)
+                        .toList();
     }
     
 }

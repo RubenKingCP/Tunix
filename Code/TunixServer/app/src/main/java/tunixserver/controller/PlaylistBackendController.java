@@ -1,5 +1,7 @@
 package tunixserver.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +14,9 @@ import tunixserver.dto.response.ApiResponse;
 import tunixserver.dto.response.PlaylistResponse;
 import tunixserver.entities.PlaylistEntity;
 import tunixserver.service.PlaylistBackendService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/playlists")
@@ -64,4 +69,17 @@ public class PlaylistBackendController {
             );
         }
     }
+
+    @GetMapping("/name")
+    public ResponseEntity<ApiResponse<List<PlaylistResponse>>> getPlaylistsByName(
+        @RequestParam String query
+    ) {
+        System.out.println("PlaylistBackendController: Got request query: " + query);
+        List<PlaylistResponse> playlists = playlistBackendService.searchByName(query);
+
+        return ResponseEntity.ok(
+            new ApiResponse<>(true, "Playlists Found!", playlists)
+        );
+    }
+    
 }

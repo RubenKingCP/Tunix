@@ -1,18 +1,28 @@
 package tunixserver.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import tunixserver.dto.request.AlbumRequest;
+import tunixserver.dto.response.AlbumResponse;
+import tunixserver.dto.response.SongResponse;
 import tunixserver.entities.AlbumEntity;
 import tunixserver.entities.ArtistEntity;
+import tunixserver.entities.SongEntity;
+import tunixserver.mapper.AlbumResponseMapper;
+import tunixserver.mapper.SongMapper;
+import tunixserver.repository.AlbumBackendRepository;
 import tunixserver.repository.ArtistBackendRepository;
 
 @Service
 public class AlbumBackendService {
 
     private final ArtistBackendRepository artistRepository;
+    private final AlbumBackendRepository albumBackendRepository;
 
-    public AlbumBackendService(ArtistBackendRepository artistRepository) {
+    public AlbumBackendService(ArtistBackendRepository artistRepository, AlbumBackendRepository albumBackendRepository) {
         this.artistRepository = artistRepository;
+        this.albumBackendRepository = albumBackendRepository;
     }
 
     public AlbumEntity uploadAlbum(AlbumRequest req) {
@@ -43,4 +53,13 @@ public class AlbumBackendService {
                 req.getReleaseDate()
         );
     }
+
+        public List<AlbumResponse> searchByName(String query) {
+
+            List<AlbumEntity> albums = albumBackendRepository.findByTitleContainingIgnoreCase(query);
+
+            return albums.stream()
+                    .map(AlbumResponseMapper::fromEntity)
+                    .toList();
+        }
 }

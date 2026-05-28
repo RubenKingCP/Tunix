@@ -1,5 +1,7 @@
 package tunix.api;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +32,10 @@ public class PlaylistApiClient {
         return apiClient.post("/playlists/create", playlistCreateRequest, PlaylistResponse.class);
     }
 
-    public ApiResponse<PlaylistResponse> getPlaylistsByName(String query) {
-        return apiClient.post("/playlists/name",query,PlaylistResponse.class);
+    public ApiResponse<List<PlaylistResponse>> getPlaylistsByName(String query) {
+        System.out.println("PlaylistApi: Reached the get albums by name query: " + query);
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+        return apiClient.get("/playlists/name?query=" + encodedQuery, new TypeReference<ApiResponse<List<PlaylistResponse>>>(){});
     }
 
     public List<ILibraryAsset> getUserPlaylists(int longId) {

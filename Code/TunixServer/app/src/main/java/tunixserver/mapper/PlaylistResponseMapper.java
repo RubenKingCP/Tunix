@@ -15,6 +15,7 @@ public class PlaylistResponseMapper {
             p.getId(),
             p.getTitle(),
             p.getCreator() != null ? p.getCreator().getAccountId() : null,
+            p.getCreator() != null ? p.getCreator().getUsername() : null,
             p.isPublic(),
             p.getCreatedAt(),
             p.getUpdatedAt(),

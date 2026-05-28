@@ -18,6 +18,7 @@ public class PlaylistResponse {
     private Long id;
     private String title;
     private Long creatorId;
+    private String creatorName;
     @JsonProperty("isPublic")
     private boolean isPublic;
     private LocalDateTime createdAt;
@@ -30,6 +31,7 @@ public class PlaylistResponse {
                 p.getId(),
                 p.getTitle(),
                 p.getCreator() != null ? p.getCreator().getAccountId() : null,
+                p.getCreator() != null ? p.getCreator().getUsername() : null,
                 p.isPublic(),
                 p.getCreatedAt(),
                 p.getUpdatedAt(),

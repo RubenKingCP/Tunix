@@ -1,5 +1,7 @@
 package tunix.api;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,4 +34,11 @@ public class AlbumApi {
         return new ArrayList<>();
     }
     
+    public ApiResponse<List<AlbumResponse>> getAlbumsByName(String query) {
+        System.out.println("AlbumApi: Reached the get albums by name query: " + query);
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+
+        return apiClient.get("/albums/name?query=" + encodedQuery, new TypeReference<ApiResponse<List<AlbumResponse>>>() {
+        });
+    }
 }
