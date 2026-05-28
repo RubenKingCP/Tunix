@@ -878,8 +878,16 @@ public class LibraryView extends JPanel {
         return field;
     }
     public void getLibraryAssets() {
+        
         if (libraryController != null) {
             libraryAssets =  libraryController.getLibraryAssets();
+            for (ILibraryAsset asset : libraryAssets) {
+                System.out.println("LibraryView: Retrieved asset - " + asset.getTitle() + " (" + asset.getType() + ")");
+                buildListItem(asset);
+            }
+            this.revalidate();
+            this.repaint();
+            this.refreshContent();
         }
     }
     public List<ILibraryAsset> getCurrentLibraryAssets() {
