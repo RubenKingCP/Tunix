@@ -50,7 +50,7 @@ package "Frontend" as V {
     }
 
     folder "Controllers" {
-        class MusicPlayerController
+        class MusicController
         class LoginController
         class RegisterController
 
@@ -194,7 +194,7 @@ package "Frontend" as V {
     LoginView -- LoginController
     RegisterView -- RegisterController
 
-    MusicPlayerView -- MusicPlayerController
+    MusicPlayerView -- MusicController
     TopBarView -- TopBarController
     LibraryView -- LibraryController
 
@@ -243,7 +243,7 @@ package "Frontend" as V {
 
 LoginController -- LoginService
 RegisterController -- RegisterService
-MusicPlayerController -- MusicPlayerService
+MusicController -- MusicPlayerService
 
 ' ==============================
 ' Service -> Api

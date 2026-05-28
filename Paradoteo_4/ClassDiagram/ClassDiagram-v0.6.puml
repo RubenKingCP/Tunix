@@ -1,0 +1,536 @@
+@startuml classDiagram
+
+!theme mars
+skinparam linetype ortho
+top to bottom direction
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam ranksep 80
+skinparam nodesep 50
+skinparam classAttributeIconSize 0
+
+' =====================================================
+' LAYERS
+' =====================================================
+
+package "Frontend" as V {
+
+    folder "Views" {
+
+        class AppWindow extends JFrame{
+            - layout : CardLayout
+            - root : JPanel
+            - screens : Map<Class<?>, JPanel>
+            --
+            + AppWindow(context : AppContext)
+            + subscriptions(eventBus : EventBus) : void
+            + register(Class<?> key, JPanel panel) : void
+            + show(key : Class<?>) : void
+        }
+
+        class AuthPanel {
+            - layout : CardLayout
+            + {static} LOGIN : String
+            + {static} REGISTER : String
+            --
+            + AuthPanel(loginView : LoginView, registerView : RegisterView, eventBus EventBus)
+            + subscribe(eventBus : EventBus) : void
+            + showLogin(void) : void
+            + showRegister(void) : void
+        }
+        class MainPanel {
+            - artistController : ArtistController
+            - centerRouter : JPanel
+            - layout : CardLayout
+            - registry : ScreenRegistry
+            - context : AppContext
+            - searchController : SearchController
+            - musicController : MusicController
+            --
+            + MainPanel(topBar : JPanel, libraryPanel : LibraryView, musicPlayer : JPanel, registry : ScreenRegistry, context : AppContext, searchController : SearchController)
+            - subscribe(eventBus : EventBus) : void
+            - createPanelForController(controllerClass : Class<?>) : JPanel
+            - showController(controllerClass : Class<?>) : void
+            + register(key : Class<?>, panel : JPanel) : void
+            + show(key : Class<?>) : void
+        }
+        class ProfilePanel
+        class AdminPanel extends JFrame {
+            - controller : AdminController
+            --
+            + AdminPanel(controller : AdminController)
+        }
+
+        class LoginView extends JPanel{
+            - {static} BG_DARK : Color
+            - {static} BG_CARD : Color
+            - {static} BG_INPUT : Color
+            - {static} ACCENT : Color
+            - {static} ACCENT_DIM : Color
+            - {static} BORDER_COLOR : Color
+            - {static} BIN_PRIMARY : Color
+            - {static} BIN_PRIMARY_FG : Color
+            - {static} BIN_SECONDARY : Color
+            - {static} BIN_SEC_HOVER : Color
+            - usernameField : JTextField
+            - passwordField : JPasswordField
+            - loginButton : JButton
+            - registerButton : JButton
+            - controller : LoginController
+            --
+            + LoginView(void)
+            - initUI(void) : void
+            - buildFieldStack(labelText : String, field : JComponent) : JPanel
+            - buildTextField(placeholder : String) : JTextField
+            - buildPasswordField(placeholder : String) : JPasswordField
+            - styleInputField(f : JTextField, placeholder : String) : void
+            - buildPrimaryButton(text : String) : JButton
+            - buildSecondaryButton(text : String) : JButton
+            - musicNoteIcon(void) : Icon
+            - {static} class RoundedBorder extends AbstractBorder
+            + setController(controller : LoginController) : void
+            + onGoToRegisterButtonClicked(void) : void
+            + onLoginButtonClicked(void) : void 
+        }
+        class RegisterView extends JPanel {
+            - {static} BG_DARK : Color
+            - {static} BG_CARD : Color
+            - {static} BG_INPUT : Color
+            - {static} ACCENT : Color
+            - {static} ACCENT_DIM : Color
+            - {static} BORDER_COLOR : Color
+            - {static} BIN_PRIMARY : Color
+            - {static} BIN_PRIMARY_FG : Color
+            - {static} BIN_SECONDARY : Color
+            - {static} BIN_SEC_HOVER : Color
+            - usernameField : JTextField
+            - emailField : JTextField
+            - passwordField : JPasswordField
+            - loginButton : JButton
+            - registerButton : JButton
+            - controller : RegisterController
+            --
+            + RegisterView(void)
+            - initUI(void) : void
+            - buildFieldStack(labelText : String, field : JComponent) : JPanel
+            - buildTextField(placeholder : String) : JTextField
+            - buildPasswordField(placeholder : String) : JPasswordField
+            - styleInputField(f : JTextField, placeholder : String) : void
+            - buildPrimaryButton(text : String) : JButton
+            - buildSecondaryButton(text : String) : JButton
+            - musicNoteIcon(void) : Icon
+            - {static} class RoundedBorder extends AbstractBorder
+            + setController(controller : RegisterController) : void
+        }
+
+        class MusicPlayerView extends JPanel {
+            - {static} BG : Color
+            - {static} SURFACE : Color
+            - {static} BORDER : Color
+            - {static} FG_PRIMARY : Color
+            - {static} ACCENT : Color
+            - {static} BTN_HOVER : Color
+            - {static} BTN_PRESS : Color
+            --
+            + MusicPlayerView(void)
+            - createControlButton(label : String, primary : boolean) : JButton
+            + setController(musicPlayerController : MusicPlayerController) : void
+        }
+
+        class TopBarView extends JPanel {
+            - {static} BG : Color
+            - {static} SURFACE : Color
+            - {static} BORDER : Color
+            - {static} BORDER_FOC : Color
+            - {static} FG_PRIMARY : Color
+            - {static} FG_MUTED : Color
+            - {static} ACCENT : Color
+            - {static} BTN_HOVER : Color
+            - {static} BTN_PRESS : Color
+            - topBarController : TopBarController
+            --
+            + TopBarView(void)
+            - createFlatButton(label : String, primary boolean) : JButton
+            - createSearchField(void) : JTextField
+            - createSearchTypeButton(value : String) : JButton
+            - createSearchTypeMenu(searchTypes : String[], selectedSearchType : String[], searchTypeButton : JButton) : JPopupMenu
+            + setController(topBarController: TopBarController) : void
+            + onSearchButtonClicked(query : String, searchType : String) : void
+            + onHomeButtonClicked(void) : void
+            + onProfileButtonClicked(void) : void
+            + onLogoutButtonClicked(void) : void
+        }
+
+        class LibraryView extends JPanel{
+            - isExpanded : boolean
+            - isCollapsed : boolean
+            - activeFilter : String
+            - searchQuery : String
+            - sortMode : String
+            - headerPanel : JPanel
+            - filterPanel : JPanel
+            - contentPanel : JPanel
+            - searchField : JTextField
+            - sortButton : JButton
+            - {static} SIDEBAR_PCT : double
+            - {static} COLLAPSED_PCT : double
+            - {static} MIN_SIDEBAR : int
+            - {static} MIN_COLLAPSED : int
+            - {static} BG : Color
+            - libraryController : LibraryController
+            - libraryAsset : List<ILibraryAsset>
+            --
+            + LibraryView(void)
+            + getPreferredSize(void) : Dimension
+            + getMinimumSize(void) : Dimension
+            + getMaximumSize(void) : Dimension
+            - getParentWidth(void) : int
+            + setLibraryAssets(assets : List<ILibraryAsset>) : void
+            - buildHeader(void) : JPanel
+            - buildFilterRow(void) : JPanel
+            - styleFilterButton(button : JToggleButton, selected : boolean) : void
+            - showSortMenu(anchor : JButton) : void
+            - addMenuSectionLabel(menu : JPopupMenu, text : String) : void
+            - styledMenuItem(text : String) : JMenuItem
+            - buildContent(void) : JPanel
+            - refreshContent(void) : void
+            - getVisibleAssets(void) : List<ILibraryAsset>
+            - getComparator(void) : Comparator<ILibraryAsset>
+            - isGridView(void) : boolean
+            - buildGridItem(asset : ILibraryAsset) : JPanel
+            - buildListItem(asset : ILibraryAsset) : JPanel
+            - attachClickHandler(panel : JPanel, asset : ILibraryAsset) : void
+            - buildImagePlaceholder(asset : ILibraryAsset, size : int) : JLabel
+            - buildCollapsedStrip(void) : JPanel
+            - toggleCollapsed(void) : void
+            + onRightClickOnLibrary(void) : void 
+            + showLibraryOptions(void) : void
+            + onCreatePlaylistClicked(void) : void
+            + showPlaylistCreationMenu(void) : void
+            - createPlaylist(request : PlaylistCreateRequest) : void
+            - styledTextField(placeholder : String) : JTextField
+            + getLibraryAssets(void) : void
+            + getCurrentLibraryAssets(void) : List<ILibraryAsset>
+            + onPlaylistCreateConfirmClicked(playlistRequest : PlaylistCreateRequest) : void
+            + setController(libraryController : LibraryController) : void
+            + songClicked(asset : ILibraryAsset) : void
+            + onMusicAssetClick(asset : ILibraryAsset) : void
+        }
+        abstract class CenterPanel
+
+        class LibraryMusicView
+
+        class MusicView extends JPanel {
+            
+        }
+        class HomeView
+        class SearchView
+        class ArtistView
+        class ILibraryAssetItem
+
+        class AdminView
+        class AdminArtistAccountApplicationView
+        class AdminArtistAccountApplicationDetails
+        class AdminDashboardView
+
+        class UserProfileView
+        class ArtistProfileView
+        class AdminProfileView
+    }
+
+    folder "Controllers" {
+        class MusicController
+        class LoginController
+        class RegisterController
+
+        
+        class TopBarController
+        class LibraryController
+
+        class HomeController
+        class SearchController
+        class ArtistController
+
+        class AdminController
+
+        class UserProfileController
+        class ArtistProfileController
+        class AdminProfileController
+    }
+    
+
+    folder "Services" {
+        class ArtistRequestService
+        class LoginService
+        class RegisterService
+        class MusicPlayerService
+        class LibraryService
+        class PlaylistService
+        class SongService
+    }
+
+    folder "Api" {
+        class ArtistRequestApiClient
+        class LoginApiClient
+        class LibraryApiClient
+        class RegisterApiClient
+        class PlaylistApiClient
+        class SongApiClient
+        class ApiClient
+
+        ApiClient *-- ArtistRequestApiClient
+        ApiClient *-- LoginApiClient
+        ApiClient *-- RegisterApiClient
+        ApiClient *-- PlaylistApiClient
+        ApiClient *-- SongApiClient
+        ApiClient *-- LibraryApiClient
+    }
+
+
+
+    folder "Models" {
+
+        abstract class Account
+        class User
+        class Artist
+        class Admin
+
+        class Library
+
+        interface ILibraryAsset
+        class Album
+        class Playlist
+        class Song
+        class AlbumItem
+
+        class ArtistRequest
+
+        class ListeningHistory
+        class ListeningHistoryItem
+
+        class AppContext
+
+        Artist *-- Song
+        Artist *-- Album
+
+        Account <|-- User
+        Account <|-- Artist
+        Account <|-- Admin
+
+        User *-- Library
+        Library -- ILibraryAsset
+
+        Album *-- AlbumItem
+        Song *-- AlbumItem
+
+        ListeningHistory *-- ListeningHistoryItem
+        ListeningHistoryItem "1" --o "1" Song
+
+        Artist ..|> ILibraryAsset
+    }
+
+    package "DTO" {
+        folder "Request" {
+            class AddSongRequest
+            class ApproveArtistRequest
+            class AristRequest
+            class LoginRequest
+            class RegisterRequest
+            class PlaylistCreateRequest
+            class SongRequest
+        }
+
+        folder "Response" {
+            class AccountResponse
+            class ApiResponse
+            class ArtistRequestResponse
+            class ArtistResponse
+            class PlaylistResponse
+            class SongResponse
+            class UserResponse
+        }
+    }
+
+    folder "Events" {
+        class EventBus
+        class GoToLoginEvent
+        class GoToRegisterEvent
+        class LoginSuccessEvent
+        class LogoutEvent
+        class OpenSongUploadViewEvent
+        class RegisterSuccessfulEvent
+        class SongUploadedEvent
+        class SwitchMainScreenEvent
+    }
+}
+
+' =====================================================
+' INHERITANCE / MODEL STRUCTURE
+' =====================================================
+    ILibraryAsset <|.. Album
+    ILibraryAsset <|.. Song
+    ILibraryAsset <|.. Playlist
+
+    CenterPanel <|-- MusicView
+    CenterPanel <|-- HomeView
+    CenterPanel <|-- SearchView
+    CenterPanel <|-- ArtistView
+
+' =====================================================
+' VIEW → CONTROLLER BINDINGS
+' =====================================================
+
+    LoginView -- LoginController
+    RegisterView -- RegisterController
+
+    MusicPlayerView -- MusicController
+    TopBarView -- TopBarController
+    LibraryView -- LibraryController
+
+    HomeView -- HomeController
+    SearchView -- SearchController
+    ArtistView -- ArtistController
+
+    AdminView -- AdminController
+
+    UserProfileView -- UserProfileController
+    ArtistProfileView -- ArtistProfileController
+    AdminProfileView -- AdminProfileController
+
+
+
+' =====================================================
+' VIEW COMPOSITION
+' =====================================================
+    AppWindow *-- AuthPanel
+    AppWindow *-- MainPanel
+    AppWindow *-- ProfilePanel
+    AppWindow *-- AdminPanel
+
+    AuthPanel *-- LoginView
+    AuthPanel *-- RegisterView
+
+    MainPanel *-- MusicPlayerView
+    MainPanel *-- TopBarView
+    MainPanel *-- LibraryView
+    MainPanel *-- CenterPanel
+
+    LibraryView *-- LibraryMusicView
+    MusicView *-- ILibraryAssetItem
+    AdminPanel *-- AdminArtistAccountApplicationView
+
+    AdminPanel *-- AdminView
+    AdminArtistAccountApplicationView *-- AdminArtistAccountApplicationDetails
+    AdminView *-- AdminDashboardView
+    ProfilePanel *-- UserProfileView
+    ProfilePanel *-- ArtistProfileView
+    ProfilePanel *-- AdminProfileView
+
+' =====================================================
+' CONTROLLER → SERVICE
+' =====================================================
+
+LoginController -- LoginService
+RegisterController -- RegisterService
+MusicController -- MusicPlayerService
+
+' ==============================
+' Service -> Api
+' ===========================
+PlaylistService -- PlaylistApiClient
+ArtistRequestService -- ArtistRequestApiClient
+LibraryService -- LibraryApiClient
+LoginService -- LoginApiClient
+RegisterService -- RegisterApiClient
+SongService -- SongApiClient
+
+package "Backend" {
+
+    folder "BackendController" {
+        class AlbumBackendController
+        class ArtistRequestBackendController
+        class PlaylistBackendController
+        class SongBackendController
+        class UserBackendController
+    }
+
+    folder "BackendService" {
+        class AlbumBackendService
+        class ArtistRequestBackendService
+        class PlaylistBackendService
+        class SongBackendService
+        class UserBackendService
+    }
+
+    folder "Backend Repository" {
+        class AccountBackendRepository
+        class ArtistRequestBackendRepository
+        class SongBackendRepository
+        class PlaylistBackendRepository
+    }
+
+    folder "DTO" as backend{
+        folder "Requests" {
+            class AlbumRequestB
+            class LoginRequestB
+            class RegisterRequestB
+            class SongRequestB
+            class PlaylistRequestB
+            class PlaylistCreateRequestB
+        }
+
+        folder "Responses" {
+            class AccountResponse
+            class AlbumResponse
+            class ArtistRequestResponse
+            class ArtistResponse
+            class PlaylistResponse
+            class RegisterResponse
+            class SongResponse
+            class UserResponse
+        }
+    }
+
+    folder "Entities" {
+            class AccountEntity
+            class AdminEntity
+            class ArtistEntity
+            class AristRequestEntity
+            class LibraryEntity
+            class PlaylistEntity
+            class SongEntity
+            class UserEntity
+        }
+
+    '===========================
+    ' BackendController - Service
+    '===================
+        AlbumBackendController -- AlbumBackendService
+        ArtistRequestBackendController -- ArtistRequestBackendService
+        PlaylistBackendController -- PlaylistBackendService
+        SongBackendController -- SongBackendService
+        UserBackendController -- UserBackendService
+
+    '==================
+    'Service - Repostiroy
+        ArtistRequestBackendService -- ArtistRequestBackendRepository
+        PlaylistBackendService -- SongBackendRepository
+        PlaylistBackendService -- PlaylistBackendRepository
+        SongBackendService -- SongBackendRepository
+        UserBackendService -- AccountBackendRepository
+
+}
+
+
+'===================
+'Front to back
+'===================
+
+ApiClient -- UserBackendController
+ApiClient -- AlbumBackendController
+ApiClient -- PlaylistBackendController
+ApiClient -- ArtistRequestBackendController
+ApiClient -- SongBackendController
+
+@enduml
