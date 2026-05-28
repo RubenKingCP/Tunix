@@ -32,7 +32,7 @@ public class PlaylistBackendController {
     }
 
     @PostMapping("/{playlistId}/add/{songId}")
-    public ResponseEntity<ApiResponse<Void>> addSongToPlaylist(Long playlistId, Long songId) {
+    public ResponseEntity<ApiResponse<Void>> addSongToPlaylist(@PathVariable Long playlistId, @PathVariable Long songId) {
         if (playlistBackendService.addSongToPlaylist(playlistId, songId)) {
             // Return a success response (e.g., HTTP 200 OK)
             return ResponseEntity.ok(ApiResponse.success());
