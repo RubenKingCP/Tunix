@@ -3,6 +3,7 @@ package tunix.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tunix.model.musicContent.Playlist;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +26,5 @@ public class PlaylistResponse {
     private LocalDateTime updatedAt;
 
     private List<SongResponse> songs;
-
     
 }

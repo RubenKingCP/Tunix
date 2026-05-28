@@ -2,6 +2,8 @@ package tunix.ui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.JPanel;
 
@@ -19,6 +21,7 @@ import tunix.service.*;
 import tunix.service.auth.SessionService;
 import tunix.ui.views.main.center.UploadSongView;
 import tunix.model.musicContent.Album;
+import tunix.ui.views.main.LibraryView;
 import tunix.ui.views.main.center.MusicView;
 
 public class MainPanel extends JPanel {
@@ -33,7 +36,7 @@ public class MainPanel extends JPanel {
     
 
     public MainPanel(JPanel topBar,
-                     JPanel libraryPanel,
+                     LibraryView libraryPanel,
                      JPanel musicPlayer,
                      ScreenRegistry registry,
                      AppContext context,
@@ -52,8 +55,17 @@ public class MainPanel extends JPanel {
 
         subscribe(context.eventBus);
         showController(HomeController.class);
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e){
+                while (SessionService.Instance == null || SessionService.Instance.getAccount() == null) {
+                    // Wait until the session is initialized and the account is available
+                }
+                libraryPanel.getLibraryAssets();
+            }
+        });
     }
-
+    
     private void subscribe(EventBus eventBus) {
         eventBus.subscribe(SwitchCenterScreenEvent.class,
                 e -> showController(e.getControllerClass()));
@@ -124,7 +136,7 @@ public class MainPanel extends JPanel {
         }
         if (controllerClass == MusicController.class) {
             if (musicController == null) {
-                musicController = new MusicController(context.eventBus);
+                musicController = new MusicController(context.eventBus, (LibraryView)registry.get(LibraryView.class));
             }
             return musicController.getView();
         }

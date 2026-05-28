@@ -13,6 +13,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -25,6 +26,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JScrollBar;
+import javax.swing.JPopupMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -38,16 +42,22 @@ import tunix.model.account.Artist;
 import tunix.model.musicContent.Playlist;
 import tunix.model.musicContent.Song;
 import tunix.service.auth.SessionService;
+import tunix.ui.views.main.LibraryView;
 
 public class MusicView extends JPanel {
     private ILibraryAsset musicAsset;
     private MusicController controller;
     private Playlist playlist;
+    private LibraryView libraryPanel; // for accessing library assets when adding songs to playlists
 
-    public MusicView() {
+    public MusicView(MusicController controller, LibraryView libraryPanel) {
+        this.controller = controller;
+        this.libraryPanel = libraryPanel;
         initGui();
     }
-    
+    public void setLibraryPanel(LibraryView libraryPanel) {
+        this.libraryPanel = libraryPanel;
+    }
     public void initGui() {
         removeAll();
 
@@ -291,10 +301,10 @@ public class MusicView extends JPanel {
     }
 
     private JScrollPane buildSongTable() {
-        String[] columns = { "#", "Title", "Artist", "🕐" };
+        String[] columns = { "#", "Title", "Artist", "🕐", "", "" };
         List<PlaylistItem> playlistItems = playlist.getPlaylistItems();
 
-        Object[][] rows = new Object[playlistItems.size()][4];
+        Object[][] rows = new Object[playlistItems.size()][6];
         for (PlaylistItem item : playlistItems) {
             int pos = item.getPosition();
             Song song = item.getSong();
@@ -304,6 +314,8 @@ public class MusicView extends JPanel {
             int minutes = song.getDuration() / 60;
             int seconds = song.getDuration() - (minutes * 60);
             rows[pos][3] = minutes + ":" + seconds;
+            rows[pos][4] = "↓"; // download placeholder
+            rows[pos][5] = "⋯"; // add to playlist
         }
 
         JTable table = new JTable(rows, columns) {
@@ -341,7 +353,62 @@ public class MusicView extends JPanel {
         table.getColumnModel().getColumn(1).setPreferredWidth(400);
         table.getColumnModel().getColumn(2).setPreferredWidth(200);
         table.getColumnModel().getColumn(3).setPreferredWidth(60);
+        table.getColumnModel().getColumn(4).setPreferredWidth(40);
+        table.getColumnModel().getColumn(5).setPreferredWidth(40);
 
+        // render action columns centered and styled
+        javax.swing.table.DefaultTableCellRenderer actionRenderer = new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+                        column);
+                label.setHorizontalAlignment(SwingConstants.CENTER);
+                label.setBackground(Color.DARK_GRAY);
+                label.setForeground(new Color(0xAAAAAA));
+                label.setFont(new Font("Dialog", Font.PLAIN, 18));
+                return label;
+            }
+        };
+
+        table.getColumnModel().getColumn(4).setCellRenderer(actionRenderer);
+        table.getColumnModel().getColumn(5).setCellRenderer(actionRenderer);
+
+        // handle clicks on action cells
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
+                if (row < 0 || col < 0) return;
+
+                PlaylistItem item = playlistItems.get(row);
+                Song song = item.getSong();
+
+                if (col == 4) {
+                    // download column — intentionally no logic for now
+                    // reserved for future download handling
+                    return;
+                }
+
+                if (col == 5) {
+                    // show popup with available playlists
+                    JPopupMenu menu = new JPopupMenu();
+                    java.util.List<String> names = getAvailablePlaylistNames();
+                    for (String name : names) {
+                        JMenuItem mi = new JMenuItem(name);
+                        mi.addActionListener(ev -> {
+                            JOptionPane.showMessageDialog(MusicView.this,
+                                    "Added \"" + song.getTitle() + "\" to \"" + name + "\"");
+                        });
+                        menu.add(mi);
+                    }
+
+                    menu.show(table, e.getX(), e.getY());
+                }
+            }
+        });
+        
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBackground(Color.DARK_GRAY);
         scrollPane.getViewport().setBackground(Color.DARK_GRAY);
@@ -350,6 +417,18 @@ public class MusicView extends JPanel {
 
         styleScrollBar(scrollPane);
         return scrollPane;
+    }
+
+    protected List<String> getAvailablePlaylistNames() {
+        List<ILibraryAsset> assets = libraryPanel.getCurrentLibraryAssets();
+        if (assets == null) return List.of();
+        List<String> names = new ArrayList<>();
+        for (ILibraryAsset asset : assets) {
+            if (asset instanceof Playlist) {
+                names.add(((Playlist) asset).getName());
+            }
+        }
+        return names;
     }
 
     @Override

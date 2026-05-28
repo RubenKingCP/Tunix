@@ -64,6 +64,10 @@ public class Playlist implements ILibraryAsset {
         return LibraryAssetType.PLAYLIST;
     }
     
+    public String getName() {
+        return title;
+    }
+
     @Override
     public List<Song> getDisplaySongs() {
 

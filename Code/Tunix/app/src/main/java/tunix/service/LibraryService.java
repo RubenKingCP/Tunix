@@ -1,21 +1,38 @@
 package tunix.service;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import tunix.model.ILibraryAsset;
-import tunix.model.account.Artist;
-import tunix.model.account.User;
-import tunix.model.musicContent.Album;
-import tunix.model.musicContent.Playlist;
-import tunix.model.musicContent.Song;
+import tunix.model.account.Account;
 import tunix.service.auth.SessionService;
+import tunix.api.*;
 
 public class LibraryService {
-
+        private final AlbumApi albumApiClient;
+        private final ArtistApi artistApiClient;
+        private final PlaylistApiClient playlistApiClient;
+        public LibraryService(AlbumApi albumApiClient, ArtistApi artistApiClient, PlaylistApiClient playlistApiClient) {
+            this.albumApiClient = albumApiClient;
+            this.artistApiClient = artistApiClient;
+            this.playlistApiClient = playlistApiClient;
+        }
     public List<ILibraryAsset> getLibraryAssets() {
-        User you = (User) SessionService.Instance.getAccount();
-
-        Artist artist = new Artist(3L,
+        Account you = SessionService.Instance.getAccount();
+        if (you == null) {
+            return new ArrayList<>();
+        }
+        
+        List<ILibraryAsset> assets = new ArrayList<>();
+        // Fetch songs, albums, artists, and playlists from the API
+        List<ILibraryAsset> playlists = playlistApiClient.getUserPlaylists(you.getLongId());
+        List<ILibraryAsset> albums = albumApiClient.getUserAlbums(you.getLongId());
+        List<ILibraryAsset> artists = artistApiClient.getUserArtists(you.getLongId());
+        assets.addAll(playlists);
+        assets.addAll(albums);
+        assets.addAll(artists);
+        return assets;
+        /*Artist artist = new Artist(3L,
                 "test artist",
                 "test@gmail.com",
                 null,
@@ -81,6 +98,6 @@ public class LibraryService {
                 doIWantToKnow,
                 letItHappen,
                 ruMine
-        );
+        );*/
     }
 }

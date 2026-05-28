@@ -877,7 +877,14 @@ public class LibraryView extends JPanel {
         });
         return field;
     }
-
+    public void getLibraryAssets() {
+        if (libraryController != null) {
+            libraryAssets =  libraryController.getLibraryAssets();
+        }
+    }
+    public List<ILibraryAsset> getCurrentLibraryAssets() {
+        return libraryAssets;
+    }
     public void onPlaylistCreateConfirmClicked(PlaylistCreateRequest playlistRequest) {
         System.out.println("LibraryView: Create playlist Button clicked");
         if (libraryController != null) {

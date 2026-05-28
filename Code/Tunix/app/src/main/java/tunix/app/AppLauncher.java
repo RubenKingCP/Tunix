@@ -5,6 +5,7 @@ package tunix.app;
 import tunix.api.AdminApi;
 import tunix.api.AlbumApi;
 import tunix.api.ApiClient;
+import tunix.api.ArtistApi;
 import tunix.api.ArtistRequestApiClient;
 import tunix.api.LoginApiClient;
 import tunix.api.PlaylistApiClient;
@@ -94,10 +95,13 @@ public class AppLauncher {
                 // =========================
                 // MAIN MODULE
                 // =========================
-                LibraryService libraryService = new LibraryService();
-                PlaylistService playlistService = new PlaylistService(new PlaylistApiClient(context.apiClient));
+                PlaylistApiClient playlistApiClient = new PlaylistApiClient(context.apiClient);
+                AlbumApi albumApiClient = new AlbumApi(context.apiClient);
+                ArtistApi artistApiClient = new ArtistApi(context.apiClient);
+                LibraryService libraryService = new LibraryService(albumApiClient, artistApiClient, playlistApiClient);
+                PlaylistService playlistService = new PlaylistService(playlistApiClient);
                 MusicPlayerService musicPlayerService = new MusicPlayerService();
-                SearchService searchService = new SearchService(new SongApiClient(context.apiClient), new PlaylistApiClient(context.apiClient),new AlbumApi());
+                SearchService searchService = new SearchService(new SongApiClient(context.apiClient), playlistApiClient, albumApiClient);
                 SearchController searchController = new SearchController(searchService, context.eventBus);
 
                 LibraryController libraryController =

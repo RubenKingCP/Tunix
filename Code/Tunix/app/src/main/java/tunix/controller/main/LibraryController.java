@@ -37,7 +37,7 @@ public class LibraryController {
         this.libraryView.setLibraryAssets(libraryService.getLibraryAssets());
     }
 
-    public JPanel getView() {
+    public LibraryView getView() {
         return libraryView;
     }
 
@@ -76,4 +76,10 @@ public class LibraryController {
     );
 }
    private MusicController musicController;
+
+  
+
+   public List<ILibraryAsset> getLibraryAssets() {
+        return libraryService.getLibraryAssets();
+   }
 }
