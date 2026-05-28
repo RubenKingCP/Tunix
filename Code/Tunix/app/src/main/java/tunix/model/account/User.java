@@ -88,8 +88,20 @@ public class User extends Account {
     // HELPERS
     // =========================
 
+    /**
+     * Check if user is eligible for premium trial
+     * @return true if user has not used trial and is not already premium
+     */
+    public boolean isTrialEligible() {
+        return !premiumTrialUsed && !premium;
+    }
+
+    /**
+     * Deprecated: Use isTrialEligible() instead
+     * @return true if trial has been used
+     */
     public boolean isPremiumTrialUsed() {
-        return !premium && !premiumTrialUsed;
+        return premiumTrialUsed;
     }
 
 

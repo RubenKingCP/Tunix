@@ -9,6 +9,7 @@ import java.net.http.HttpResponse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -26,6 +27,8 @@ public class ApiClient {
 
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        // tolerate extra fields in error responses from backend (e.g., Spring Boot error payload)
+        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     // =========================
@@ -96,7 +99,26 @@ public class ApiClient {
 
             System.out.println("RAW RESPONSE: " + response.body());
 
-            return objectMapper.readValue(response.body(), typeRef);
+            int status = response.statusCode();
+
+            if (status >= 200 && status < 300) {
+                return objectMapper.readValue(response.body(), typeRef);
+            }
+
+            // non-2xx: try to parse a helpful message from the body, but return a failed ApiResponse
+            try {
+                JsonNode node = objectMapper.readTree(response.body());
+                String message = null;
+                if (node.has("message")) message = node.get("message").asText();
+                else if (node.has("error")) message = node.get("error").asText();
+                else message = "HTTP " + status + " - " + response.body();
+
+                // build a generic ApiResponse with success=false
+                String wrapper = objectMapper.writeValueAsString(new ApiResponse<>(false, message, null));
+                return objectMapper.readValue(wrapper, typeRef);
+            } catch (Exception ex) {
+                throw new RuntimeException("GET failed: " + path + " (status " + status + ")", ex);
+            }
 
         } catch (Exception e) {
             throw new RuntimeException("GET failed: " + path, e);

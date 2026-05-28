@@ -185,20 +185,31 @@ public class UserProfileView extends JPanel {
         buttonRow.setBackground(CARD_BG);
         buttonRow.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JButton purchaseButton = makePrimaryButton("Purchase premium", PREMIUM);
-        purchaseButton.addActionListener(e -> controller.purchasePremiumPlan());
-        buttonRow.add(purchaseButton);
+        if (premiumUiState.showPurchaseButton()) {
+            JButton purchaseButton = makePrimaryButton("Purchase premium", PREMIUM);
+            purchaseButton.addActionListener(e -> {
+                controller.purchasePremiumPlan();
+                refresh();
+            });
+            buttonRow.add(purchaseButton);
+        }
 
-        if (controller.checkTrialEligibility()) {
+        if (premiumUiState.showTrialButton()) {
             JButton trialButton = makePrimaryButton("Start trial", PREMIUM);
-            trialButton.addActionListener(e -> controller.startTrial());
+            trialButton.addActionListener(e -> {
+                controller.startTrial();
+                refresh();
+            });
             buttonRow.add(trialButton);
         }
 
         if (premiumUiState.showCancelButton()) {
             JButton cancelButton = makePrimaryButton("Cancel premium", new Color(110, 110, 110));
             cancelButton.setForeground(Color.WHITE);
-            cancelButton.addActionListener(e -> this.controller.cancelPremium());
+            cancelButton.addActionListener(e -> {
+                controller.cancelPremium();
+                refresh();
+            });
             buttonRow.add(cancelButton);
         }
 
@@ -253,7 +264,9 @@ public class UserProfileView extends JPanel {
         }
 
         if (user.isPremium()) {
-            return new PremiumUiState("Current plan: Premium", "Trial: active", false, true, true);
+            // Distinguish trial-activated premium from purchased premium
+            String trialText = user.hasUsedPremiumTrial() ? "Trial: active" : "Trial: not used";
+            return new PremiumUiState("Current plan: Premium", trialText, false, false, true);
         }
 
         if (user.hasUsedPremiumTrial()) {

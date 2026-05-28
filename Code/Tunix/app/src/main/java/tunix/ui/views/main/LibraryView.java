@@ -897,6 +897,9 @@ public class LibraryView extends JPanel {
         System.out.println("LibraryView: Create playlist Button clicked");
         if (libraryController != null) {
             libraryController.createPlaylist(playlistRequest);
+            this.refreshContent();
+            this.revalidate();
+            this.repaint();
         }
     }
 

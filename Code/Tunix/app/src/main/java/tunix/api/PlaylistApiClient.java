@@ -14,6 +14,7 @@ import tunix.dto.response.AddSongResponse;
 import tunix.dto.response.AlbumResponse;
 import tunix.dto.response.ApiResponse;
 import tunix.dto.response.PlaylistResponse;
+import tunix.dto.response.LibraryResponse;
 import tunix.dto.response.SongResponse;
 import tunix.model.ILibraryAsset;
 import tunix.model.musicContent.Album;
@@ -29,7 +30,8 @@ public class PlaylistApiClient {
 
     public ApiResponse<AddSongResponse> addSongToPlaylist(int playlistId, int songId) {
         // Logic to call the API to add the song to the playlist
-        return apiClient.post("/playlists/" + playlistId + "/add", new AddSongRequest(songId), AddSongResponse.class);
+        // Backend exposes: POST /playlists/{playlistId}/add/{songId}
+        return apiClient.post("/playlists/" + playlistId + "/add/" + songId, null, AddSongResponse.class);
     }
 
     public ApiResponse<PlaylistResponse> createPlaylist(PlaylistCreateRequest playlistCreateRequest) {
@@ -43,16 +45,18 @@ public class PlaylistApiClient {
     }
 
     public List<ILibraryAsset> getUserPlaylists(int longId) {
-        ApiResponse<List<PlaylistResponse>> userPlaylists = apiClient.get("/playlists/user/" + longId, new TypeReference<ApiResponse<List<PlaylistResponse>>>() {});
-        if (userPlaylists.isSuccess()){
-            List<ILibraryAsset> assets = new ArrayList<>();
-            for (PlaylistResponse playlist : userPlaylists.getData()) {
+        // The backend exposes user playlists as part of the user's library: /library/{accountId}
+        ApiResponse<LibraryResponse> resp = apiClient.get("/library/" + longId, new TypeReference<ApiResponse<LibraryResponse>>(){});
+
+        List<ILibraryAsset> assets = new ArrayList<>();
+
+        if (resp != null && resp.isSuccess() && resp.getData() != null && resp.getData().getPlaylists() != null) {
+            for (PlaylistResponse playlist : resp.getData().getPlaylists()) {
                 assets.add(new Playlist(playlist.getTitle(), playlist.getId().intValue(), SessionService.Instance.getAccount()));
             }
-            return assets;
         }
-        
-        return new ArrayList<>();
+
+        return assets;
     }
 
     public ILibraryAsset getById(long id) {

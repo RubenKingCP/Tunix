@@ -10,6 +10,9 @@ import tunix.dto.response.ApiResponse;
 import tunix.dto.response.PlaylistResponse;
 import tunix.model.ILibraryAsset;
 import tunix.model.musicContent.Playlist;
+import tunix.service.auth.SessionService;
+import tunix.model.account.Account;
+import tunix.model.musicContent.Song;
 
 public class PlaylistService {
 
@@ -22,24 +25,30 @@ public class PlaylistService {
         this.playlistApiClient = playlistApiClient;
     }
 
-    public boolean addSongToPlaylist(int playlistId, int songId) {
+    public boolean addSongToPlaylist(int playlistId, Song song) {
+
+        int songId = song.getId();
 
         ApiResponse<AddSongResponse> response =
-                playlistApiClient.addSongToPlaylist(
-                        playlistId,
-                        songId
-                );
+            playlistApiClient.addSongToPlaylist(
+                playlistId,
+                songId
+            );
 
         if (response.isSuccess()) {
 
-            // update local cache
+            // update local cache: find matching playlist and add song if not present
             for (Playlist playlist : cachedPlaylists) {
 
                 if (playlist.getId() == playlistId) {
 
-                    // optional:
-                    // add temporary frontend-only song state here
-                    // if you already have the Song object available
+                        boolean exists = playlist.getDisplaySongs()
+                            .stream()
+                            .anyMatch(s -> s.getId() == song.getId());
+
+                    if (!exists) {
+                        playlist.addSong(song);
+                    }
 
                     break;
                 }
@@ -89,5 +98,27 @@ public class PlaylistService {
         if (playlist != null) {
             cachedPlaylists.add(playlist);
         }
+    }
+
+    /**
+     * Load current user's playlists from backend and populate cache.
+     * Safe to call multiple times.
+     */
+    public void loadUserPlaylists() {
+        Account account = SessionService.Instance == null ? null : SessionService.Instance.getAccount();
+        if (account == null) return;
+
+        List<ILibraryAsset> assets = playlistApiClient.getUserPlaylists(account.getLongId());
+        List<Playlist> playlists = new ArrayList<>();
+
+        if (assets != null) {
+            for (ILibraryAsset asset : assets) {
+                if (asset instanceof Playlist p) {
+                    playlists.add(p);
+                }
+            }
+        }
+
+        setCachedPlaylists(playlists);
     }
 }

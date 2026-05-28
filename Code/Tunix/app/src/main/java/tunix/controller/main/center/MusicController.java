@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 
 import tunix.navigation.events.EventBus;
 import tunix.model.musicContent.Playlist;
+import tunix.model.musicContent.Song;
 import tunix.service.PlaylistService;
 import tunix.ui.views.main.LibraryView;
 import tunix.ui.views.main.center.MusicView;
@@ -33,14 +34,19 @@ public class MusicController {
     }
 
     public void drawView() {
+        ensurePlaylistsLoaded();
         musicView.initGui();
     }
 
-    public boolean addSongToPlaylist(int playlistId, int songId) {
+    public void ensurePlaylistsLoaded() {
+        playlistService.loadUserPlaylists();
+    }
+
+    public boolean addSongToPlaylist(int playlistId, Song song) {
 
         return playlistService.addSongToPlaylist(
                 playlistId,
-                songId);
+                song);
     }
 
     public List<Playlist> getCachedPlaylists() {

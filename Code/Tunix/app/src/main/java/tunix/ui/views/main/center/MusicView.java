@@ -66,6 +66,10 @@ public class MusicView extends JPanel {
     public void initGui() {
 
         removeAll();
+                // Ensure playlists are loaded into the cache before rendering UI/menu actions
+                if (controller != null) {
+                        controller.ensurePlaylistsLoaded();
+                }
 
         playlist = buildPlaylistForAsset(musicAsset);
 
@@ -720,7 +724,7 @@ public class MusicView extends JPanel {
                                             controller
                                                     .addSongToPlaylist(
                                                             playlist.getId(),
-                                                            song.getId());
+                                                            song);
 
                                     if (success) {
 
