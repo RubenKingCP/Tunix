@@ -10,9 +10,9 @@ skinparam ranksep 80
 skinparam nodesep 50
 skinparam classAttributeIconSize 0
 
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 ' LAYERS
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 package "Frontend" as V {
 
@@ -222,19 +222,199 @@ package "Frontend" as V {
         class LibraryMusicView
 
         class MusicView extends JPanel {
-            
+            - musicAsset : ILibraryAsset
+            - controller : MusicController
+            - playlist : Playlist
+            - libraryPanel : LibraryView
+            --
+            + MusicView(controller : MusicController, libraryPanel : LibraryView)
+            + setLibraryPanel(libraryPanel : LibraryView) : void
+            + initGUI(void) : void
+            + setAsset(asset : ILibraryAsset) : void
+            + refresh(void) : void
+            + styleScrollBar(JScrollBar scrollBar) : void
+            - buildPlaylistForAsset(asset : ILibraryAsset) : Playlist
+            - createDummySong(void) : Song
+            - getArtistName(void) : String
+            - buildHeader(void) : JPanel
+            - buildPlaylistCoverThumb(void) : JLabel
+            - buildPlaylistInfo(void) : JPanel
+            - buildActionsBar(void) : JPanel
+            - buildCirclePlayButton(void) : JButton
+            - buildActionButton(label : String) : JButton
+            - buildSongTable(void) : JScrollPane
+            # getAvailablePlaylistNames(void) : List<String>
+            + onPlayClicked(void) : void
+            + onShuffleClicked(void) : void
+            + onSaveClicked(void) : void
+            + onDownloadClicked(void) : void
+            + onAddSongClicked(void) : void
+            + onOptionsClicked(void) : void
+            + getPlaylist(void) : void
+            + setController(controller : MusicController) : void
+            + setSong(song : Song) : void
         }
-        class HomeView
-        class SearchView
-        class ArtistView
+        class HomeView extends JPanel {
+            - {static} BG : Color
+            - {static} BG_CARD : Color
+            - {static} BG_HOVER : Color
+            - {static} FG_PRIMARY : Color
+            - {static} FG_SECONDARY : Color
+            - {static} FONT_TITLE : Font
+            - {static} FONT_SECTION : Font
+            - {static} FONT_CARD : Font
+            - {static} FONT_SUB : Font
+            --
+            + HomeView(void)
+            - buildTopBar(void) : JPanel
+            - iconButton(emoji : String, tooltip : String) : JButton
+            - buildSection(title : String, items : List<CardItem>) : JPanel
+            - buildCard(item : CardItem) : JPanel
+            - buildCover(item : CardItem) : JLabel
+            - buildPlayButton(void) : JButton
+            - recentlyPlayed(void) : List<CardItem>
+            - recommended(void) : List<CardItem>
+            - fromLibrary(void) : List<CardItem>
+            - truncate(s : String, max : int) : String
+            + display(void) : void
+        }
+        class SearchView {
+            - {static} BG : Color
+            - {static} SURFACE : Color
+            - {static} SURFACE2 : Color
+            - {static} TEXT_PRIMARY : Color
+            - {static} TEXT_SECONDARY : Color
+            - {static} TAG_SONG : Color
+            - {static} TAG_ALBUM : Color
+            - {static} TAG_PLAYLIST : Color
+            - {static} FONT_TITLE : Font
+            - {static} FONT_SECTION : Font
+            - {static} FONT_CARD : Font
+            - {static} FONT_SUB : Font
+            - {static} FONT_TAG : Font
+            - {static} FONT_LETTER : Font
+            - {static} BROWSE_CATEGORIES : CardData[]
+            - searchField : JTextField
+            - contentPanel : JPanel
+            - results : List<ILibraryAsset>
+            - eventBus : EventBus
+            --
+            + SearchView(results : List<ILibraryAsset>, eventBus : EventBus)
+            + setResults(results : List<ILibraryAsset>) : void
+            + refresh(void) : void
+            - buildContent(void) : JPanel
+            - refreshContent(void) : void
+            - populateContent(void) : void
+            - buildResultGrid(void) : JPanel
+            - buildResultCard(asset : ILibraryAsset) : JPanel
+            - browseGrid(void) : JPanel
+            - buildBrowseCard(data : CardData) : JPanel
+            - greetingLabel(void) : JLabel
+            - sectionLabel(text : String) : JLabel
+            - addHoverEffect(panel : JPanel) : void
+            - openResult(asset : ILibraryAsset) : void
+            - truncate(value : String, maxLength : int) : String
+            - {static} tagText(type : LibraryAssetType) : String
+            - buildTopBar(void) : JPanel
+            - buildResultsSection(title : String, items : List<CardItem>) : JPanel
+            - buildCard(item : CardItem) : JPanel
+            - buildCover(item : CardItem) : JLabel
+            + onSearchResults(results : List<CardItem>) : void
+        }
+        class ArtistView extends JPanel{
+            - artist : Artist
+            - topSongs : List<Song>
+            - albums : List<Album>
+            - controller : ArtistController
+            --
+            + ArtistView()
+            + setArtistData(artist : Artist, topSongs : List<Song>, albums : List<Album>) : void
+            - initGui(void) : void
+            - buildHeader(void) : JPanel
+            - buildArtistAvatar(void) : JLabel
+            - buildArtistInfo(void) : JPanel
+            - buildCirclePlayButton(void) : JButton
+            - buildActionButton(label : String) : JButton
+            - buildTopSongsSection(void) : JPanel
+            - buildAlbumsSection(void) : JScrollPane
+            - buildAlbumsSection(void) : JPanel
+            - buildAlbumCard(album : Album) : JPanel
+            - buildAlbumCover(void) : JLabel
+            - styleScrollBar(scrollPane : JScrollPane) : void
+            + setController(controller : ArtistController) : void
+            - onFollowClicked(void) : void
+            - onAlbumClicked(album : Album) : void
+            - buildActionsBar(void) : JPanel
+        }
         class ILibraryAssetItem
 
-        class AdminView
+        class AdminView {
+            - {static} BG_PRIMARY : Color
+            - {static} BG_CARD : Color
+            - {static} BG_TAB_BAR : Color
+            - {static} TEXT_PRIMARY : Color
+            - {static} TEXT_MUTED : Color
+            - {static} BTN_APPROVE : Color
+            - {static} BTN_REJECT : Color
+            - {static} BTN_REMOVE : Color
+            - {static} DIVIDER : Color
+            - {static} UNDERLINE : Color
+            - {static} FONT_HEADING : Font
+            - {static} FONT_BODY : Font
+            - {static} FONT_BTN : Font
+            - AdminController : AdminController
+            - songs : List<Song>
+            - artistRequests : List<ArtistRequest> 
+            - tapBar : JPanel
+            - tabSongs : JButton
+            - tabApplications : JButton
+            - contentArea : JPanel
+            - cardLayout : CardLayout
+            - songsPanel : JPanel
+            - artistApplicationsPanel : JPanel
+            --
+            + AdminView(controller : AdminController)
+            + displaySongs(songs : List<Song>) : void
+            + display(void) : void
+            - buildHeader(void) : JPanel
+            - makeTabButton(text : String) : JButton
+            - selectTab(card : String) : void
+            - wrapScroll(inner : JPanel) : JScrollPane
+            - {static} makeButton(text : String, bg : Color, fg : Color) : JButton
+            + setSongs(songs : List<Song>) : void
+            + setArtistRequests(ar : List<ArtistRequest>) : void
+            + onArtistRequestClicked(void) : void
+            + displayArtistRequests(artistRequests : List<ArtistRequest>) : void
+            - showArtistRequestDetails(ar : ArtistRequest) : void
+            - buildDetailRow(label : String, value : String) : JPanel
+            - buildReasonRow(reason : String) : JPanel
+            + onArtistRequestShowDetailsClicked(ar : ArtistRequest) : void
+            + onApproveArtistRequestClicked(id : int) : void
+            + onRejectArtistRequestClicked(id : int) : void
+            + showMessage(message : String) : void
+            - {static} colorThumb(seed : String) : JPanel
+        }
         class AdminArtistAccountApplicationView
         class AdminArtistAccountApplicationDetails
         class AdminDashboardView
 
-        class UserProfileView
+        class UserProfileView {
+            - {static} BG : Color;
+            - {static} CARD_BG : Color;
+            - {static} CARD_HOVER : Color;
+            - {static} MUTED : Color;
+            - {static} PREMIUM : Color;
+
+            - planStatusLabel : JLabel;
+            - trialStatusLabel : JLabel;
+            - premiumPanel : JPanel;
+            - controller : UserProfileController
+            --
+            + UserProfileView(UserProfileController controller)
+            + initGUI(void) : void
+            + refresh(void) : void
+            - buildheader(void) : JPanel
+        }
         class ArtistProfileView
         class AdminProfileView
     }
@@ -365,9 +545,9 @@ package "Frontend" as V {
     }
 }
 
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 ' INHERITANCE / MODEL STRUCTURE
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
     ILibraryAsset <|.. Album
     ILibraryAsset <|.. Song
     ILibraryAsset <|.. Playlist
@@ -377,9 +557,9 @@ package "Frontend" as V {
     CenterPanel <|-- SearchView
     CenterPanel <|-- ArtistView
 
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 ' VIEW → CONTROLLER BINDINGS
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     LoginView -- LoginController
     RegisterView -- RegisterController
@@ -400,9 +580,9 @@ package "Frontend" as V {
 
 
 
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 ' VIEW COMPOSITION
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
     AppWindow *-- AuthPanel
     AppWindow *-- MainPanel
     AppWindow *-- ProfilePanel
@@ -427,17 +607,17 @@ package "Frontend" as V {
     ProfilePanel *-- ArtistProfileView
     ProfilePanel *-- AdminProfileView
 
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 ' CONTROLLER → SERVICE
-' =====================================================
+' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 LoginController -- LoginService
 RegisterController -- RegisterService
 MusicController -- MusicPlayerService
 
-' ==============================
+' ::::::::::::::::::::::::::::::
 ' Service -> Api
-' ===========================
+' :::::::::::::::::::::::::::
 PlaylistService -- PlaylistApiClient
 ArtistRequestService -- ArtistRequestApiClient
 LibraryService -- LibraryApiClient
@@ -503,16 +683,16 @@ package "Backend" {
             class UserEntity
         }
 
-    '===========================
+    ':::::::::::::::::::::::::::
     ' BackendController - Service
-    '===================
+    ':::::::::::::::::::
         AlbumBackendController -- AlbumBackendService
         ArtistRequestBackendController -- ArtistRequestBackendService
         PlaylistBackendController -- PlaylistBackendService
         SongBackendController -- SongBackendService
         UserBackendController -- UserBackendService
 
-    '==================
+    '::::::::::::::::::
     'Service - Repostiroy
         ArtistRequestBackendService -- ArtistRequestBackendRepository
         PlaylistBackendService -- SongBackendRepository
@@ -523,9 +703,9 @@ package "Backend" {
 }
 
 
-'===================
+':::::::::::::::::::
 'Front to back
-'===================
+':::::::::::::::::::
 
 ApiClient -- UserBackendController
 ApiClient -- AlbumBackendController
