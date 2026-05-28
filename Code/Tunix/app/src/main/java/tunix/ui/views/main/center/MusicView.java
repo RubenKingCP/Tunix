@@ -77,7 +77,10 @@ public class MusicView extends JPanel {
 
         add(buildHeader());
         add(buildActionsBar());
-        add(buildSongTable());
+        JScrollPane songTable = buildSongTable();
+        songTable.setAlignmentX(Component.LEFT_ALIGNMENT);
+        songTable.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        add(songTable);
 
         revalidate();
         repaint();
@@ -107,26 +110,11 @@ public class MusicView extends JPanel {
 
         List<Song> songs = asset == null ? List.of() : asset.getDisplaySongs();
 
-        if (songs == null || songs.isEmpty()) {
-            builtPlaylist.addSong(createDummySong());
-            return builtPlaylist;
-        }
-
         for (Song song : songs) {
             builtPlaylist.addSong(song);
         }
 
         return builtPlaylist;
-    }
-
-    private Song createDummySong() {
-        return new Song(
-                "Demo Song",
-                1L,
-                new Artist(1L, "Demo Artist", "demo@example.com", null, 210, false),
-                210,
-                "path",
-                "path");
     }
 
     private String getArtistName() {
@@ -302,6 +290,24 @@ public class MusicView extends JPanel {
         String[] columns = { "#", "Title", "Artist", "🕐", "", "" };
 
         List<PlaylistItem> playlistItems = playlist.getPlaylistItems();
+        if (playlistItems == null || playlistItems.isEmpty()) {
+            JPanel emptyPanel = new JPanel(new BorderLayout());
+            emptyPanel.setBackground(Color.DARK_GRAY);
+            emptyPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            JLabel emptyLabel = new JLabel("This Playlist is Empty", SwingConstants.CENTER);
+            emptyLabel.setForeground(new Color(0xAAAAAA));
+            emptyLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
+            emptyPanel.add(emptyLabel, BorderLayout.CENTER);
+
+            JScrollPane scrollPane = new JScrollPane(emptyPanel);
+            scrollPane.setBackground(Color.DARK_GRAY);
+            scrollPane.getViewport().setBackground(Color.DARK_GRAY);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+            scrollPane.getViewport().setLayout(new BorderLayout());
+            scrollPane.getViewport().add(emptyPanel, BorderLayout.CENTER);
+            return scrollPane;
+        }
         Object[][] rows = new Object[playlistItems.size()][6];
 
         for (PlaylistItem item : playlistItems) {
