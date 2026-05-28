@@ -58,7 +58,7 @@ public class PlaylistApiClient {
     public ILibraryAsset getById(long id) {
 
         ApiResponse<PlaylistResponse> response = apiClient.get(
-                "/playlist/" + id,
+                "/playlists/" + id,
                 new TypeReference<ApiResponse<PlaylistResponse>>() {}
         );
 

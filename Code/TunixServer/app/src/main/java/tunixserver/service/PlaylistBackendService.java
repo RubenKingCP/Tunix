@@ -3,10 +3,13 @@ package tunixserver.service;
 import tunixserver.dto.request.PlaylistCreateRequest;
 import tunixserver.dto.response.PlaylistResponse;
 import tunixserver.entities.AccountEntity;
+import tunixserver.entities.LibraryEntity;
+import tunixserver.entities.LibraryPlaylistEntity;
 import tunixserver.entities.PlaylistEntity;
 import tunixserver.entities.SongEntity;
 import tunixserver.mapper.PlaylistResponseMapper;
 import tunixserver.repository.AccountBackendRepository;
+import tunixserver.repository.LibraryBackendRepository;
 import tunixserver.repository.PlaylistBackendRepository;
 import tunixserver.repository.SongBackendRepository;
 
@@ -21,11 +24,13 @@ public class PlaylistBackendService {
     private final PlaylistBackendRepository playlistBackendRepository;
     private final SongBackendRepository songBackendRepository;
     private final AccountBackendRepository accountBackendRepository;
+    private final LibraryBackendRepository libraryBackendRepository;
 
-    public PlaylistBackendService(AccountBackendRepository accountBackendRepository, PlaylistBackendRepository playlistBackendRepository, SongBackendRepository songBackendRepository) {
+    public PlaylistBackendService(AccountBackendRepository accountBackendRepository, PlaylistBackendRepository playlistBackendRepository, SongBackendRepository songBackendRepository, LibraryBackendRepository libraryBackendRepository) {
         this.playlistBackendRepository = playlistBackendRepository;
         this.songBackendRepository = songBackendRepository;
         this.accountBackendRepository = accountBackendRepository;
+        this.libraryBackendRepository = libraryBackendRepository;
     }
 
     public boolean addSongToPlaylist(Long playlistId, Long songId) {
@@ -76,6 +81,8 @@ public class PlaylistBackendService {
             throw new RuntimeException("Playlist with this name already exists");
         });
 
+
+        // Create playlist and svae to database
         List<AccountEntity> coauthors = new ArrayList<>();
 
         PlaylistEntity playlist = new PlaylistEntity();
@@ -85,8 +92,23 @@ public class PlaylistBackendService {
         playlist.setCreatedAt(LocalDateTime.now());
         playlist.setUpdatedAt(LocalDateTime.now());
         playlist.setCoauthors(coauthors);
+        playlistBackendRepository.save(playlist);
+        
+        // Add to user library
+        LibraryEntity library= libraryBackendRepository
+                .findByAccount_AccountId(request.getCreatorId())
+                .orElseThrow(()-> new RuntimeException("Library Not Found"));
+        
+                LibraryPlaylistEntity libraryPlaylistEntity = new LibraryPlaylistEntity();
 
-        return playlistBackendRepository.save(playlist); 
+                libraryPlaylistEntity.setLibrary(library);
+                libraryPlaylistEntity.setPlaylist(playlist);
+
+                library.getPlaylists().add(libraryPlaylistEntity);
+
+                libraryBackendRepository.save(library);
+
+        return playlist;
     }
 
     public List<PlaylistResponse> searchByName(String queryString) {

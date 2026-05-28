@@ -9,7 +9,7 @@ import tunix.model.account.Artist;
 import tunix.model.musicContent.Album;
 import tunix.model.musicContent.Song;
 import tunix.ui.views.main.center.ArtistView;
-
+ 
 public class ArtistController {
 
     private final ArtistView view;

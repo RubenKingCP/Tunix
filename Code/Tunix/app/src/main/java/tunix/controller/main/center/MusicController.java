@@ -14,7 +14,7 @@ public class MusicController {
 
     private final MusicView musicView;
     private final PlaylistService playlistService;
-
+ 
     public MusicController(
             EventBus eventBus,
             LibraryView libraryPanel,

@@ -81,4 +81,62 @@ public class UserBackendService {
                 artistResponse
         );
     }
+
+        public boolean startPremium(Long userId) {
+
+                System.out.println("START PREMIUM SERVICE");
+                System.out.println("User ID: " + userId);
+
+                UserEntity user = userRepo.findById(userId.intValue())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                System.out.println("Found user: " + user.getId());
+
+                user.setPremium(true);
+
+                userRepo.save(user);
+
+                System.out.println("Premium ENABLED for user: " + userId);
+
+                return true;
+        }
+
+        public boolean cancelPremium(Long userId) {
+
+                System.out.println("CANCEL PREMIUM SERVICE");
+                System.out.println("User ID: " + userId);
+
+                UserEntity user = userRepo.findById(userId.intValue())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                System.out.println("Found user: " + user.getId());
+
+                user.setPremium(false);
+
+                userRepo.save(user);
+
+                System.out.println("Premium DISABLED for user: " + userId);
+
+                return true;
+        }
+
+        public boolean startTrial(Long userId) {
+
+                System.out.println("START PREMIUM SERVICE");
+                System.out.println("User ID: " + userId);
+
+                UserEntity user = userRepo.findById(userId.intValue())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                System.out.println("Found user: " + user.getId());
+
+                user.setPremium(true);
+                //Add method to set trial used to true
+                user.setPremiumTrialUsed(true);
+                userRepo.save(user);
+
+                System.out.println("Premium ENABLED for user: " + userId);
+
+                return true;
+        }
 }

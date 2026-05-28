@@ -12,4 +12,7 @@ public interface SongBackendRepository extends JpaRepository<SongEntity, Long> {
     SongEntity getSongById(Long songId); 
 
     java.util.List<SongEntity> findByTitleContainingIgnoreCase(String title);
+
+    long countByArtist_Id(Long artistId);
+    int deleteByArtistId(Long artistId);
 }

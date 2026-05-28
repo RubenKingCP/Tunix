@@ -91,7 +91,7 @@ public class AdminController {
     }
 
     public boolean onRemoveSongClicked(int songId){
-        adminService.postRemoveSongById(songId); 
+        adminService.postRemoveSongById(songId);
         List<Song> updatedSongs = onSongsClicked();
         adminView.displaySongs(updatedSongs);
         return true;

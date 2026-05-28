@@ -13,4 +13,5 @@ public class AdminApi {
     public Boolean issueBan(int artistId){
         return apiClient.post("/admin/issueBan", artistId, boolean.class).getData();
     }
+
 }

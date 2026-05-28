@@ -14,7 +14,7 @@ CREATE TABLE account (
     password VARCHAR(255) NOT NULL,
     role ENUM('USER', 'ARTIST', 'ADMIN') NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+)ENGINE=InnoDB;
 
 -- =================
 -- USER
@@ -33,7 +33,7 @@ CREATE TABLE user (
 
     FOREIGN KEY (account_id) REFERENCES account(account_id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 
 CREATE TABLE artist (
@@ -46,7 +46,7 @@ CREATE TABLE artist (
 
     FOREIGN KEY (account_id) REFERENCES account(account_id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE admin (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -54,7 +54,7 @@ CREATE TABLE admin (
 
     FOREIGN KEY (account_id) REFERENCES account(account_id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE song (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -68,7 +68,7 @@ CREATE TABLE song (
 
     FOREIGN KEY (artist_id) REFERENCES artist(id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE album (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -79,7 +79,7 @@ CREATE TABLE album (
 
     FOREIGN KEY (artist_id) REFERENCES artist(id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE album_song (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -91,7 +91,7 @@ CREATE TABLE album_song (
         ON DELETE CASCADE,
     FOREIGN KEY (song_id) REFERENCES song(id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE playlist (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -105,7 +105,7 @@ CREATE TABLE playlist (
 
     FOREIGN KEY (creator_id) REFERENCES account(account_id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE playlist_coauthor (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -117,7 +117,7 @@ CREATE TABLE playlist_coauthor (
         ON DELETE CASCADE,
     FOREIGN KEY (account_id) REFERENCES account(account_id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE playlist_item (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -132,7 +132,7 @@ CREATE TABLE playlist_item (
         ON DELETE CASCADE,
 
     UNIQUE (playlist_id, position)
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE artist_request (
     request_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -150,7 +150,7 @@ CREATE TABLE artist_request (
 
     FOREIGN KEY (user_id) REFERENCES user(id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE library (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -161,7 +161,7 @@ CREATE TABLE library (
 
     FOREIGN KEY (account_id) REFERENCES account(account_id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE library_song (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -176,7 +176,7 @@ CREATE TABLE library_song (
         ON DELETE CASCADE,
 
     UNIQUE(library_id, song_id)
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE library_album (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -191,7 +191,7 @@ CREATE TABLE library_album (
         ON DELETE CASCADE,
 
     UNIQUE(library_id, album_id)
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE library_playlist (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -206,7 +206,7 @@ CREATE TABLE library_playlist (
         ON DELETE CASCADE,
 
     UNIQUE(library_id, playlist_id)
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE library_artist (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -221,4 +221,4 @@ CREATE TABLE library_artist (
         ON DELETE CASCADE,
 
     UNIQUE(library_id, artist_id)
-);
+)ENGINE=InnoDB;

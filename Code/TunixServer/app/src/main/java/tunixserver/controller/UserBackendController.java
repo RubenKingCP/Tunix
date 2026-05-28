@@ -47,4 +47,76 @@ public class UserBackendController {
             return ResponseEntity.ok(new ApiResponse<>(false, "Failed to login User" + exception, null));
         }
     }
+
+    @PostMapping("/start")
+    public ResponseEntity<ApiResponse<Boolean>> startPremium(@RequestBody Long userId) {
+
+        try {
+            System.out.println("START PREMIUM REQUEST");
+            System.out.println("User ID: " + userId);
+
+            boolean result = userBackendService.startPremium(userId);
+
+            System.out.println("Premium activated for user: " + userId);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Premium started successfully!", result)
+            );
+
+        } catch (Exception e) {
+            System.out.println("ERROR starting premium: " + e.getMessage());
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(false, "Failed to start premium: " + e.getMessage(), false)
+            );
+        }
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<ApiResponse<Boolean>> cancelPremium(@RequestBody Long userId) {
+
+        try {
+            System.out.println("CANCEL PREMIUM REQUEST");
+            System.out.println("User ID: " + userId);
+
+            boolean result = userBackendService.cancelPremium(userId);
+
+            System.out.println("Premium cancelled for user: " + userId);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Premium cancelled successfully!", result)
+            );
+
+        } catch (Exception e) {
+            System.out.println("ERROR cancelling premium: " + e.getMessage());
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(false, "Failed to cancel premium: " + e.getMessage(), false)
+            );
+        }
+    }
+
+    @PostMapping("/trial")
+    public ResponseEntity<ApiResponse<Boolean>> startTrial(@RequestBody Long userId) {
+
+        try {
+            System.out.println("START PREMIUM REQUEST");
+            System.out.println("User ID: " + userId);
+
+            boolean result = userBackendService.startTrial(userId);
+
+            System.out.println("Premium activated for user: " + userId);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Trial started successfully!", result)
+            );
+
+        } catch (Exception e) {
+            System.out.println("ERROR starting trial: " + e.getMessage());
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(false, "Failed to start trial: " + e.getMessage(), false)
+            );
+        }
+    }
 }

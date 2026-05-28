@@ -6,7 +6,7 @@ public class UserApi {
         this.api = api;
     }
     public boolean trialStarted(int userId) {
-        return api.post("accounts/trial", userId, boolean.class).getData();
+        return api.post("/account/trial", userId, boolean.class).getData();
         //return true; // Return true if trial started successfully
     }
     /*public boolean premiumStatusUpdated(int userId, boolean isPremium) {
@@ -14,9 +14,9 @@ public class UserApi {
         return true; // Return true if update was successful
     }*/
    public boolean buyPremium(int userId){
-        return api.post("accounts/start", userId, boolean.class).getData();
+        return api.post("/account/start", userId, boolean.class).getData();
    }
    public boolean cancelPremium(int userId){
-        return api.post("accounts/cancel", userId, boolean.class).getData();
-   }
+        return api.post("/account/cancel", userId, boolean.class).getData();
+   } 
 }
