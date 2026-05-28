@@ -5,9 +5,10 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import tunix.model.ILibraryAsset;
-import tunix.navigation.events.EventBus;
 import tunix.service.SearchService;
 import tunix.ui.views.main.center.SearchView;
+import tunix.navigation.events.*;
+
 
 public class SearchController {
 
@@ -20,7 +21,7 @@ public class SearchController {
         this.eventBus = eventBus;
 
         // Keep ONE persistent view instance
-        this.view = new SearchView(List.of(), eventBus);
+        this.view = new SearchView(List.of(), eventBus,this);
     }
 
     public JPanel getView() {
@@ -37,4 +38,11 @@ public class SearchController {
 
         return results;
     }
+    public void openResult(ILibraryAsset asset) {
+    if (eventBus != null) {
+        // Fetch full details (songs included) before publishing
+        ILibraryAsset fullAsset = service.getFullAsset(asset.getId(), asset.getType());
+        eventBus.publish(new LibraryPlaylistClicked(fullAsset != null ? fullAsset : asset));
+    }
+}
 }

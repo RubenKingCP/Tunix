@@ -8,6 +8,7 @@ import org.checkerframework.checker.units.qual.s;
 import tunix.api.AlbumApi;
 import tunix.api.PlaylistApiClient;
 import tunix.api.SongApiClient;
+import tunix.dto.enums.LibraryAssetType;
 import tunix.dto.response.AlbumResponse;
 import tunix.dto.response.ApiResponse;
 import tunix.dto.response.PlaylistResponse;
@@ -30,7 +31,13 @@ public class SearchService {
         this.songApiClient = songApiClient;
         this.albumApiClient = albumApi;
     }
-
+    public ILibraryAsset getFullAsset(long id, LibraryAssetType type) {
+    return switch (type) {
+        case PLAYLIST -> playlistApiClient.getById(id);
+        case ALBUM -> albumApiClient.getById(id);
+        default -> null;
+    };
+}
     public List<ILibraryAsset> search(String query, String type) {
         System.out.println("SearchService: Reached search query: " + query + "\nSearchType: " + type);
         String normalizedType = type == null ? "" : type.trim().toLowerCase();

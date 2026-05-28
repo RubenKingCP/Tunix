@@ -2,6 +2,7 @@ package tunix.api;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,9 +11,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import tunix.dto.request.AddSongRequest;
 import tunix.dto.request.PlaylistCreateRequest;
 import tunix.dto.response.AddSongResponse;
+import tunix.dto.response.AlbumResponse;
 import tunix.dto.response.ApiResponse;
 import tunix.dto.response.PlaylistResponse;
 import tunix.model.ILibraryAsset;
+import tunix.model.musicContent.Album;
 import tunix.model.musicContent.Playlist;
 import tunix.service.auth.SessionService;
 
@@ -49,5 +52,17 @@ public class PlaylistApiClient {
         }
         
         return new ArrayList<>();
-    } 
+    }
+
+    public ILibraryAsset getById(long id) {
+    ApiResponse<PlaylistResponse> response = apiClient.get(
+        "/playlist/getById/" + id,
+        new TypeReference<ApiResponse<PlaylistResponse>>() {}
+    );
+    if (response == null || !response.isSuccess()) return null;
+
+    PlaylistResponse playlist = response.getData();
+
+    return new Playlist(playlist.getTitle(), playlist.getId().intValue(), SessionService.Instance.getAccount());
+}
 }
