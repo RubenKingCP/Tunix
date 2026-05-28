@@ -885,6 +885,7 @@ public class LibraryView extends JPanel {
                 System.out.println("LibraryView: Retrieved asset - " + asset.getTitle() + " (" + asset.getType() + ")");
                 buildListItem(asset);
             }
+            
             this.revalidate();
             this.repaint();
             this.refreshContent();
@@ -897,6 +898,7 @@ public class LibraryView extends JPanel {
         System.out.println("LibraryView: Create playlist Button clicked");
         if (libraryController != null) {
             libraryController.createPlaylist(playlistRequest);
+            this.getLibraryAssets();
             this.refreshContent();
             this.revalidate();
             this.repaint();

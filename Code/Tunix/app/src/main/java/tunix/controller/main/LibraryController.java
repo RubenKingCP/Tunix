@@ -44,7 +44,15 @@ public class LibraryController {
     public void createPlaylist(PlaylistCreateRequest playlistRequest) {
         System.out.println("LibraryControler: PlaylistCreationButtonClicked"  );
         List<ILibraryAsset> assets = libraryService.getLibraryAssets();
-        playlistService.createPlaylist(playlistRequest, assets);
+        boolean ok = playlistService.createPlaylist(playlistRequest, assets);
+
+        if (ok) {
+            // reload library assets from backend and update the view so the new playlist appears immediately
+            List<ILibraryAsset> updated = libraryService.getLibraryAssets();
+            libraryView.setLibraryAssets(updated);
+        } else {
+            System.err.println("Failed to create playlist");
+        }
     }
 
     public void playlistClicked(ILibraryAsset asset) {
