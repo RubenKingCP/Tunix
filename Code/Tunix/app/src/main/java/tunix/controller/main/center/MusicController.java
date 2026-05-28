@@ -25,7 +25,7 @@ public class MusicController {
         this.musicView.setController(this);
     }
 
-    public JPanel getView() {
+    public JPanel getView() { //You sure?
         return musicView;
     }
 
