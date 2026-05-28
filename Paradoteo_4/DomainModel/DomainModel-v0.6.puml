@@ -37,7 +37,7 @@ package "Frontend" as V {
         class HomeView
         class SearchView
         class ArtistView
-        class MusicAssetItem
+        class ILibraryAssetItem
 
         class AdminView
         class AdminArtistAccountApplicationView
@@ -108,12 +108,18 @@ package "Frontend" as V {
 
         class Library
 
-        interface MusicAsset
+        interface ILibraryAsset
         class Album
         class Playlist
         class Song
+        class AlbumItem
 
-        class ArtistApplication
+        class ArtistRequest
+
+        class ListeningHistory
+        class ListeningHistoryItem
+
+        class AppContext
 
         Artist *-- Song
         Artist *-- Album
@@ -123,14 +129,22 @@ package "Frontend" as V {
         Account <|-- Admin
 
         User *-- Library
-        Library -- MusicAsset
+        Library -- ILibraryAsset
+
+        Album *-- AlbumItem
+        Song *-- AlbumItem
+
+        ListeningHistory *-- ListeningHistoryItem
+        ListeningHistoryItem "1" --o "1" Song
+
+        Artist ..|> ILibraryAsset
     }
 
     package "DTO" {
         folder "Request" {
             class AddSongRequest
             class ApproveArtistRequest
-            class AristApplicationRequest
+            class AristRequest
             class LoginRequest
             class RegisterRequest
             class PlaylistCreateRequest
@@ -164,9 +178,9 @@ package "Frontend" as V {
 ' =====================================================
 ' INHERITANCE / MODEL STRUCTURE
 ' =====================================================
-    MusicAsset <|-- Album
-    MusicAsset <|-- Song
-    MusicAsset <|-- Playlist
+    ILibraryAsset <|.. Album
+    ILibraryAsset <|.. Song
+    ILibraryAsset <|.. Playlist
 
     CenterPanel <|-- MusicView
     CenterPanel <|-- HomeView
@@ -213,7 +227,7 @@ package "Frontend" as V {
     MainPanel *-- CenterPanel
 
     LibraryView *-- LibraryMusicView
-    MusicView *-- MusicAssetItem
+    MusicView *-- ILibraryAssetItem
     AdminPanel *-- AdminArtistAccountApplicationView
 
     AdminPanel *-- AdminView
