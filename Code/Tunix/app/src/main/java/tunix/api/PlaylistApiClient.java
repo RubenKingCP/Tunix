@@ -37,6 +37,13 @@ public class PlaylistApiClient {
         return apiClient.post("/playlists/create", playlistCreateRequest, PlaylistResponse.class);
     }
 
+    public ApiResponse<Void> removeSongFromPlaylist(int playlistId, int songId) {
+    return apiClient.delete(
+        "/playlists/" + playlistId + "/remove/" + songId,
+        new TypeReference<ApiResponse<Void>>() {}
+    );
+}
+
     public ApiResponse<List<PlaylistResponse>> getPlaylistsByName(String query) {
         System.out.println("PlaylistApi: Reached the get albums by name query: " + query);
         String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);

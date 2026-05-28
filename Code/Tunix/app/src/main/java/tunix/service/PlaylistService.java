@@ -66,6 +66,32 @@ public class PlaylistService {
         return response != null && response.isSuccess();
     }
 
+    public boolean removeSongFromPlaylist(int playlistId, Song song) {
+    ApiResponse<Void> response =
+        playlistApiClient.removeSongFromPlaylist(playlistId, song.getId());
+
+    if (response != null && response.isSuccess()) {
+        // Keep local cache in sync
+        for (Playlist playlist : cachedPlaylists) {
+            if (playlist.getId() == playlistId) {
+                playlist.getPlaylistItems()
+                    .removeIf(item -> item.getSong().getId() == song.getId());
+                break;
+            }
+        }
+    } else {
+        System.out.println("PlaylistService.removeSongFromPlaylist failed.");
+        if (response == null) {
+            System.out.println("Response was null.");
+        } else {
+            System.out.println("Response success=" + response.isSuccess()
+                + ", message=" + response.getMessage());
+        }
+    }
+
+    return response != null && response.isSuccess();
+}
+
     public boolean createPlaylist(
             PlaylistCreateRequest playlistRequest,
             List<ILibraryAsset> libraryAssets) {
