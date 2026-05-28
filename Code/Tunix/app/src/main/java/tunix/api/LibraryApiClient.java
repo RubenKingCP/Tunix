@@ -15,9 +15,9 @@ public class LibraryApiClient {
     // =========================
     // GET LIBRARY
     // =========================
-    public ApiResponse<LibraryResponse> getLibrary(Long accountId) {
+    public ApiResponse<LibraryResponse> getLibrary(Integer accountId) {
 
-        String path = "/library?accountId=" + accountId;
+        String path = "/library/" + accountId;
 
         System.out.println("LibraryApiClient: GET library for account " + accountId);
 
@@ -26,4 +26,6 @@ public class LibraryApiClient {
                 new TypeReference<ApiResponse<LibraryResponse>>() {}
         );
     }
+
+
 }

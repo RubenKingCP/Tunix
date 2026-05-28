@@ -3,6 +3,8 @@ package tunix.dto.response;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tunix.model.account.Artist;
+import tunix.model.musicContent.Song;
 
 @Getter
 @Setter
@@ -22,4 +24,25 @@ public class SongResponse {
     private String filePathUrl;
 
     private String coverImageUrl;
+
+    public Song toSong() {
+
+        Artist artist = new Artist(
+                artistId,
+                artistName,
+                null,
+                null,
+                0,
+                false
+        );
+
+        return new Song(
+                title,
+                id,
+                artist,
+                duration,
+                filePathUrl,
+                coverImageUrl
+        );
+    }
 }

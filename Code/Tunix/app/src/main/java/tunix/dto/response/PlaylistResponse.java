@@ -3,6 +3,7 @@ package tunix.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tunix.model.account.Artist;
 import tunix.model.musicContent.Playlist;
 
 import java.time.LocalDateTime;
@@ -28,4 +29,29 @@ public class PlaylistResponse {
 
     private List<SongResponse> songs;
     
+    public Playlist toPlaylist() {
+
+        Artist creator = new Artist(
+                creatorId,
+                creatorName,
+                null,
+                null,
+                0,
+                false
+        );
+
+        Playlist playlist = new Playlist(
+                title,
+                id.intValue(),
+                creator
+        );
+
+        if (songs != null) {
+            songs.stream()
+                    .map(SongResponse::toSong)
+                    .forEach(playlist::addSong);
+        }
+
+        return playlist;
+    }
 }

@@ -7,6 +7,7 @@ import tunix.api.AlbumApi;
 import tunix.api.ApiClient;
 import tunix.api.ArtistApi;
 import tunix.api.ArtistRequestApiClient;
+import tunix.api.LibraryApiClient;
 import tunix.api.LoginApiClient;
 import tunix.api.PlaylistApiClient;
 import tunix.api.RegisterApiClient;
@@ -98,7 +99,8 @@ public class AppLauncher {
                 PlaylistApiClient playlistApiClient = new PlaylistApiClient(context.apiClient);
                 AlbumApi albumApiClient = new AlbumApi(context.apiClient);
                 ArtistApi artistApiClient = new ArtistApi(context.apiClient);
-                LibraryService libraryService = new LibraryService(albumApiClient, artistApiClient, playlistApiClient);
+                LibraryApiClient libraryApiClient = new LibraryApiClient(context.apiClient);
+                LibraryService libraryService = new LibraryService(libraryApiClient);
                 PlaylistService playlistService = new PlaylistService(playlistApiClient);
                 MusicPlayerService musicPlayerService = new MusicPlayerService();
                 SearchService searchService = new SearchService(new SongApiClient(context.apiClient), playlistApiClient, albumApiClient);

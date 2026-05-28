@@ -11,11 +11,24 @@ import java.util.List;
 @AllArgsConstructor
 public class LibraryResponse {
 
-    private Long libraryId;
-    private Long accountId;
-
     private List<SongResponse> songs;
     private List<AlbumResponse> albums;
     private List<PlaylistResponse> playlists;
     private List<ArtistResponse> artists;
+
+    public List<SongResponse> getSongs() {
+        return songs;
+    }
+
+    public List<AlbumResponse> getAlbums() {
+        return albums;
+    }
+
+    public List<PlaylistResponse> getPlaylists() {
+        return playlists;
+    }
+
+    public List<ArtistResponse> getArtists() {
+        return artists;
+    }
 }
