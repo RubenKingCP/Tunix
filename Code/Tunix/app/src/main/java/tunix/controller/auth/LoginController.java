@@ -8,11 +8,12 @@ import tunix.service.auth.SessionService;
 import tunix.ui.views.auth.LoginView;
 
 public class LoginController {
+
     private final LoginView loginView;
     private final LoginService loginService;
     private final EventBus eventBus;
 
-    public LoginController(LoginService loginService, SessionService sessionService, EventBus eventBus){
+    public LoginController(LoginService loginService, SessionService sessionService, EventBus eventBus) {
         this.loginService = loginService;
         this.eventBus = eventBus;
         this.loginView = new LoginView();
@@ -23,12 +24,18 @@ public class LoginController {
         return loginView;
     }
 
-    public void onLogin(String username, String password){
+    public void onLogin(String username, String password) {
+        loginView.clearMessage();
         LoginRequest loginRequest = new LoginRequest(username, password);
-        loginService.login(loginRequest);
+        loginService.login(loginRequest, errorMessage -> {
+            loginView.showError(errorMessage != null && !errorMessage.isBlank()
+                    ? errorMessage
+                    : "Invalid username or password.");
+        });
     }
 
     public void onGoToRegisterButtonClicked() {
+        loginView.clearMessage();
         eventBus.publish(new GoToRegisterButtonClicked());
     }
 }

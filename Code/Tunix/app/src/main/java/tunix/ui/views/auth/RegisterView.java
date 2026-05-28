@@ -20,10 +20,13 @@ public class RegisterView extends JPanel {
     private static final Color BTN_PRIMARY_FG= new Color(0x1E1E1E);
     private static final Color BTN_SECONDARY = new Color(0x2A2A2A);
     private static final Color BTN_SEC_HOVER = new Color(0x3D3D3D);
+    private static final Color COLOR_ERROR   = new Color(0xE06060);
+    private static final Color COLOR_SUCCESS = new Color(0x6FCF97);
 
     private JTextField     usernameField;
     private JTextField     emailField;
     private JPasswordField passwordField;
+    private JLabel         messageLabel;
     private JButton        registerButton;
     private JButton        loginButton;
     private RegisterController controller;
@@ -60,7 +63,7 @@ public class RegisterView extends JPanel {
         };
         card.setOpaque(false);
         card.setLayout(new GridBagLayout());
-        card.setPreferredSize(new Dimension(380, 490));
+        card.setPreferredSize(new Dimension(380, 530));
 
         GridBagConstraints gc = new GridBagConstraints();
         gc.fill  = GridBagConstraints.HORIZONTAL;
@@ -101,15 +104,24 @@ public class RegisterView extends JPanel {
 
         // ── Password field ───────────────────────────────────────────────────
         gc.gridy  = 5;
-        gc.insets = new Insets(0, 40, 24, 40);
+        gc.insets = new Insets(0, 40, 8, 40);
         card.add(buildFieldStack("Password", passwordField = buildPasswordField("••••••••")), gc);
+
+        // ── Message label (errors / success) ────────────────────────────────
+        messageLabel = new JLabel(" ");
+        messageLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        messageLabel.setForeground(COLOR_ERROR);
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        gc.gridy  = 6;
+        gc.insets = new Insets(0, 40, 8, 40);
+        card.add(messageLabel, gc);
 
         // ── Register button ──────────────────────────────────────────────────
         registerButton = buildPrimaryButton("Create Account");
         registerButton.addActionListener(e -> {
             if (controller != null) controller.onRegisterButtonClicked();
         });
-        gc.gridy  = 6;
+        gc.gridy  = 7;
         gc.insets = new Insets(0, 40, 12, 40);
         card.add(registerButton, gc);
 
@@ -118,7 +130,7 @@ public class RegisterView extends JPanel {
         loginButton.addActionListener(e -> {
             if (controller != null) controller.onGoToLoginButtonClicked();
         });
-        gc.gridy  = 7;
+        gc.gridy  = 8;
         gc.insets = new Insets(0, 40, 40, 40);
         card.add(loginButton, gc);
 
@@ -298,6 +310,20 @@ public class RegisterView extends JPanel {
 
     public void setController(RegisterController controller) {
         this.controller = controller;
+    }
+
+    public void showError(String message) {
+        messageLabel.setForeground(COLOR_ERROR);
+        messageLabel.setText(message);
+    }
+
+    public void showSuccess(String message) {
+        messageLabel.setForeground(COLOR_SUCCESS);
+        messageLabel.setText(message);
+    }
+
+    public void clearMessage() {
+        messageLabel.setText(" ");
     }
 
     public String getUsername() { return usernameField.getText(); }

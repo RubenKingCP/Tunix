@@ -20,9 +20,11 @@ public class LoginView extends JPanel {
     private static final Color BTN_PRIMARY_FG= new Color(0x1E1E1E);
     private static final Color BTN_SECONDARY = new Color(0x2A2A2A);
     private static final Color BTN_SEC_HOVER = new Color(0x3D3D3D);
+    private static final Color COLOR_ERROR   = new Color(0xE06060);
 
     private JTextField     usernameField;
     private JPasswordField passwordField;
+    private JLabel         messageLabel;
     private JButton        loginButton;
     private JButton        registerButton;
     private LoginController controller;
@@ -52,7 +54,7 @@ public class LoginView extends JPanel {
         };
         card.setOpaque(false);
         card.setLayout(new GridBagLayout());
-        card.setPreferredSize(new Dimension(380, 420));
+        card.setPreferredSize(new Dimension(380, 460));
 
         GridBagConstraints gc = new GridBagConstraints();
         gc.insets = new Insets(0, 40, 0, 40);
@@ -89,20 +91,29 @@ public class LoginView extends JPanel {
 
         // ── Password field ───────────────────────────────────────────────────
         gc.gridy  = 4;
-        gc.insets = new Insets(0, 40, 24, 40);
+        gc.insets = new Insets(0, 40, 8, 40);
         card.add(buildFieldStack("Password", passwordField = buildPasswordField("••••••••")), gc);
+
+        // ── Message label (errors) ───────────────────────────────────────────
+        messageLabel = new JLabel(" ");
+        messageLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        messageLabel.setForeground(COLOR_ERROR);
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        gc.gridy  = 5;
+        gc.insets = new Insets(0, 40, 8, 40);
+        card.add(messageLabel, gc);
 
         // ── Login button ─────────────────────────────────────────────────────
         loginButton = buildPrimaryButton("Log In");
         loginButton.addActionListener(e -> onLoginButtonClicked());
-        gc.gridy  = 5;
+        gc.gridy  = 6;
         gc.insets = new Insets(0, 40, 12, 40);
         card.add(loginButton, gc);
 
         // ── Register button ──────────────────────────────────────────────────
         registerButton = buildSecondaryButton("Create an Account");
         registerButton.addActionListener(e -> onGoToRegisterButtonClicked());
-        gc.gridy  = 6;
+        gc.gridy  = 7;
         gc.insets = new Insets(0, 40, 40, 40);
         card.add(registerButton, gc);
 
@@ -292,6 +303,15 @@ public class LoginView extends JPanel {
         this.controller = controller;
     }
 
+    public void showError(String message) {
+        messageLabel.setForeground(COLOR_ERROR);
+        messageLabel.setText(message);
+    }
+
+    public void clearMessage() {
+        messageLabel.setText(" ");
+    }
+
     public void onGoToRegisterButtonClicked() {
         controller.onGoToRegisterButtonClicked();
     }
@@ -300,5 +320,5 @@ public class LoginView extends JPanel {
         if (controller != null)
             controller.onLogin(usernameField.getText(),
                                 new String(passwordField.getPassword()));
-    } 
+    }
 }

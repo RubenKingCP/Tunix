@@ -8,10 +8,11 @@ import tunix.service.auth.SessionService;
 import tunix.ui.views.auth.RegisterView;
 
 public class RegisterController {
+
     private final RegisterService registerService;
     private final RegisterView registerView;
     private final EventBus eventBus;
-    
+
     public RegisterController(RegisterService registerService, SessionService sessionService, EventBus eventBus) {
         this.registerService = registerService;
         this.eventBus = eventBus;
@@ -24,16 +25,22 @@ public class RegisterController {
     }
 
     public void onRegisterButtonClicked() {
+        registerView.clearMessage();
         String username = registerView.getUsername();
-        String email = registerView.getEmail();
+        String email    = registerView.getEmail();
         String password = registerView.getPassword();
-
         RegisterRequest registerRequest = new RegisterRequest(username, email, password);
-
-        registerService.register(registerRequest);
+        registerService.register(
+            registerRequest,
+            () -> registerView.showSuccess("Registration successful! Please log in."),
+            errorMessage -> registerView.showError(errorMessage != null && !errorMessage.isBlank()
+                    ? errorMessage
+                    : "Registration failed. Please try again.")
+        );
     }
 
     public void onGoToLoginButtonClicked() {
+        registerView.clearMessage();
         eventBus.publish(new GoToLoginButtonClicked());
     }
 }
