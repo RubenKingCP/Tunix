@@ -34,7 +34,7 @@ public class ArtistRequestApiClient {
     }
 
     public ApiResponse<ArtistApplicationResponse> rejectArtistRequest(int requestId) {
-        return apiClient.post(
+        return apiClient.put( // I REPLACED POST WITH PUT BECAUSE POST DIDNT WORK, SORRY
                 "/artist-requests/" + requestId + "/reject",
                 "",
                 ArtistApplicationResponse.class

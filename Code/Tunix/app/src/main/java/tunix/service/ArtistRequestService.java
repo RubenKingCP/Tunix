@@ -103,7 +103,7 @@ public class ArtistRequestService {
 
     public boolean rejectArtistRequest(int requestId) {
         // Code to reject artist request via API call
-        ApiResponse<ArtistApplicationResponse> response = artistRequestApiClient.approveArtistRequest(requestId);
+        ApiResponse<ArtistApplicationResponse> response = artistRequestApiClient.rejectArtistRequest(requestId);
         // Handle error success
         return response.isSuccess();
     }
