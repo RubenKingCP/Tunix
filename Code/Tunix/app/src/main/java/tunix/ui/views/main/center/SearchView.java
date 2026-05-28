@@ -26,6 +26,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import tunix.controller.SearchController;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
 import tunix.model.musicContent.Album;
@@ -71,15 +72,16 @@ public class SearchView extends JPanel {
     private JPanel contentPanel;
     private List<ILibraryAsset> results;
     private final EventBus eventBus;
+    private final SearchController controller;
 
     public SearchView(List<ILibraryAsset> results) {
-        this(results, null);
+        this(results, null, null);
     }
 
-    public SearchView(List<ILibraryAsset> results, EventBus eventBus) {
+    public SearchView(List<ILibraryAsset> results, EventBus eventBus, SearchController controller) {
         this.results = results == null ? List.of() : List.copyOf(results);
         this.eventBus = eventBus;
-
+        this.controller = controller;
         setLayout(new BorderLayout());
         setBackground(BG);
         setOpaque(true);
@@ -287,9 +289,7 @@ public class SearchView extends JPanel {
     }
 
     private void openResult(ILibraryAsset asset) {
-        if (eventBus != null) {
-            eventBus.publish(new LibraryPlaylistClicked(asset));
-        }
+        controller.openResult(asset);
     }
 
     private String truncate(String value, int maxLength) {

@@ -12,6 +12,7 @@ import tunix.dto.response.ApiResponse;
 import tunix.dto.response.AlbumResponse;
 import tunix.model.ILibraryAsset;
 import tunix.model.musicContent.Album;
+import tunix.api.*;
 
 public class AlbumApi {
     private final ApiClient apiClient;
@@ -41,4 +42,18 @@ public class AlbumApi {
         return apiClient.get("/albums/name?query=" + encodedQuery, new TypeReference<ApiResponse<List<AlbumResponse>>>() {
         });
     }
+
+    public ILibraryAsset getById(long id) {
+    ApiResponse<AlbumResponse> response = apiClient.get(
+        "/album/getById/" + id,
+        new TypeReference<ApiResponse<AlbumResponse>>() {}
+    );
+    if (response == null || !response.isSuccess()) return null;
+
+    AlbumResponse album = response.getData();
+    Date releaseDate = album.getReleaseDate() != null
+        ? Date.valueOf(album.getReleaseDate()) : null;
+
+    return new Album(album.getTitle(), album.getId().intValue(), null, new ArrayList<>(), releaseDate);
+}
 }
