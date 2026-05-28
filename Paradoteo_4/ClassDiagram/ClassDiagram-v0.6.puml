@@ -414,8 +414,39 @@ package "Frontend" as V {
             + initGUI(void) : void
             + refresh(void) : void
             - buildheader(void) : JPanel
+            - buildAccountSection(void) : JPanel
+            - buildPremiumSection(void) : JPanel
+            - buildQuickActionSection(void) : JPanel
+            - getCurrentUser(void) : User
+            - {static} getPremiumUiState(user : User) : PremiumUiState
+            - showArtistRequestForm(void) : void
+            - addDetailRow(container : JPanel, label : String, value : String) : void
+            - buildActionRow(title : String, subtitle : String) : JPanel
+            - makePrimaryButton(text : String, color : Color) : JButton
+            + showPremiumTrialScreen(void) : void
+            + showTrialStartedMessage(void) : void
         }
-        class ArtistProfileView
+        class ArtistProfileView {
+                - {static} BG : Color;
+                - {static} CARD_BG : Color;
+                - {static} CARD_HOVER : Color;
+                - {static} MUTED : Color;
+                - {static} GREEN : Color;
+    
+                - uploadSongButton : JButton;
+                --
+                + ArtistProfileView(void)
+                + initGUI(void) : void
+                + refresh(void) : void
+                - buildheader(void) : JPanel
+                - buildArtistSection(void) : JPanel
+                - buildUploadSection(void) : JPanel
+                - buildSectionContainer(title : String) : JPanel
+                - buildQuickActionSection(void) : JPanel
+                - addDetailRow(container : JPanel, label : String, value : String) : void
+                - buildActionRow(title : String, subtitle : String) : JPanel
+                + setUploadSongListener(listener : ActionListener) : void
+        }
         class AdminProfileView
     }
 
