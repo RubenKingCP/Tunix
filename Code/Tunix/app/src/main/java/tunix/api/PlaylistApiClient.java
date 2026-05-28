@@ -14,6 +14,7 @@ import tunix.dto.response.AddSongResponse;
 import tunix.dto.response.AlbumResponse;
 import tunix.dto.response.ApiResponse;
 import tunix.dto.response.PlaylistResponse;
+import tunix.dto.response.SongResponse;
 import tunix.model.ILibraryAsset;
 import tunix.model.musicContent.Album;
 import tunix.model.musicContent.Playlist;
@@ -55,14 +56,37 @@ public class PlaylistApiClient {
     }
 
     public ILibraryAsset getById(long id) {
-    ApiResponse<PlaylistResponse> response = apiClient.get(
-        "/playlist/getById/" + id,
-        new TypeReference<ApiResponse<PlaylistResponse>>() {}
-    );
-    if (response == null || !response.isSuccess()) return null;
 
-    PlaylistResponse playlist = response.getData();
+        ApiResponse<PlaylistResponse> response = apiClient.get(
+                "/playlist/" + id,
+                new TypeReference<ApiResponse<PlaylistResponse>>() {}
+        );
 
-    return new Playlist(playlist.getTitle(), playlist.getId().intValue(), SessionService.Instance.getAccount());
+        if (response == null || !response.isSuccess() || response.getData() == null) {
+            return null;
+        }
+
+        PlaylistResponse dto = response.getData();
+
+        Playlist playlist = new Playlist(
+                dto.getTitle(),
+                dto.getId().intValue(),
+                SessionService.Instance.getAccount()
+        );
+
+        // visibility
+        if (dto.isPublic()) {
+            playlist.toggleVisibility();
+        }
+
+        // songs
+        if (dto.getSongs() != null) {
+            dto.getSongs().stream()
+                    .map(SongResponse::toSong)
+                    .forEach(playlist::addSong);
+        }
+
+        return playlist;
+    }
 }
-}
+    

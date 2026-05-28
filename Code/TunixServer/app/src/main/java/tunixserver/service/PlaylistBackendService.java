@@ -98,4 +98,9 @@ public class PlaylistBackendService {
                         .toList();
     }
     
+    public PlaylistResponse getPlaylist(Long playlistId) {
+        PlaylistEntity playlistEntity = playlistBackendRepository.findById(playlistId)
+                                .orElseThrow(() -> new RuntimeException("Playlist with this id coulnt be found"));
+        return PlaylistResponseMapper.fromEntity(playlistEntity);
+    }
 }

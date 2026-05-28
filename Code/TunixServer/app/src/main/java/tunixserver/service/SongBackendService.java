@@ -10,6 +10,8 @@ import tunixserver.repository.SongBackendRepository;
 
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -72,5 +74,14 @@ public class SongBackendService {
         return songs.stream()
                 .map(SongMapper::toResponse)
                 .toList();
+    }
+
+    public void deleteSong(Long id) {
+
+        if (!songRepository.existsById(id)) {
+            throw new RuntimeException("Song not found");
+        }
+
+        songRepository.deleteById(id);
     }
 }

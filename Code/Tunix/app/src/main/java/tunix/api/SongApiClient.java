@@ -36,4 +36,14 @@ public class SongApiClient {
         System.out.println("SongApiClient: Sending request to api client");
         return apiClient.get("/songs/all", new TypeReference<ApiResponse<List<SongResponse>>>() {});
     }
+
+    public ApiResponse<Void> removeSongById(int songId) {
+
+        System.out.println("Removing song with id: " + songId);
+
+        return apiClient.delete(
+                "/songs/remove/" + songId,
+                new TypeReference<ApiResponse<Void>>() {}
+        );
+    }
 }

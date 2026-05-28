@@ -15,16 +15,20 @@ import tunixserver.dto.response.PlaylistResponse;
 import tunixserver.entities.PlaylistEntity;
 import tunixserver.service.PlaylistBackendService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import tunixserver.service.SongBackendService;
 
 
 @RestController
 @RequestMapping("/playlists")
 public class PlaylistBackendController {
+    private final SongBackendService songBackendService;
     private final PlaylistBackendService playlistBackendService;
 
-    public PlaylistBackendController(PlaylistBackendService playlistBackendService) {
+    public PlaylistBackendController(PlaylistBackendService playlistBackendService, SongBackendService songBackendService) {
         this.playlistBackendService = playlistBackendService;
+        this.songBackendService = songBackendService;
     }
 
     @PostMapping("/{playlistId}/add/{songId}")
@@ -40,6 +44,7 @@ public class PlaylistBackendController {
             );
         }
     }
+
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<PlaylistResponse>> createPlaylist(
@@ -82,4 +87,24 @@ public class PlaylistBackendController {
         );
     }
     
+    @GetMapping("/{playlistId}")
+    public ResponseEntity<ApiResponse<PlaylistResponse>> getMethodName(@PathVariable Long playlistId) {
+        try {
+                PlaylistResponse response = playlistBackendService.getPlaylist(playlistId);
+                
+                return ResponseEntity.ok(
+                    new ApiResponse<>(
+                        true,
+                        "Playlist Fetched successfully",
+                        response)
+                );
+        } catch (Exception e) {
+                // TODO: handle exception
+                return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Playlist not found", null)
+                );
+        }
+    }
 }
+    
+

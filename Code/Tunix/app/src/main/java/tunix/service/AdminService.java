@@ -4,12 +4,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import tunix.api.AdminApi;
+import tunix.api.SongApiClient;
 import tunix.model.ArtistRequest;
 
 public class AdminService {
     private AdminApi api;
+    private final SongApiClient songApiClient;
 
-    public AdminService(AdminApi api){
+    public AdminService(AdminApi api, SongApiClient songApiClient){
+        this.songApiClient = songApiClient;
         this.api = api;
     }
 
@@ -19,7 +22,7 @@ public class AdminService {
             return result;
         }catch(Exception e){
             //Handle exception
-            return false;
+            return false; 
         }
     }
 
@@ -45,8 +48,9 @@ public class AdminService {
         return new LinkedList<String>();
     }
 
+    // TODO: WIP
     public String postRemoveSongById(int songId) {
-        return ""; // idk, something like "DELETE FROM song WHERE id = songId;" ??
+        return songApiClient.removeSongById(songId).getMessage();
     }
 
     public String getProfilePic (ArtistRequest ar) {

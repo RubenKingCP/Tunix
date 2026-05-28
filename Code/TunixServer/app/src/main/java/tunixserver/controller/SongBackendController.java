@@ -7,10 +7,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import tunixserver.repository.SongBackendRepository;
 import tunixserver.service.SongBackendService;
 import tunixserver.dto.request.SongRequest;
 import tunixserver.dto.response.ApiResponse;
@@ -20,10 +23,12 @@ import tunixserver.entities.SongEntity;
 @RestController
 @RequestMapping("/songs")
 public class SongBackendController {
+    private final SongBackendRepository songBackendRepository;
     private final SongBackendService songService; 
 
-    public SongBackendController(SongBackendService songService) {
+    public SongBackendController(SongBackendService songService, SongBackendRepository songBackendRepository) {
         this.songService = songService;
+        this.songBackendRepository = songBackendRepository;
     }
 
     @PostMapping("/upload")
@@ -75,4 +80,16 @@ public class SongBackendController {
                 new ApiResponse<>(true, "Songs found", songs)
         );
     }
+
+    @DeleteMapping("/remove/{id}")
+    public ApiResponse<Void> removeSong(@PathVariable Long id) {
+        songService.deleteSong(id);
+
+        return new ApiResponse<>(
+            true,
+            "Song deleted successfully",
+            null
+        );
+    }
+
 }

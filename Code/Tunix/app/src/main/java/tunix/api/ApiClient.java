@@ -106,7 +106,8 @@ public class ApiClient {
     // =========================
     // DELETE
     // =========================
-    public <T> ApiResponse<T> delete(String path, Class<T> dataType) {
+    public <T> T delete(String path, TypeReference<T> typeReference) {
+
         try {
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -115,7 +116,7 @@ public class ApiClient {
                     .DELETE()
                     .build();
 
-            return sendAndParse(request, dataType);
+            return sendAndParse(request, typeReference);
 
         } catch (Exception e) {
             throw new RuntimeException("DELETE failed: " + path, e);
@@ -144,5 +145,21 @@ public class ApiClient {
         }
 
         return new ApiResponse<>(success, message, data);
+    }
+
+    // =========================
+    // CORE PARSER (TypeReference)
+    // =========================
+    private <T> T sendAndParse(
+            HttpRequest request,
+            TypeReference<T> typeReference
+    ) throws Exception {
+
+        HttpResponse<String> response =
+                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("RAW RESPONSE: " + response.body());
+
+        return objectMapper.readValue(response.body(), typeReference);
     }
 }
