@@ -136,6 +136,8 @@ public class LibraryView extends JPanel {
     public void setLibraryAssets(List<ILibraryAsset> assets) {
         this.libraryAssets = assets == null ? List.of() : List.copyOf(assets);
         refreshContent();
+        revalidate();
+        repaint();
     }
 
     private JPanel buildHeader() {

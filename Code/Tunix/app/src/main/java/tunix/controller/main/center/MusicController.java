@@ -9,17 +9,20 @@ import tunix.model.musicContent.Song;
 import tunix.service.PlaylistService;
 import tunix.ui.views.main.LibraryView;
 import tunix.ui.views.main.center.MusicView;
+import tunix.navigation.events.UpdateLibraryEvent;
 
 public class MusicController {
 
     private final MusicView musicView;
     private final PlaylistService playlistService;
+    private final EventBus eventBus;
 
     public MusicController(
             EventBus eventBus,
             LibraryView libraryPanel,
             PlaylistService playlistService) {
 
+        this.eventBus = eventBus;
         this.playlistService = playlistService;
         this.musicView = new MusicView(this, libraryPanel);
         this.musicView.setController(this);
@@ -39,11 +42,15 @@ public class MusicController {
     }
 
     public boolean addSongToPlaylist(int playlistId, Song song) {
-        return playlistService.addSongToPlaylist(playlistId, song);
+        boolean result = playlistService.addSongToPlaylist(playlistId, song);
+        eventBus.publish(new UpdateLibraryEvent());
+        return result;
     }
 
     public boolean removeSongFromPlaylist(int playlistId, Song song) {
-        return playlistService.removeSongFromPlaylist(playlistId, song);
+        boolean result = playlistService.removeSongFromPlaylist(playlistId, song);
+        eventBus.publish(new UpdateLibraryEvent());
+        return result;
     }
 
     public ILibraryAsset fetchFreshAsset(ILibraryAsset asset) {

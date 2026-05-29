@@ -15,6 +15,7 @@ import tunix.ui.views.main.LibraryView;
 import tunix.model.account.Artist;
 import tunix.model.musicContent.Song;
 import tunix.navigation.events.OpenArtistViewEvent;
+import tunix.navigation.events.UpdateLibraryEvent;
 import tunix.navigation.events.OpenAlbumViewEvent;
 import tunix.model.musicContent.Album;
 
@@ -35,10 +36,17 @@ public class LibraryController {
         this.libraryView = new LibraryView();
         this.libraryView.setController(this);
         this.libraryView.setLibraryAssets(libraryService.getLibraryAssets());
+        this.appContext.eventBus.subscribe(UpdateLibraryEvent.class, e -> onLibraryAssetsUpdated());
     }
 
     public LibraryView getView() {
         return libraryView;
+    }
+
+    public void onLibraryAssetsUpdated() {
+        List<ILibraryAsset> updatedAssets = libraryService.getLibraryAssets();
+        libraryView.setLibraryAssets(updatedAssets);
+        ;
     }
 
     public void createPlaylist(PlaylistCreateRequest playlistRequest) {
