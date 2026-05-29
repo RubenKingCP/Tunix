@@ -83,7 +83,7 @@ public class LibraryController {
             new OpenArtistViewEvent(artist)
     );
 }
-   private MusicController musicController;
+   private MusicController musicController; // ?
 
   
 

@@ -13,7 +13,7 @@ public class UserProfileController {
     private final UserProfileView view;
     private final UserService service;
     private final ArtistRequestService artistRequestService;
-    EventBus eventBus;
+    private final EventBus eventBus;
 
     public UserProfileController(EventBus eventBus, UserService service, ArtistRequestService artistRequestService) {
         this.service = service;

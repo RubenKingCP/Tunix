@@ -451,44 +451,274 @@ package "Frontend" as V {
     }
 
     folder "Controllers" {
-        class MusicController
-        class LoginController
-        class RegisterController
+        class MusicController {
+            - musicView : MusicView
+            - playlistService : PlaylistService
+            --
+            + MusicController(eventBus : EventBus, libraryPanel : LibraryView, playlistService : PlaylistService)
+            + getView(void) : JPanel
+            + drawView(void) : void
+            + ensurePlaylistLoaded(void) : void
+            + addSongToPlaylist(playlistId : int, song : Song) : boolean
+            + fetchFreshAsset(asset : ILibraryAsset) : ILibraryAsset
+            + getCachedPlaylists(void) : List<Playlist>
+        }
+        class LoginController {
+            - loginView : LoginView
+            - loginService : LoginService
+            - eventBus : EventBus
+            --
+            + LoginController(loginService : LoginService, sessionService : SessionService, eventBus : EventBus)
+            + getView(void) : LoginView
+            + onLogin(username : String, password : String) : void
+            + onGoToRegisterButtonClicked(void) : void
+        }
+        class RegisterController {
+            - registerService : RegisterService
+            - registerView : RegisterView
+            - eventBus : EventBus
+            --
+            + RegisterController(registerService : RegisterService, sessionService : SessionService, eventBus : EventBus)
+            + getView(void) : RegisterView
+            + onRegisterButtonClicked(void) : void
+            + onGoToLoginButtonClicked(void) : void
+        }
 
         
-        class TopBarController
-        class LibraryController
+        class TopBarController {
+            - searchController : SearchController
+            - topBarView : TopBarView
+            - eventBus : EventBus
+            --
+            + TopBarController(searchController : SearchController, eventBus : EventBus)
+            + getView(void) : JPanel
+            + onSearch(query : String, searchType : String) : void
+            + onHomeButtonClicked(void) : void
+            + onProfileButtonClicked(void) : void
+            + onLogoutButtonClicked(void) : void
+        }
+        class LibraryController {
+            - libraryService : LibraryService
+            - playlistService : PlaylistService
+            - appContext : AppContext
+            - libraryView : LibraryView
+            --
+            + LibraryController(libraryService : LibraryService, playlistService : PlaylistService, context : AppContext)
+            + getView(void) : LibraryView
+            + createPlaylist(playlistRequest : PlaylistCreateRequest) : void
+            + playlistClicked(asset : ILibraryAsset) : void
+            + albumClicked(album : Album) : void
+            + songClicked(song : Song) : void
+            + getLibraryAssets(void) : List<ILibraryAsset>
+        }
 
-        class HomeController
-        class SearchController
-        class ArtistController
+        class HomeController {
+            - view : HomeView
+            --
+            + HomeController(void)
+            + getView(void) : JPanel
+            + draw(void) : void
+        }
+        class SearchController {
+            - service : SearchService
+            - eventBus : EventBus
+            - view : SearchView
+            --
+            + SearchController(service : SearchService, eventBus : EventBus)
+            + getView() : JPanel
+            + search(query : String, type : String) : List<ILibraryAsset>
+            + openResult(asset : ILibraryAsset) : void
+        }
+        class ArtistController {
+            - view : ArtistView
+            - artist : Artist
+            - topSongs : List<Song>
+            - albums : List<Album>
+            --
+            + ArtistController(void)
+            + getView(void) : JPanel
+            + setArtist(artist : Artist, topSongs : List<Song>, albums : List<Album>) : void
+            + loadArtist(artist : Artist, topSongs : List<Song>, albums : List<Album>) : void
+            + getArtist(void) : Artist
+            + getTopSongs(void) : List<Song>
+            + getAlbums(void) : List<Album>
+        }
 
-        class AdminController
+        class AdminController {
+            - adminView : AdminView
+            - adminService : AdminService
+            - songService : SongService
+            - artistRequestService : ArtistRequestService
+            - eventBus : EventBus
+            --
+            + AdminController(eventBus : EventBus, adminService : AdminService, artistRequestService : ArtistRequestService, songService : SongService)
+            + getView(void) : AdminView
+            + onArtistRequestClicked(void) : List<ArtistRequest>
+            + showArtistRequestDetails(artistRequest : ArtistRequest) : void
+            + onApproveArtistRequestClicked(int requestId) : void
+            + onSongsClicked(void) : List<Song>
+            + onRejectArtistRequestClicked(requestId : int) : void
+            + onRemoveSongClicked(songId : int) : boolean
+            + onIssueStrikeClicked(artistId : int, reason : String) : boolean
+            + onIssueBanClicked(artistId : int, reason : String) : boolean
+            + onLogoutButtonClicked(void) : void
+            + getProfilePic(ar : ArtistRequest) : String
+        }
 
-        class UserProfileController
-        class ArtistProfileController
-        class AdminProfileController
+        class UserProfileController {
+            - view : UserProfileView
+            - service : UserService
+            - artistRequestService : ArtistRequestService
+            - eventBus : EventBus
+            --
+            + UserProfileController(eventBus : EventBus, service : UserService, artistRequestService : ArtistRequestService)
+            + getView(void) : JPanel
+            + startTrial(void) : boolean
+            + purchasePremiumPlan(void) : boolean
+            + cancelPremium(void) : boolean
+            + drawView(void) : void
+            + requestArtistStatus(stageName : String, bio : String) : void
+        }
+        class ArtistProfileController {
+            - artistProfileView : ArtistProfileView
+            - artistProfileService : ArtistProfileService
+            - eventBus : EventBus
+            --
+            + ArtistProfileController(artistProfileService : ArtistProfileService, eventBus : EventBus)
+            - setupListeners(void) : void
+            + getView(void) : JPanel
+            + draw(void) : void
+        }
+        class AdminProfileController {
+            - view : AdminProfileView
+            --
+            + AdminProfileController(void)
+            + getView(void) : JPanel
+        }
     }
     
 
     folder "Services" {
-        class ArtistRequestService
-        class LoginService
-        class RegisterService
+        class ArtistRequestService {
+            - artistRequestApiClient : ArtistRequestApiClient
+            --
+            + ArtistRequestService(artistRequestApiClient : ArtistRequestApiClient)
+            + getArtistRequests(void) : List<ArtistRequest>
+            - mockArtistRequests(void) : List<ArtistRequest>
+            - toModel(dto : ArtistApplicationResponse) : ArtistRequest
+            + approveArtistRequest(requestId : int) : boolean
+            + rejectArtistRequest(requestId : int) : boolean
+            + makeRequest(userId : Long, stageName : String, message : String) : void
+        }
+        class LoginService {
+            - loginApiClient : LoginApiClient
+            - eventBus : EventBus
+            -- 
+            + LoginService(loginApiClient : LoginApiClient, eventBus : EventBus)
+            + login(loginRequest : LoginRequest, onError : Consumer<String>) : void
+            + logout(void) : void
+        }
+        class RegisterService{
+            - registerApiClient : RegisterApiClient
+            - eventBus : EventBus
+            --
+            + RegisterService(registerApiClient : RegisterApiClient, eventBus : EventBus)
+            + register(registerRequest : RegisterRequest, onSuccess : Runnable, onError : Consumer<String>) : void
+        }
         class MusicPlayerService
-        class LibraryService
-        class PlaylistService
-        class SongService
+        class LibraryService{
+            - libraryApiClient : LibraryApiClient
+            --
+            + LibraryService(apiClient : LibraryApiClient)
+            + getLibraryAssets(void) : List<ILibraryAsset>
+        }
+        class PlaylistService {
+            - playlistApiClient : PlaylistApiClient
+            - cachedPlaylists : List<Playlist>
+            --
+            + PlaylistService(playlistApiClient : PlaylistApiClient)
+            + addSongToPlaylist(playlistId : int, song : Song) : boolean
+            + removeSongFromPlaylist(playlistId : int, song : Song) : boolean
+            + createPlaylist(playlistRequest : PlaylistRequest, libraryAssets : List<ILibraryAsset>) : boolean
+            + getCachedPlaylists(void) : List<Playlist>
+            + setCachedPlaylist(playlists : List<Playlist>) : void
+            + addPlaylistToCache(playlist : Playlist) : void
+            + getPlaylistById(playlistId : int) : Playlist
+            + loadUserPlaylists(void) : void
+        }
+        class SongService {
+            - eventBus : EventBus
+            - songApiClient : SongApiClient
+            --
+            + SongService(eventBus : EventBus, songApiClient : SongApiClient)
+            + uploadSong(songRequest : Song) : Song
+            + getSongs(void) : List<Song>
+            + getDummySongs(void) : List<Song>
+            + toModel(response : SongResponse) : Song
+        }
     }
 
     folder "Api" {
-        class ArtistRequestApiClient
-        class LoginApiClient
-        class LibraryApiClient
-        class RegisterApiClient
-        class PlaylistApiClient
-        class SongApiClient
-        class ApiClient
+        class ArtistRequestApiClient {
+            - apiClient : ApiClient
+            --
+            + ArtistRequestApiClient(apiClient : ApiClient)
+            + getAllArtistRequests(void) : ApiResponse<List<ArtistApplicationResponse>>
+            + approveArtistRequest(requestId : int) : ApiResponse<ArtistApplicationResponse>
+            + rejectArtistRequest(requestId : int) : ApiResponse<ArtistApplicationResponse>
+            + makeRequest(req : ArtistApplicationRequest) : ApiResponse<ArtistApplicationResponse>
+        }
+        class LoginApiClient{
+            - apiClient : ApiClient
+            --
+            + LoginApiClient(apiClient : ApiClient)
+            + login(loginRequest : LoginRequest) : ApiResponse<AccountResponse>
+        }
+        class LibraryApiClient {
+            - apiClient : ApiClient
+            --
+            + LibraryApiClient(apiClient : ApiClient)
+            + getLibrary(accountId : Integer) : ApiResponse<LibraryResponse>
+        }
+        class RegisterApiClient {
+            - apiClient : ApiClient
+            --
+            + RegisterApiClient(apiClient : ApiClient)
+            + register(registerRequest : RegisterRequest) : ApiResponse<AccountResponse>
+        }
+        class PlaylistApiClient {
+            - apiClient : ApiClient
+            --
+            + PlaylistApiClient(apiClient : ApiClient)
+            + addSongToPlaylist(playlistId : int, songId : int) : ApiResponse<AddSongResponse>
+            + createPlaylist(playlistCreateRequest : PlaylistCreateRequest) : ApiResponse<PlaylistResponse>
+            + removeSongFromPlaylist(playlistId : int, songId : int) : ApiResponse<Void>
+            + getPlaylistByName(query : String) : ApiResponse<List<PlaylistResponse>>
+            + getUserPlaylists(longId : int) : List<ILibraryAsset>
+            + getById(id : long) : ILibraryAsset
+        }
+        class SongApiClient {
+            - apiClient : ApiClient
+            --
+            + SongApiClient(apiClient : ApiClient)
+            + uploadSong(songRequest : SongRequest) : ApiResponse<SongResponse>
+            + getSongsByName(query : String) : ApiResponse<List<SongResponse>>
+            + getSongs(void) : ApiResponse<List<SongResponse>>
+            + removeSongById(songId : int) : ApiResponse<Void>
+        }
+        class ApiClient {
+            - httpClient : HttpClient
+            - objectMapper : ObjectMapper
+            - baseUrl : String
+            --
+            + ApiClient(baseUrl : String)
+            + post(path : String, body : Object, dataType : Class<T>) : <T> ApiResponse<T>
+            + put(path : String, body : Object, dataType : Class<T>) : <T> ApiResponse<T>
+            + get(path : String, typeRef : TypeReference<ApiResponse<T>>) : <T> ApiResponse<T>
+            + delete(path : String, typeReference : TypeReference<T>) : <T> T
+            - sendAndParse(request : HttpRequest, dataType : Class<T>) : <T> ApiResponse<T>
+            - sendAndParse(request : HttpRequest, typeReference : TypeReference<T>) : <T> T
+        }
 
         ApiClient *-- ArtistRequestApiClient
         ApiClient *-- LoginApiClient
@@ -502,8 +732,40 @@ package "Frontend" as V {
 
     folder "Models" {
 
-        abstract class Account
-        class User
+        abstract class Account {
+            # id : Long
+            # username : String
+            # email : String
+            # accountStatus : Role 
+            --
+            + Account(id : Long, username : String, email : String, accountStatus : Role)
+            + getLongId(void) : Long
+            + getUsername(void) : String
+            + getEmail(void) : String
+            + getAccountStatus(void) : Role
+        }
+        class User {
+            - displayName : String
+            - profilePictureUrl : String
+            - id : Long
+            - premium : boolean
+            - premiumTrialUsed : boolean
+            - downloadedSongsCount : int
+            --
+            + User(id : Long, username : String, email : String, displayName : String, profilePictureUrl : String, premium : boolean, premiumTrialUsed : boolean, downloadedSongsCount : int)
+            + getDisplayName(void) : String
+            + setDisplayName(displayName : String) : void
+            + getProfilePictureUrl(void) : String
+            + setProfilePictureUrl(profilePictureUrl : String) : void
+            + isPremium(void) : boolean
+            + setPremium(premium : boolean) : void
+            + hasUsedPremiumTrial(void) : boolean
+            + setPremiumTrialUsed(premiumTrialUsed : boolean) : void
+            + getDownloadedSongsCount(void) : int
+            + setDownloadedSongsCount(downloadedSongsCount : int) : void
+            + isTrialEligible(void) : boolean
+            + isPremiumTrialUsed(void) : boolean
+        }
         class Artist
         class Admin
 
