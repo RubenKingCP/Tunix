@@ -251,3 +251,38 @@ INSERT INTO library_artist (library_id, artist_id) VALUES
 -- Extra 10
 (11, 1), (12, 2), (13, 3), (14, 4), (15, 5),
 (16, 6), (17, 7), (18, 8), (19, 9), (20, 10);
+
+-- =========================
+-- BANNED ARTIST ACCOUNTS
+-- =========================
+INSERT INTO account (
+    account_id,
+    username,
+    email,
+    password,
+    role,
+    is_banned,
+    ban_reason
+) VALUES
+(23, 'artist_kanye',  'kanye@music.com',  'pass123', 'ARTIST', TRUE, 'Hate speech violations'),
+(24, 'artist_travis', 'travis@music.com', 'pass123', 'ARTIST', TRUE, 'Repeated copyright strikes'),
+(25, 'artist_carti',  'carti@music.com',  'pass123', 'ARTIST', TRUE, 'Community guideline violations'),
+(26, 'artist_uzi',    'uzi@music.com',    'pass123', 'ARTIST', TRUE, 'Fraudulent streaming activity'),
+(27, 'artist_x',      'x@music.com',      'pass123', 'ARTIST', TRUE, 'Abusive behavior toward users');
+
+-- =========================
+-- BANNED ARTISTS
+-- =========================
+INSERT INTO artist (
+    id,
+    account_id,
+    display_name,
+    biography,
+    followers_count,
+    verified
+) VALUES
+(11, 23, 'Kanye West', 'American rapper and producer.', 65000000, TRUE),
+(12, 24, 'Travis Scott', 'Houston rapper and performer.', 47000000, TRUE),
+(13, 25, 'Playboi Carti', 'Atlanta rapper and performer.', 32000000, TRUE),
+(14, 26, 'Lil Uzi Vert', 'Philadelphia rapper and artist.', 36000000, TRUE),
+(15, 27, 'XXXTentacion', 'Florida rapper and songwriter.', 41000000, TRUE);

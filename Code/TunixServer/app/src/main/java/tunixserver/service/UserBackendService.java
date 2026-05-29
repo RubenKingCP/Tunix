@@ -27,61 +27,55 @@ public class UserBackendService {
         this.accountRepo = accountRepo;
     }
 
-    public AccountResponse registerUser(RegisterRequest req) {
+        public AccountResponse registerUser(RegisterRequest req) {
 
-        AccountEntity account = AccountEntity.builder()
-                .username(req.getUsername())
-                .email(req.getEmail())
-                .password(req.getPassword())
-                .role(Role.USER)
-                .build();
+                AccountEntity account = AccountEntity.builder()
+                        .username(req.getUsername())
+                        .email(req.getEmail())
+                        .password(req.getPassword())
+                        .role(Role.USER)
+                        .build();
 
-        AccountEntity savedAccount = accountRepo.save(account);
+                AccountEntity savedAccount = accountRepo.save(account);
+
+                UserEntity user = new UserEntity();
+                user.setAccount(savedAccount);
+                user.setDisplayName(req.getUsername());
+                user.setPremium(false);
+                user.setPremiumTrialUsed(false);
+
+                userRepo.save(user);
+
+                savedAccount.setUser(user);
+
+                return AccountResponse.fromEntity(savedAccount);
+        }
+
+        public AccountResponse loginUser(LoginRequest req) {
+
+                Optional<AccountEntity> optional = accountRepo
+                        .findByUsernameAndPassword(
+                                req.getUsername(),
+                                req.getPassword()
+                        );
+
+                AccountEntity account = optional
+                        .orElseThrow(() ->
+                                new RuntimeException("Invalid credentials"));
+
+                // Check if banned
+                if (account.isBanned()) {
+                        throw new RuntimeException(
+                                "Account is banned. Reason: " +
+                                (account.getBanReason() == null
+                                        ? "No reason provided"
+                                        : account.getBanReason())
+                        );
+                }
+
+                return AccountResponse.fromEntity(account);
         
-        UserEntity user = new UserEntity();
-        user.setAccount(savedAccount);
-        user.setDisplayName(req.getUsername());
-        user.setPremium(false);
-        user.setPremiumTrialUsed(false);
-
-        userRepo.save(user);
-
-        UserResponse userResponse = UserResponse.fromEntity(user);
-
-        return new AccountResponse(
-                savedAccount.getAccountId(),
-                savedAccount.getUsername(),
-                savedAccount.getEmail(),
-                savedAccount.getRole(),
-                userResponse,
-                null
-        );
-    }
-
-    public AccountResponse loginUser(LoginRequest req) {
-
-        Optional<AccountEntity> optional = accountRepo
-                .findByUsernameAndPassword(req.getUsername(), req.getPassword());
-
-        AccountEntity account = optional
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-
-        UserResponse userResponse =
-                account.getUser() != null ? UserResponse.fromEntity(account.getUser()) : null;
-
-        ArtistResponse artistResponse =
-                account.getArtist() != null ? ArtistResponse.fromEntity(account.getArtist()) : null;
-
-        return new AccountResponse(
-                account.getAccountId(),
-                account.getUsername(),
-                account.getEmail(),
-                account.getRole(),
-                userResponse,
-                artistResponse
-        );
-    }
-
+        }
         public boolean startPremium(Long userId) {
 
                 System.out.println("START PREMIUM SERVICE");

@@ -13,18 +13,22 @@ public class AccountResponse {
     private String username;
     private String email;
     private Role role;
-
+    private boolean banned;
+    private String banReason;
+    
     private UserResponse user;
     private ArtistResponse artist;
 
     public static AccountResponse fromEntity(AccountEntity acc) {
         return new AccountResponse(
-                acc.getAccountId(),
-                acc.getUsername(),
-                acc.getEmail(),
-                acc.getRole(),
-                acc.getUser() != null ? UserResponse.fromEntity(acc.getUser()) : null,
-                acc.getArtist() != null ? ArtistResponse.fromEntity(acc.getArtist()) : null
+            acc.getAccountId(),
+            acc.getUsername(),
+            acc.getEmail(),
+            acc.getRole(),
+            acc.isBanned(),
+            acc.getBanReason(),
+            acc.getUser() != null ? UserResponse.fromEntity(acc.getUser()) : null,
+            acc.getArtist() != null ? ArtistResponse.fromEntity(acc.getArtist()) : null
         );
     }
 }
