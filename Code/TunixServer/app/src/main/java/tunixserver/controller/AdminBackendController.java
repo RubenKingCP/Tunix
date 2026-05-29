@@ -52,7 +52,7 @@ public class AdminBackendController {
                 new ApiResponse<>(
                         result,
                         "Artist banned successfully",
-                        null
+                        true
                 )
         );
         }

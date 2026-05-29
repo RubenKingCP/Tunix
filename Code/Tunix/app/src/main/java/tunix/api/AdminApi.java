@@ -10,14 +10,15 @@ public class AdminApi {
     public AdminApi(ApiClient apiClient) {
         this.apiClient = apiClient;
     }
-    public Boolean issueWarning(BanRequest request){
-        
-        return apiClient.post("/admin/issueWarning", request, boolean.class).getData();
-    }
+    public Boolean issueBan(BanRequest banRequest) {
+    Boolean result = apiClient.post("/admin/issueBan", banRequest, boolean.class).getData();
+    return result != null && result;
+}
 
-    public Boolean issueBan(BanRequest banRequest){
-        return apiClient.post("/admin/issueBan", banRequest, boolean.class).getData();
-    }
+public Boolean issueWarning(BanRequest request) {
+    Boolean result = apiClient.post("/admin/issueWarning", request, boolean.class).getData();
+    return result != null && result;
+}
     public List<String> getArtistModerationHistory(int artistId) {
         ApiResponse<List<String>> response = apiClient.get("/admin/artistModerationHistory/" + artistId, new com.fasterxml.jackson.core.type.TypeReference<ApiResponse<List<String>>>(){});
         return response.getData();
