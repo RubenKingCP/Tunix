@@ -10,6 +10,7 @@ public class Artist extends Account implements ILibraryAsset{
 
     private String biography;
     private int followersCount;
+    private String displayName;
 
     private boolean verified;
 

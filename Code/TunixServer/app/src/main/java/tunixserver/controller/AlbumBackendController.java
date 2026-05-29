@@ -14,6 +14,7 @@ import tunixserver.dto.response.ApiResponse;
 import tunixserver.entities.AlbumEntity;
 import tunixserver.service.AlbumBackendService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -54,7 +55,16 @@ public class AlbumBackendController {
         List<AlbumResponse> albums = albumBackendService.searchByName(query);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(true, "Songs found", albums)
+                new ApiResponse<>(true, "Albums found", albums)
         );
     }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ApiResponse<AlbumResponse>> getAlbumById(@PathVariable Long albumId) {
+        AlbumResponse response = albumBackendService.getAlbumById(albumId);
+        return ResponseEntity.ok(
+            new ApiResponse<>(true, "Album found", response)
+        );
+    }
+    
 }

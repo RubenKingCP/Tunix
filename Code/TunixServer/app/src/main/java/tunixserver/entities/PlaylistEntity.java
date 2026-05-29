@@ -31,13 +31,10 @@ public class PlaylistEntity {
 
     private LocalDateTime updatedAt;
 
-    @ManyToMany
-    @JoinTable(
-        name = "playlist_song",
-        joinColumns = @JoinColumn(name = "playlist_id"),
-        inverseJoinColumns = @JoinColumn(name = "song_id")
-    )
-    private List<SongEntity> songs = new ArrayList<>();
+    // REPLACE with this
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("position ASC")
+    private List<PlaylistItemEntity> items = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

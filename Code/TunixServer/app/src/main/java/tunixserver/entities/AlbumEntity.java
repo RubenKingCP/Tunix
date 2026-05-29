@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,6 +19,7 @@ public class AlbumEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
     @ManyToOne
@@ -30,4 +33,12 @@ public class AlbumEntity {
         this.title = title;
         this.releaseDate = rDate;
     }
+
+    @ManyToMany
+    @JoinTable(
+        name = "album_song",   // ← was "album_son"
+        joinColumns = @JoinColumn(name = "album_id"),
+        inverseJoinColumns = @JoinColumn(name = "song_id")
+    )
+    private List<SongEntity> songs = new ArrayList<>();
 }

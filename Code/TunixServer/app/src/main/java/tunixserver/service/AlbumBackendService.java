@@ -59,4 +59,8 @@ public class AlbumBackendService {
                     .map(AlbumResponseMapper::fromEntity)
                     .toList();
         }
+
+        public AlbumResponse getAlbumById(Long albumId) {
+            return AlbumResponse.fromEntity(albumBackendRepository.findById(albumId).orElseThrow(() -> new RuntimeException("Coulnt find album!")));
+        }
 }

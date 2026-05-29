@@ -6,6 +6,7 @@ import tunixserver.entities.AccountEntity;
 import tunixserver.entities.LibraryEntity;
 import tunixserver.entities.LibraryPlaylistEntity;
 import tunixserver.entities.PlaylistEntity;
+import tunixserver.entities.PlaylistItemEntity;
 import tunixserver.entities.SongEntity;
 import tunixserver.mapper.PlaylistResponseMapper;
 import tunixserver.repository.AccountBackendRepository;
@@ -17,7 +18,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PlaylistBackendService {
@@ -34,39 +37,29 @@ public class PlaylistBackendService {
     }
 
     public boolean addSongToPlaylist(Long playlistId, Long songId) {
-
         PlaylistEntity playlist = playlistBackendRepository.findById(playlistId)
-                .orElseThrow(() -> new RuntimeException("Playlist not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Playlist not found"));
 
         SongEntity song = songBackendRepository.findById(songId)
-                .orElseThrow(() -> new RuntimeException("Song not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Song not found"));
 
-        // check duplicate (based on ManyToMany list)
-        boolean exists = playlist.getSongs()
+        boolean exists = playlist.getItems()
                 .stream()
-                .anyMatch(s -> s.getSongId().equals(songId));
+                .anyMatch(item -> item.getSong().getId().equals(songId));
 
-        if (exists) {
-            return false;
-        }
+        if (exists) return false;
 
-        playlist.getSongs().add(song);
+        int nextPosition = playlist.getItems().size() + 1;
 
+        PlaylistItemEntity item = new PlaylistItemEntity();
+        item.setPlaylist(playlist);
+        item.setSong(song);
+        item.setPosition(nextPosition);
+
+        playlist.getItems().add(item);
         playlistBackendRepository.save(playlist);
-
         return true;
     }
-
-    public boolean checkDuplicate(Long playlistId, Long songId) {
-        PlaylistEntity playlist = playlistBackendRepository.findById(playlistId)
-                .orElseThrow(() -> new RuntimeException("Playlist not found"));
-        for (SongEntity s : playlist.getSongs()) {
-            if (s.getSongId() == songId) {
-                return true; // Song already in playlist
-            }
-        }
-        return false; // Song not in playlist 
-    } 
 
     public PlaylistEntity createPlaylist(PlaylistCreateRequest request) {
 

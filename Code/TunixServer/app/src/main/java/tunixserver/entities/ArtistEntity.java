@@ -3,6 +3,9 @@ package tunixserver.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,4 +31,7 @@ public class ArtistEntity {
     private int followersCount;
 
     private boolean verified;
+
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SongEntity> songs = new ArrayList<>();  // ← was @ManyToMany with non-existent join table
 }

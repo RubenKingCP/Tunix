@@ -1,7 +1,5 @@
 package tunixserver.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,22 +10,15 @@ import tunixserver.dto.request.LoginRequest;
 import tunixserver.dto.request.RegisterRequest;
 import tunixserver.dto.response.AccountResponse;
 import tunixserver.dto.response.ApiResponse;
-import tunixserver.dto.response.ArtistResponse;
-import tunixserver.service.ArtistBackendService;
 import tunixserver.service.UserBackendService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/account")
 public class AccountBackendController {
     private final UserBackendService userBackendService;
-    private final ArtistBackendService artistBackendService; 
 
-    public AccountBackendController(UserBackendService userBackendService, ArtistBackendService artistBackendService) {
+    public AccountBackendController(UserBackendService userBackendService) {
         this.userBackendService = userBackendService;
-        this.artistBackendService = artistBackendService;
     }
 
     @PostMapping("/register")
@@ -128,15 +119,4 @@ public class AccountBackendController {
             );
         }
     }
-
-    @GetMapping("/artists/name")
-    public ResponseEntity<ApiResponse<List<ArtistResponse>>> getArtistsByName(@RequestParam String query) {
-        System.out.println("PlaylistBackendController: Got request query: " + query);
-        List<ArtistResponse> artist = artistBackendService.searchByName(query);
-        
-        return ResponseEntity.ok(
-            new ApiResponse<>(true, "Artists Found!", artist)
-        );
-    }
-    
 }

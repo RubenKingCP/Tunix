@@ -1,5 +1,7 @@
 package tunixserver.dto.response;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,7 @@ public class ArtistResponse {
     private String biography;
     private int followersCount;
     private boolean verified;
+    private List<SongResponse> songResponses;
 
     public static ArtistResponse fromEntity(ArtistEntity artist) {
         return new ArtistResponse(
@@ -24,7 +27,10 @@ public class ArtistResponse {
                 artist.getDisplayName(),
                 artist.getBiography(),
                 artist.getFollowersCount(),
-                artist.isVerified()
+                artist.isVerified(),
+                artist.getSongs().stream()
+                    .map(SongResponse::fromEntity)
+                    .toList()
         );
     }
 }

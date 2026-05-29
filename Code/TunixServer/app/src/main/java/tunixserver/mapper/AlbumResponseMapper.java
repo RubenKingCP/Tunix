@@ -1,6 +1,7 @@
 package tunixserver.mapper;
 
 import tunixserver.dto.response.AlbumResponse;
+import tunixserver.dto.response.SongResponse;
 import tunixserver.entities.AlbumEntity;
 
 public class AlbumResponseMapper {
@@ -12,7 +13,10 @@ public class AlbumResponseMapper {
                 album.getId(),
                 album.getTitle(),
                 album.getArtist() != null ? album.getArtist().getId() : null,
-                album.getReleaseDate()
+                album.getReleaseDate(),
+                album.getSongs().stream()
+                        .map(SongResponse::fromEntity)
+                        .toList()
         );
 }
 }

@@ -3,7 +3,6 @@ package tunixserver.mapper;
 import java.util.List;
 
 import tunixserver.dto.response.PlaylistResponse;
-import tunixserver.dto.response.SongResponse;
 import tunixserver.entities.PlaylistEntity;
 
 public class PlaylistResponseMapper {
@@ -20,9 +19,9 @@ public class PlaylistResponseMapper {
             p.getCreatedAt(),
             p.getUpdatedAt(),
 
-            p.getSongs() != null
-                    ? p.getSongs().stream()
-                        .map(SongResponse::fromEntity)
+            p.getItems() != null
+                    ? p.getItems().stream()
+                        .map(item -> SongMapper.toResponse(item.getSong()))
                         .toList()
                     : List.of()
     );

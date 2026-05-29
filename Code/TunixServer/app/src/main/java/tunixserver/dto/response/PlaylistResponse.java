@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tunixserver.entities.PlaylistEntity;
+import tunixserver.mapper.SongMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,8 +36,8 @@ public class PlaylistResponse {
                 p.isPublic(),
                 p.getCreatedAt(),
                 p.getUpdatedAt(),
-                p.getSongs().stream()
-                        .map(SongResponse::fromEntity)
+                p.getItems().stream()
+                        .map(item -> SongMapper.toResponse(item.getSong()))
                         .toList()
         );
     }

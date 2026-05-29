@@ -2,12 +2,14 @@ package tunix.dto.response;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tunix.model.account.Artist;
 import tunix.model.musicContent.Album;
+import tunix.model.musicContent.Song;
 
 @Getter
 @NoArgsConstructor
@@ -18,7 +20,8 @@ public class AlbumResponse {
     private String title;
     private Long artistId;
     private LocalDate releaseDate;
-
+    private List<Song> songs;
+    
         public Album toAlbum() {
 
         Artist artist = new Artist(
