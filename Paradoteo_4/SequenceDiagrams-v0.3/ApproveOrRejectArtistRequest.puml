@@ -4,8 +4,8 @@ title Approve Or Reject Artist Request
 
 actor Admin
 
-participant AdminDashdoardView
-participant AdminDashdoardController
+participant AdminView
+participant AdminController
 participant ArtistRequestService
 participant ArtistRequestApiClient
 participant ApiClient
@@ -13,13 +13,14 @@ participant ArtistRequestBackendController
 participant ArtistRequestBackendService
 participant ArtistRequestBackendRepository
 
-activate AdminDashdoardView
-Admin -> AdminDashdoardView : clicks on "Artist Account Applications"
-AdminDashdoardView -> AdminDashdoardView : showArtistAccountApplications()
-Admin -> AdminDashdoardView : selects an application
-AdminDashdoardView -> AdminDashdoardController : getApplicationDetails(applicationId)
-activate AdminDashdoardController
-AdminDashdoardController -> ArtistRequestService : getApplicationDetails(applicationId)
+activate AdminView
+Admin -> AdminView : clicks on "Artist Account Applications"
+opt
+AdminView -> AdminView : showArtistAccountApplications()
+Admin -> AdminView : selects an application
+AdminView -> AdminController : getApplicationDetails(applicationId)
+activate AdminController
+AdminController -> ArtistRequestService : getApplicationDetails(applicationId)
 activate ArtistRequestService
 ArtistRequestService -> ArtistRequestApiClient : getApplicationDetails(applicationId)
 activate ArtistRequestApiClient
@@ -39,18 +40,22 @@ ArtistRequestBackendController --> ApiClient : return application details
 deactivate ArtistRequestBackendController
 ApiClient --> ArtistRequestApiClient : return application details
 deactivate ApiClient
-ArtistRequestApiClient --> AdminDashdoardController : return application details
+ArtistRequestApiClient --> ArtistRequestService : return application details
+
 deactivate ArtistRequestApiClient
-AdminDashdoardController -> AdminDashdoardView : showApplicationDetails(applicationDetails)
-deactivate AdminDashdoardController
-alt Admin approves Request
-    Admin -> AdminDashdoardView : Approve Request
-else Admin rejects Request
-    Admin -> AdminDashdoardView : Reject Request
+ArtistRequestService --> AdminController : return application details
+deactivate ArtistRequestService
+AdminController -> AdminView : showApplicationDetails(applicationDetails)
+deactivate AdminController
 end
-AdminDashdoardView -> AdminDashdoardController : saveResponse(adminRes, applicationId)
-activate AdminDashdoardController
-AdminDashdoardController -> ArtistRequestService : saveResponse(adminRes, applicationId)
+alt Admin approves Request
+    Admin -> AdminView : Approve Request
+else Admin rejects Request
+    Admin -> AdminView : Reject Request
+end
+AdminView -> AdminController : saveResponse(adminRes, applicationId)
+activate AdminController
+AdminController -> ArtistRequestService : saveResponse(adminRes, applicationId)
 activate ArtistRequestService
 ArtistRequestService -> ArtistRequestApiClient : saveResponse(adminRes, applicationId)
 activate ArtistRequestApiClient
@@ -70,7 +75,7 @@ ArtistRequestBackendController --> ApiClient : return success
 deactivate ArtistRequestBackendController
 ApiClient --> ArtistRequestApiClient : return success
 deactivate ApiClient
-ArtistRequestApiClient --> AdminDashdoardController : return success
+ArtistRequestApiClient --> AdminController : return success
 deactivate ArtistRequestApiClient
 
 

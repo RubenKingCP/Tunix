@@ -4,9 +4,8 @@ title Add Song To Playlist
 
 actor User
 
-participant MainPanel
-participant SearchView
-participant SearchController
+participant MusicView
+participant MusicController
 participant MusicView
 participant MusicController
 participant PlaylistService
@@ -19,20 +18,20 @@ participant PlaylistBackendRepository
 
 participant EventBus
 
-ref over SearchView, SearchController
+ref over MusicView, MusicController
 SearchSong
 end ref
-activate SearchView
-User -> SearchView : right click on song
-SearchView -> SearchView : showSongContextMenu()
-activate SearchView
-User -> SearchView : click on "Add to Playlist"
-SearchView -> SearchView : showPlaylistSelectionPopUp()
-activate SearchView
-User -> SearchView : select playlist
-SearchView -> SearchController : checkForDuplicates(playlistId, songId)
-activate SearchController
-SearchController -> PlaylistService : checkForDuplicateSong(playlistId, songId)
+activate MusicView
+User -> MusicView : click on three dots next to song
+MusicView -> MusicView : showSongContextMenu()
+activate MusicView
+User -> MusicView : click on "Add to Playlist"
+MusicView -> MusicView : showPlaylistSelection()
+activate MusicView
+User -> MusicView : select playlist
+MusicView -> MusicController : checkForDuplicates(playlistId, songId)
+activate MusicController
+MusicController -> PlaylistService : checkForDuplicateSong(playlistId, songId)
 activate PlaylistService
 PlaylistService -> PlaylistApi : checkForDuplicateSong(playlistId, songId)
 activate PlaylistApi
@@ -55,10 +54,10 @@ ApiClient --> PlaylistApi : hasDuplicate
 deactivate ApiClient
 PlaylistApi --> PlaylistService : hasDuplicate
 deactivate PlaylistApi
-PlaylistService --> SearchController : hasDuplicate
+PlaylistService --> MusicController : hasDuplicate
 deactivate PlaylistService
 alt !hasDuplicate
-SearchController -> PlaylistService : addToPlaylist(playlistId, songId)
+MusicController -> PlaylistService : addToPlaylist(playlistId, songId)
 activate PlaylistService
 PlaylistService -> PlaylistApi : addToPlaylist(playlistId, songId)
 activate PlaylistApi
@@ -81,24 +80,9 @@ ApiClient --> PlaylistApi : updated playlist
 deactivate ApiClient
 PlaylistApi --> PlaylistService : updated playlist
 deactivate PlaylistApi
-PlaylistService --> SearchController : updated playlist
-deactivate PlaylistService
-SearchController -> EventBus : publish switchToMusicView(MusicView, playlist)
-activate EventBus
-EventBus -> MainPanel : switchToMusicView(playlist)
-activate MainPanel
-deactivate EventBus
-create MusicController
-MainPanel -->> MusicController : new(playlist)
-activate MusicController
-deactivate MainPanel
-create MusicView
-MusicController -->> MusicView : new()
-activate MusicView
-MusicController -> MusicView : display(playlistData)
 
 else hasDuplicate
-SearchController -> SearchView : showDuplicateExistsPopUp()
+MusicController -> MusicView : showDuplicateExistsPopUp()
 end
 
 @enduml
