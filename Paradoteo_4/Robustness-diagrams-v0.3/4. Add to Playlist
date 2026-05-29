@@ -32,7 +32,7 @@ C_SRS --> B_SRC
 GX --> B_SRC : επιλέγει τραγούδι
 B_SRC --> C_SGS
 C_SGS --> B_SGS
-GX --> B_SGS : δεξί κλικ στο τραγούδι
+GX --> B_SGS : πατάει τις τρεις τελείες
 B_SGS --> C_SGM
 C_SGM --> B_SGM
 GX --> B_SGM : επιλογή <<Add to Playlist>>
