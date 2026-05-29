@@ -27,12 +27,13 @@ public class AdminService {
         }
     }
 
-    public Boolean postBan(int artistId){
+    public Boolean postBan(int artistId, String reason){
         try{
             BanRequest request = new BanRequest();
-            Boolean result = api.issueBan(request);
-            request.setReason(null);
-            return result;
+            request.setArtistId(artistId);
+            request.setReason(reason);
+            return api.issueBan(request);
+            
         }catch(Exception e){
             //Handle exception
             return false;

@@ -105,7 +105,7 @@ public class AdminController {
     }
 
     public boolean onIssueBanClicked(int artistId, String reason) {
-        boolean success = adminService.postBan(artistId);
+        boolean success = adminService.postBan(artistId,reason);
         String note = reason == null || reason.isBlank() ? "" : " Reason: " + reason;
         adminView.showMessage(success ? "Ban issued successfully." + note : "Failed to issue ban.");
         return success;
