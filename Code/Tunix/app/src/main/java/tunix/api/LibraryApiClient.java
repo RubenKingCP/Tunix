@@ -16,16 +16,22 @@ public class LibraryApiClient {
     // GET LIBRARY
     // =========================
     public ApiResponse<LibraryResponse> getLibrary(Integer accountId) {
-
         String path = "/library/" + accountId;
-
         System.out.println("LibraryApiClient: GET library for account " + accountId);
-
         return apiClient.get(
-                path,
-                new TypeReference<ApiResponse<LibraryResponse>>() {}
+            path,
+            new TypeReference<ApiResponse<LibraryResponse>>() {}
         );
     }
 
+    public ApiResponse<LibraryResponse> followArtist(int artistId) {
+        return apiClient.post("/library/add/" + artistId, artistId, LibraryResponse.class);
+    }
 
+    public ApiResponse<LibraryResponse> unfollowArtist(int artistId) {
+        return apiClient.delete(
+            "/library/remove/" + artistId,
+            new TypeReference<ApiResponse<LibraryResponse>>() {}
+        );
+    }
 }

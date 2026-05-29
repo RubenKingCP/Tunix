@@ -20,7 +20,6 @@ import tunix.navigation.events.*;
 import tunix.service.*;
 import tunix.service.auth.SessionService;
 import tunix.ui.views.main.center.UploadSongView;
-import tunix.model.musicContent.Album;
 import tunix.ui.views.main.LibraryView;
 import tunix.ui.views.main.center.MusicView;
 
@@ -102,15 +101,21 @@ public class MainPanel extends JPanel {
 
             showController(ArtistController.class);
 
-            JPanel panel = registry.get(ArtistController.class);
-
-            if (panel instanceof tunix.ui.views.main.center.ArtistView view) {
-
-                view.setArtistData(
+            if (artistController != null) {
+                artistController.loadArtist(
                         event.getArtist(),
                         java.util.List.of(),
                         java.util.List.of()
                 );
+            } else {
+                JPanel panel = registry.get(ArtistController.class);
+                if (panel instanceof tunix.ui.views.main.center.ArtistView view) {
+                    view.setArtistData(
+                            event.getArtist(),
+                            java.util.List.of(),
+                            java.util.List.of()
+                    );
+                }
             }
         });
         eventBus.subscribe(SwitchProfileScreenEvent.class, e -> {
@@ -147,7 +152,8 @@ public class MainPanel extends JPanel {
             return new AdminProfileController().getView();
         }
         if (controllerClass == ArtistController.class) {
-            return new ArtistController().getView();
+            artistController = new ArtistController(new FollowService(new LibraryApiClient(context.apiClient), SessionService.Instance.getAccount().getLongId()), SessionService.Instance.getAccount().getLongId());
+            return artistController.getView();
         }
         if (controllerClass == ArtistProfileController.class) {
             return new ArtistProfileController(new ArtistProfileService(context.eventBus), context.eventBus).getView();

@@ -3,7 +3,6 @@ package tunix.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Getter
@@ -16,19 +15,13 @@ public class LibraryResponse {
     private List<PlaylistResponse> playlists;
     private List<ArtistResponse> artists;
 
-    public List<SongResponse> getSongs() {
-        return songs;
-    }
+    public List<SongResponse> getSongs()         { return songs; }
+    public List<AlbumResponse> getAlbums()       { return albums; }
+    public List<PlaylistResponse> getPlaylists() { return playlists; }
+    public List<ArtistResponse> getArtists()     { return artists; }
 
-    public List<AlbumResponse> getAlbums() {
-        return albums;
-    }
-
-    public List<PlaylistResponse> getPlaylists() {
-        return playlists;
-    }
-
-    public List<ArtistResponse> getArtists() {
+    // Semantic alias used by FollowService.isFollowing()
+    public List<ArtistResponse> getFollowedArtists() {
         return artists;
     }
 }

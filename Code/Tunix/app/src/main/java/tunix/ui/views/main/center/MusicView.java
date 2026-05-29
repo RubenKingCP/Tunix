@@ -37,10 +37,8 @@ import tunix.controller.main.center.MusicController;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
 import tunix.model.PlaylistItem;
-import tunix.model.account.Artist;
 import tunix.model.musicContent.Playlist;
 import tunix.model.musicContent.Song;
-import tunix.service.auth.SessionService;
 import tunix.ui.views.main.LibraryView;
 
 public class MusicView extends JPanel {
@@ -109,6 +107,9 @@ public class MusicView extends JPanel {
                 asset == null ? null : asset.getCreator());
 
         List<Song> songs = asset == null ? List.of() : asset.getDisplaySongs();
+        if (songs == null) {
+            songs = List.of();
+        }
 
         for (Song song : songs) {
             builtPlaylist.addSong(song);

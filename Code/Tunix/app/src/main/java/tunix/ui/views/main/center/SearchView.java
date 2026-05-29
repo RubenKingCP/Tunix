@@ -21,7 +21,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -29,17 +28,13 @@ import javax.swing.border.EmptyBorder;
 import tunix.controller.SearchController;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
-import tunix.model.musicContent.Album;
 import tunix.navigation.events.EventBus;
-import tunix.navigation.events.LibraryPlaylistClicked;
-import tunix.navigation.events.OpenAlbumViewEvent;
 
 
 public class SearchView extends JPanel {
 
     private static final Color BG = new Color(0x121212);
     private static final Color SURFACE = new Color(0x1E1E1E);
-    private static final Color SURFACE2 = new Color(0x2A2A2A);
     private static final Color TEXT_PRIMARY = new Color(0xFFFFFF);
     private static final Color TEXT_SECONDARY = new Color(0xB3B3B3);
     private static final Color TAG_SONG = new Color(0x1A1A2E);
@@ -68,10 +63,8 @@ public class SearchView extends JPanel {
         new CardData("♫", "Classical", "", new Color(0xDC2626)),
     };
 
-    private JTextField searchField;
     private JPanel contentPanel;
     private List<ILibraryAsset> results;
-    private final EventBus eventBus;
     private final SearchController controller;
 
     public SearchView(List<ILibraryAsset> results) {
@@ -80,7 +73,6 @@ public class SearchView extends JPanel {
 
     public SearchView(List<ILibraryAsset> results, EventBus eventBus, SearchController controller) {
         this.results = results == null ? List.of() : List.copyOf(results);
-        this.eventBus = eventBus;
         this.controller = controller;
         setLayout(new BorderLayout());
         setBackground(BG);
@@ -196,16 +188,6 @@ public class SearchView extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-
-                if (asset instanceof Album album) {
-
-                    if (eventBus != null) {
-                        eventBus.publish(new OpenAlbumViewEvent(album));
-                    }
-
-                    return;
-                }
-
                 openResult(asset);
             }
         });
@@ -370,32 +352,6 @@ public class SearchView extends JPanel {
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
             g2.dispose();
             super.paintComponent(g);
-        }
-    }
-
-    private static class RoundTextField extends JTextField {
-        RoundTextField(int cols) {
-            super(cols);
-            setOpaque(false);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(SURFACE2);
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-            g2.dispose();
-            super.paintComponent(g);
-        }
-
-        @Override
-        protected void paintBorder(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(new Color(0x444444));
-            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
-            g2.dispose();
         }
     }
 

@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
 import tunix.model.account.Artist;
+import tunix.model.musicContent.Album;
 import tunix.service.SearchService;
 import tunix.ui.views.main.center.SearchView;
 import tunix.navigation.events.*;
@@ -55,6 +56,20 @@ public class SearchController {
 
             if (artist != null) {
                 eventBus.publish(new OpenArtistViewEvent(artist));
+            }
+            return;
+        }
+
+        if (asset.getType() == LibraryAssetType.ALBUM) {
+            Album album = null;
+            if (fullAsset instanceof Album fullAlbum) {
+                album = fullAlbum;
+            } else if (asset instanceof Album searchAlbum) {
+                album = searchAlbum;
+            }
+
+            if (album != null) {
+                eventBus.publish(new OpenAlbumViewEvent(album));
             }
             return;
         }
