@@ -98,15 +98,15 @@ public class MusicView extends JPanel {
 
     private Playlist buildPlaylistForAsset(ILibraryAsset asset) {
 
-        var currentUser =
-                SessionService.Instance == null
-                        ? null
-                        : SessionService.Instance.getAccount();
+        // var currentUser =
+        //         SessionService.Instance == null
+        //                 ? null
+        //                 : SessionService.Instance.getAccount();
 
         Playlist builtPlaylist = new Playlist(
                 asset == null ? "Testing" : asset.getTitle(),
                 asset == null ? 1 : asset.getId(),
-                currentUser);
+                asset == null ? null : asset.getCreator());
 
         List<Song> songs = asset == null ? List.of() : asset.getDisplaySongs();
 
@@ -132,12 +132,11 @@ public class MusicView extends JPanel {
             }
         }
 
-        var currentUser =
-                SessionService.Instance == null
-                        ? null
-                        : SessionService.Instance.getAccount();
-
-        return currentUser == null ? "Guest" : currentUser.getUsername();
+        // var currentUser =
+        //         SessionService.Instance == null
+        //                 ? null
+        //                 : SessionService.Instance.getAccount();
+        return musicAsset == null ? "Guest" : musicAsset.getCreator().getUsername();
     }
 
     private JPanel buildHeader() {
@@ -288,7 +287,6 @@ public class MusicView extends JPanel {
     private JScrollPane buildSongTable() {
 
         String[] columns = { "#", "Title", "Artist", "🕐", "", "" };
-
         List<PlaylistItem> playlistItems = playlist.getPlaylistItems();
         if (playlistItems == null || playlistItems.isEmpty()) {
             JPanel emptyPanel = new JPanel(new BorderLayout());

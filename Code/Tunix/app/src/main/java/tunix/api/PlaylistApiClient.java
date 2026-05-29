@@ -75,11 +75,13 @@ public class PlaylistApiClient {
 
         PlaylistResponse dto = response.getData();
 
-        Playlist playlist = new Playlist(
-                dto.getTitle(),
-                dto.getId().intValue(),
-                SessionService.Instance.getAccount()
-        );
+        // Playlist playlist = new Playlist(
+        //         dto.getTitle(),
+        //         dto.getId().intValue(),
+        //         SessionService.Instance.getAccount()
+        // );
+
+        Playlist playlist = dto.toPlaylist();
 
         // visibility
         if (dto.isPublic()) {
