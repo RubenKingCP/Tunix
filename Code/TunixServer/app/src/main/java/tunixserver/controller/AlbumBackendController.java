@@ -59,11 +59,11 @@ public class AlbumBackendController {
         );
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{albumId}")
     public ResponseEntity<ApiResponse<AlbumResponse>> getAlbumById(@PathVariable Long albumId) {
         AlbumResponse response = albumBackendService.getAlbumById(albumId);
         return ResponseEntity.ok(
-            new ApiResponse<>(true, "Album found", response)
+            new ApiResponse<>(true, "Album found! ", response)
         );
     }
     

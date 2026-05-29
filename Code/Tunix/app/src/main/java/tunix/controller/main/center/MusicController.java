@@ -3,9 +3,12 @@ package tunix.controller.main.center;
 import java.util.List;
 import javax.swing.JPanel;
 import tunix.navigation.events.EventBus;
+import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
+import tunix.model.musicContent.Album;
 import tunix.model.musicContent.Playlist;
 import tunix.model.musicContent.Song;
+import tunix.service.AlbumService;
 import tunix.service.PlaylistService;
 import tunix.ui.views.main.LibraryView;
 import tunix.ui.views.main.center.MusicView;
@@ -15,17 +18,20 @@ public class MusicController {
 
     private final MusicView musicView;
     private final PlaylistService playlistService;
+    private final AlbumService albumService;
     private final EventBus eventBus;
 
     public MusicController(
             EventBus eventBus,
             LibraryView libraryPanel,
-            PlaylistService playlistService) {
+            PlaylistService playlistService,
+            AlbumService albumService) {
 
         this.eventBus = eventBus;
         this.playlistService = playlistService;
         this.musicView = new MusicView(this, libraryPanel);
         this.musicView.setController(this);
+        this.albumService = albumService;
     }
 
     public JPanel getView() { //You sure?
@@ -59,6 +65,10 @@ public class MusicController {
         }
         if (asset.getType() == tunix.dto.enums.LibraryAssetType.PLAYLIST) {
             Playlist fresh = playlistService.getPlaylistById(asset.getId());
+            return fresh != null ? fresh : asset;
+        }
+        if (asset.getType() == LibraryAssetType.ALBUM) {
+            Album fresh = albumService.getAlbumById(asset.getId());
             return fresh != null ? fresh : asset;
         }
         return asset;

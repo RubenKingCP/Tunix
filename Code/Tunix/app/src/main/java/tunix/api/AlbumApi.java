@@ -44,7 +44,7 @@ public class AlbumApi {
 
     public ILibraryAsset getById(long id) {
     ApiResponse<AlbumResponse> response = apiClient.get(
-        "/album/getById/" + id,
+        "/albums/" + id,
         new TypeReference<ApiResponse<AlbumResponse>>() {}
     );
     if (response == null || !response.isSuccess()) return null;

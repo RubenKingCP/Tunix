@@ -20,7 +20,7 @@ public class AlbumEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String title;
+    private String title; 
 
     @ManyToOne
     @JoinColumn(name = "artist_id", nullable = false)
