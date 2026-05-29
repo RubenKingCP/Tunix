@@ -3,8 +3,6 @@ package tunix.service;
 import java.sql.Date;
 import java.util.List;
 
-import org.checkerframework.checker.units.qual.s;
-
 import tunix.api.AlbumApi;
 import tunix.api.ArtistApi;
 import tunix.api.PlaylistApiClient;
@@ -16,9 +14,7 @@ import tunix.dto.response.ArtistResponse;
 import tunix.dto.response.PlaylistResponse;
 import tunix.dto.response.SongResponse;
 import tunix.model.ILibraryAsset;
-import tunix.model.account.Account;
 import tunix.model.account.Artist;
-import tunix.model.account.User;
 import tunix.model.musicContent.Album;
 import tunix.model.musicContent.Playlist;
 import tunix.model.musicContent.Song;
@@ -39,6 +35,7 @@ public class SearchService {
     return switch (type) {
         case PLAYLIST -> playlistApiClient.getById(id);
         case ALBUM -> albumApiClient.getById(id);
+        case ARTIST -> toArtist(artistApiClient.getArtistById((int) id).getData());
         default -> null;
     };
 }
