@@ -52,19 +52,33 @@ public class MusicView extends JPanel {
             LibraryView libraryPanel) {
 
         this.controller = controller;
-        initGui();
     }
 
-    public void initGui() {
-
+    public void initGui(){
         removeAll();
 
+        if (musicAsset == null) {
+            setLayout(new BorderLayout());
+            setBackground(Color.DARK_GRAY);
+
+            JLabel loading = new JLabel("Loading...", SwingConstants.CENTER);
+            loading.setForeground(Color.GRAY);
+
+            add(loading, BorderLayout.CENTER);
+
+            revalidate();
+            repaint();
+            return;
+        }
         if (controller != null) {
             controller.ensurePlaylistsLoaded();
         }
 
         if (controller != null && musicAsset != null) {
-            musicAsset = controller.fetchFreshAsset(musicAsset);
+            ILibraryAsset fresh = controller.fetchFreshAsset(musicAsset);
+            if (fresh != null) {
+                musicAsset = fresh;
+            }
         }
 
         playlist = buildPlaylistForAsset(musicAsset);
@@ -85,8 +99,22 @@ public class MusicView extends JPanel {
     }
 
     public void setAsset(ILibraryAsset asset) {
+
+        if (asset == null) {
+            System.out.println("Asset is null");
+            this.musicAsset = null;
+            initGui();
+            return;
+        }
+
+        System.out.println("Check to see what asset we got: " + asset.getTitle());
+
         this.musicAsset = asset;
+
+        System.out.println("Check to see what asset we got in music asset: " + musicAsset.getTitle());
+
         this.playlist = buildPlaylistForAsset(asset);
+
         initGui();
     }
 
@@ -94,8 +122,9 @@ public class MusicView extends JPanel {
         initGui();
     }
 
-    private Playlist buildPlaylistForAsset(ILibraryAsset asset) {
 
+
+    private Playlist buildPlaylistForAsset(ILibraryAsset asset) {
         // var currentUser =
         //         SessionService.Instance == null
         //                 ? null
@@ -120,10 +149,30 @@ public class MusicView extends JPanel {
 
     private String getArtistName() {
 
-        if (musicAsset != null && musicAsset.getType() == LibraryAssetType.PLAYLIST) {
+        if (musicAsset == null) return "Guest";
+
+        if (musicAsset.getType() == LibraryAssetType.PLAYLIST) {
             return playlist.getCreator() == null
                     ? "Guest"
                     : playlist.getCreator().getUsername();
+        }
+
+        if (musicAsset.getType() == LibraryAssetType.ALBUM) {
+
+            // BEST: use album creator
+            if (musicAsset.getCreator() != null) {
+                return musicAsset.getCreator().getUsername();
+            }
+
+            // fallback: derive from first song
+            if (!playlist.getPlaylistItems().isEmpty()) {
+                Song first = playlist.getPlaylistItems().get(0).getSong();
+                if (first != null && first.getArtist() != null) {
+                    return first.getArtist().getTitle();
+                }
+            }
+
+            return "Unknown Artist";
         }
 
         if (!playlist.getPlaylistItems().isEmpty()) {
@@ -133,11 +182,9 @@ public class MusicView extends JPanel {
             }
         }
 
-        // var currentUser =
-        //         SessionService.Instance == null
-        //                 ? null
-        //                 : SessionService.Instance.getAccount();
-        return musicAsset == null ? "Guest" : musicAsset.getCreator().getUsername();
+        return musicAsset.getCreator() != null
+                ? musicAsset.getCreator().getUsername()
+                : "Guest";
     }
 
     private JPanel buildHeader() {
@@ -309,20 +356,21 @@ public class MusicView extends JPanel {
         }
         Object[][] rows = new Object[playlistItems.size()][6];
 
-        for (PlaylistItem item : playlistItems) {
+        for (int i = 0; i < playlistItems.size(); i++) {
 
-            int pos  = item.getPosition();
+            PlaylistItem item = playlistItems.get(i);
             Song song = item.getSong();
 
-            rows[pos][0] = pos + 1;
-            rows[pos][1] = song.getTitle();
-            rows[pos][2] = song.getSubtitle();
+            rows[i][0] = i + 1;
+            rows[i][1] = song.getTitle();
+            rows[i][2] = song.getSubtitle();
 
             int minutes = song.getDuration() / 60;
-            int seconds = song.getDuration() - (minutes * 60);
-            rows[pos][3] = minutes + ":" + seconds;
-            rows[pos][4] = "↓";
-            rows[pos][5] = "⋯";
+            int seconds = song.getDuration() % 60;
+
+            rows[i][3] = String.format("%d:%02d", minutes, seconds);
+            rows[i][4] = "↓";
+            rows[i][5] = "⋯";
         }
 
         JTable table = new JTable(rows, columns) {

@@ -79,12 +79,14 @@ public class MainPanel extends JPanel {
         });
 
         eventBus.subscribe(OpenAlbumViewEvent.class, event -> {
-
+            System.out.println("WE GOT THE EVENT AND MOVING ON");
             showController(MusicController.class);
 
             JPanel panel = registry.get(MusicController.class);
-
+            
+            System.out.println("Pring the isntance herer: " + panel.getClass());
             if (panel instanceof MusicView musicView) {
+                System.out.println("SENDING ALBUM: " + event.getAlbum().getTitle());
                 musicView.setAsset(event.getAlbum());
             }
         });

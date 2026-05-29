@@ -99,7 +99,7 @@ public class ApiClient {
             HttpResponse<String> response =
                     httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println("RAW RESPONSE: " + response.body());
+            // System.out.println("RAW RESPONSE: " + response.body());
 
             int status = response.statusCode();
 
@@ -155,7 +155,7 @@ public class ApiClient {
         HttpResponse<String> response =
                 httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("RAW RESPONSE: " + response.body());
+        // System.out.println("RAW RESPONSE: " + response.body());
 
         int status = response.statusCode();
         JsonNode root = objectMapper.readTree(response.body());
@@ -197,7 +197,7 @@ public class ApiClient {
                 httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         String body = response.body();
-        System.out.println("RAW RESPONSE: " + body);
+        // System.out.println("RAW RESPONSE: " + body);
 
         int status = response.statusCode();
         if (status >= 200 && status < 300) {

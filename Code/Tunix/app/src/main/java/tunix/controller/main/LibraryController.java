@@ -69,6 +69,8 @@ public class LibraryController {
     }
 
     public void albumClicked(Album album) {
+        System.out.println("ALBUM CLICKED AND SEND AN EVENT");
+        System.out.println("A;BUM SEND" + album.getTitle());
         appContext.eventBus.publish(new OpenAlbumViewEvent(album));
     }
     public void songClicked(Song song) {
