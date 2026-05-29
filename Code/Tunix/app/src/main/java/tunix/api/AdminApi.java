@@ -2,6 +2,7 @@ package tunix.api;
 
 import java.util.List;
 
+import tunix.dto.request.BanRequest;
 import tunix.dto.response.ApiResponse;
 
 public class AdminApi {
@@ -14,8 +15,8 @@ public class AdminApi {
         return apiClient.post("/admin/issueWarning", artistId, boolean.class).getData();
     }
 
-    public Boolean issueBan(int artistId){
-        return apiClient.post("/admin/issueBan", artistId, boolean.class).getData();
+    public Boolean issueBan(BanRequest banRequest){
+        return apiClient.post("/admin/issueBan", banRequest, boolean.class).getData();
     }
     public List<String> getArtistModerationHistory(int artistId) {
         ApiResponse<List<String>> response = apiClient.get("/admin/artistModerationHistory/" + artistId, new com.fasterxml.jackson.core.type.TypeReference<ApiResponse<List<String>>>(){});

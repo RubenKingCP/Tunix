@@ -13,8 +13,10 @@ CREATE TABLE account (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role ENUM('USER', 'ARTIST', 'ADMIN') NOT NULL,
+    is_banned BOOLEAN NOT NULL DEFAULT FALSE,
+    ban_reason VARCHAR(255) NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)ENGINE=InnoDB;
+) ENGINE=InnoDB;
 
 -- =================
 -- USER

@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tunixserver.entities.AccountEntity;
 import tunixserver.entities.ArtistEntity;
+import tunixserver.repository.AccountBackendRepository;
 import tunixserver.repository.ArtistBackendRepository;
 import tunixserver.repository.SongBackendRepository;
 
@@ -14,6 +16,8 @@ public class AdminBackendService {
 
     private final ArtistBackendRepository artistBackendRepository;
     private final SongBackendRepository songBackendRepository;
+    private final ArtistBackendRepository artistRepo;
+    private final AccountBackendRepository accountRepository;
     // =========================
     // ISSUE WARNING
     // =========================
@@ -30,29 +34,16 @@ public class AdminBackendService {
     // =========================
     // ISSUE BAN
     // =========================
-    @Transactional
-    public Boolean issueBan(int artistId) {
+    public boolean banArtist(Long artistId, String reason) {
 
-        Long id = (long) artistId;
+        ArtistEntity artist = artistRepo.findById(artistId)
+                .orElseThrow();
 
-        System.out.println("=== BAN START ===");
-        System.out.println("Artist ID to ban: " + id);
+        AccountEntity account = artist.getAccount();
 
-        ArtistEntity artist = artistBackendRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Artist not found"));
+        account.setBanned(true);
+        account.setBanReason(reason);
 
-        System.out.println("Found artist: " + artist.getId());
-
-        // 1. delete dependent songs first
-        int deletedSongs = songBackendRepository.deleteByArtistId(id);
-        System.out.println("Deleted songs count: " + deletedSongs);
-
-        // 2. delete artist
-        artistBackendRepository.deleteById(id);
-        System.out.println("Artist deleted");
-
-        System.out.println("=== BAN COMPLETE ===");
-
-        return true;
+        return (accountRepository.save(account) != null);
     }
 }

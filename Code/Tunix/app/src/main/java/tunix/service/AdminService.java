@@ -5,6 +5,7 @@ import java.util.List;
 
 import tunix.api.AdminApi;
 import tunix.api.SongApiClient;
+import tunix.dto.request.BanRequest;
 import tunix.model.ArtistRequest;
 
 public class AdminService {
@@ -28,7 +29,9 @@ public class AdminService {
 
     public Boolean postBan(int artistId){
         try{
-            Boolean result = api.issueBan(artistId);
+            BanRequest request = new BanRequest();
+            Boolean result = api.issueBan(request);
+            request.setReason(null);
             return result;
         }catch(Exception e){
             //Handle exception

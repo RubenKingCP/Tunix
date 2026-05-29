@@ -24,6 +24,12 @@ public class AccountEntity {
 
     private String password;
 
+    @Column(name = "is_banned")
+    private boolean isBanned;
+
+    @Column(name = "ban_reason")
+    private String banReason;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

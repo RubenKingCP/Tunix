@@ -22,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class PlaylistBackendService {
     private final PlaylistBackendRepository playlistBackendRepository;
@@ -58,6 +60,45 @@ public class PlaylistBackendService {
 
         playlist.getItems().add(item);
         playlistBackendRepository.save(playlist);
+        return true;
+    }
+
+    @Transactional
+    public boolean removeSongFromPlaylist(Long playlistId, Long songId) {
+
+        PlaylistEntity playlist = playlistBackendRepository.findById(playlistId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Playlist not found"));
+
+        SongEntity song = songBackendRepository.findById(songId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Song not found"));
+
+        PlaylistItemEntity itemToRemove = playlist.getItems()
+                .stream()
+                .filter(item -> item.getSong().getId().equals(songId))
+                .findFirst()
+                .orElse(null);
+
+        // song not in playlist
+        if (itemToRemove == null) {
+            return false;
+        }
+
+        // remove item
+        playlist.getItems().remove(itemToRemove);
+
+        // re-order positions
+        for (int i = 0; i < playlist.getItems().size(); i++) {
+            playlist.getItems().get(i).setPosition(i);
+        }
+
+        playlistBackendRepository.save(playlist);
+
         return true;
     }
 

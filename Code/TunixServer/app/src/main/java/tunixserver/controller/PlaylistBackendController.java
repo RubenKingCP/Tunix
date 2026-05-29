@@ -13,7 +13,10 @@ import tunixserver.dto.request.PlaylistCreateRequest;
 import tunixserver.dto.response.ApiResponse;
 import tunixserver.dto.response.PlaylistResponse;
 import tunixserver.entities.PlaylistEntity;
+import tunixserver.repository.PlaylistBackendRepository;
 import tunixserver.service.PlaylistBackendService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,10 +26,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequestMapping("/playlists")
 public class PlaylistBackendController {
+    private final PlaylistBackendRepository playlistBackendRepository;
     private final PlaylistBackendService playlistBackendService;
 
-    public PlaylistBackendController(PlaylistBackendService playlistBackendService) {
+    public PlaylistBackendController(PlaylistBackendService playlistBackendService, PlaylistBackendRepository playlistBackendRepository) {
         this.playlistBackendService = playlistBackendService;
+        this.playlistBackendRepository = playlistBackendRepository;
     }
 
     @PostMapping("/{playlistId}/add/{songId}")
@@ -41,6 +46,37 @@ public class PlaylistBackendController {
                 ApiResponse.error("Song already exists")
             );
         }
+    }
+
+    @DeleteMapping("/{playlistId}/remove/{songId}")
+    public ResponseEntity<ApiResponse<Void>> removeSongFromPlaylist(
+            @PathVariable Long playlistId,
+            @PathVariable Long songId
+    ) {
+
+        boolean removed =
+                playlistBackendService.removeSongFromPlaylist(
+                        playlistId,
+                        songId
+                );
+
+        if (!removed) {
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(
+                            false,
+                            "Song was not in playlist",
+                            null
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Song removed successfully",
+                        null
+                )
+        );
     }
 
 

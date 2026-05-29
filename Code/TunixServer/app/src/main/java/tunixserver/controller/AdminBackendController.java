@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import tunixserver.dto.request.BanRequest;
 import tunixserver.dto.response.ApiResponse;
 import tunixserver.service.AdminBackendService;
 
@@ -37,19 +38,22 @@ public class AdminBackendController {
     // =========================
     // ISSUE BAN
     // =========================
-    @PostMapping("/issueBan")
-    public ResponseEntity<ApiResponse<Boolean>> issueBan(
-            @RequestBody Integer artistId
-    ) {
+        @PostMapping("/issueBan")
+        public ResponseEntity<ApiResponse<Boolean>> issueBan(
+                @RequestBody BanRequest request
+        ) {
 
-        Boolean result = adminBackendService.issueBan(artistId);
+        Boolean result = adminBackendService.banArtist(
+                Long.valueOf(request.getArtistId()),
+                request.getReason()
+        );
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
-                        true,
+                        result,
                         "Artist banned successfully",
-                        result
+                        null
                 )
         );
-    }
+        }
 }
