@@ -56,4 +56,12 @@ public class AdminService {
     public String getProfilePic (ArtistRequest ar) {
         return ""; // idk, something like "SELECT profile_picture_url WHERE user_id = ar.applicantId;" ??
     }
+
+    public List<String> getArtistModerationHistory(int artistId) {
+        List<String> violations = api.getArtistModerationHistory(artistId);
+        if (violations == null){
+            return List.of("No violations found for this artist.");
+        }
+        return violations;
+    }
 }

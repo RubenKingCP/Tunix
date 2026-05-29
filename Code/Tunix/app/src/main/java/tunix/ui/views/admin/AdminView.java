@@ -439,135 +439,223 @@ public class AdminView extends JPanel {
     }
 
     private void showRemoveSongOptions(Song song) {
-        Window ancestor = SwingUtilities.getWindowAncestor(this);
-        JDialog dialog = new JDialog((Frame) ancestor, "Remove Song", Dialog.ModalityType.APPLICATION_MODAL);
-        dialog.setResizable(false);
-        dialog.setBackground(BG_PRIMARY);
+    Window ancestor = SwingUtilities.getWindowAncestor(this);
+    JDialog dialog = new JDialog((Frame) ancestor, "Remove Song", Dialog.ModalityType.APPLICATION_MODAL);
+    dialog.setResizable(false);
+    dialog.setBackground(BG_PRIMARY);
 
-        JPanel root = new JPanel(new BorderLayout()) {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(BG_PRIMARY);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 18, 18);
-                g2.dispose();
-            }
-        };
-        root.setOpaque(true);
-        root.setBackground(BG_PRIMARY);
-        root.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0x33, 0x33, 0x33), 1),
-                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+    int artistId = song.getArtist() != null ? song.getArtist().getId() : -1;
 
-        JPanel content = new JPanel();
-        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-        content.setOpaque(false);
+    // Load moderation history
+    List<String> moderationHistory =
+            artistId >= 0
+                    ? adminController.getArtistModerationHistory(artistId)
+                    : List.of();
 
-        JLabel title = new JLabel("Remove song and apply a penalty");
-        title.setFont(new Font("SansSerif", Font.BOLD, 16));
-        title.setForeground(TEXT_PRIMARY);
-        title.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Wrap subtitle in a label with wrapping via HTML
-        JLabel subtitle = new JLabel("<html>Choose what should happen to the artist after removing <i>" + song.getTitle() + "</i>.</html>");
-        subtitle.setFont(FONT_BODY);
-        subtitle.setForeground(TEXT_MUTED);
-        subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        content.add(title);
-        content.add(Box.createVerticalStrut(6));
-        content.add(subtitle);
-        content.add(Box.createVerticalStrut(16));
-
-        JRadioButton removeOnly = new JRadioButton("Remove only");
-        JRadioButton issueStrike = new JRadioButton("Issue strike");
-        JRadioButton issueBan = new JRadioButton("Issue ban");
-
-        for (JRadioButton rb : new JRadioButton[]{removeOnly, issueStrike, issueBan}) {
-            rb.setOpaque(false);
-            rb.setForeground(TEXT_PRIMARY);
-            rb.setFont(FONT_BODY);
-            rb.setAlignmentX(Component.LEFT_ALIGNMENT);
+    JPanel root = new JPanel(new BorderLayout()) {
+        @Override protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(BG_PRIMARY);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 18, 18);
+            g2.dispose();
         }
-        removeOnly.setSelected(true);
+    };
 
-        ButtonGroup group = new ButtonGroup();
-        group.add(removeOnly);
-        group.add(issueStrike);
-        group.add(issueBan);
+    root.setOpaque(true);
+    root.setBackground(BG_PRIMARY);
+    root.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(0x33, 0x33, 0x33), 1),
+            BorderFactory.createEmptyBorder(16, 16, 16, 16)));
 
-        content.add(removeOnly);
-        content.add(Box.createVerticalStrut(6));
-        content.add(issueStrike);
-        content.add(Box.createVerticalStrut(6));
-        content.add(issueBan);
-        content.add(Box.createVerticalStrut(16));
+    JPanel content = new JPanel();
+    content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+    content.setOpaque(false);
 
-        JLabel reasonLabel = new JLabel("Reason for the action (optional)");
-        reasonLabel.setFont(FONT_BTN);
-        reasonLabel.setForeground(TEXT_MUTED);
-        reasonLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        content.add(reasonLabel);
-        content.add(Box.createVerticalStrut(6));
+    JLabel title = new JLabel("Remove song and apply a penalty");
+    title.setFont(new Font("SansSerif", Font.BOLD, 16));
+    title.setForeground(TEXT_PRIMARY);
+    title.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JTextArea reasonField = new JTextArea();
-        reasonField.setFont(FONT_BODY);
-        reasonField.setForeground(TEXT_PRIMARY);
-        reasonField.setBackground(BG_CARD);
-        reasonField.setCaretColor(TEXT_PRIMARY);
-        reasonField.setLineWrap(true);
-        reasonField.setWrapStyleWord(true);
-        reasonField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(DIVIDER),
-                BorderFactory.createEmptyBorder(8, 8, 8, 8)));
-        // Let it stretch to fill available width, fixed height
-        reasonField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        reasonField.setPreferredSize(new Dimension(360, 72));
-        reasonField.setMaximumSize(new Dimension(360, 72));
-        content.add(reasonField);
-        content.add(Box.createVerticalStrut(16));
+    JLabel subtitle = new JLabel(
+            "<html>Choose what should happen to the artist after removing <i>"
+                    + song.getTitle()
+                    + "</i>.</html>");
 
-        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        actions.setOpaque(false);
-        actions.setAlignmentX(Component.LEFT_ALIGNMENT);
+    subtitle.setFont(FONT_BODY);
+    subtitle.setForeground(TEXT_MUTED);
+    subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JButton cancel  = makeButton("Cancel",  BTN_REMOVE,  TEXT_PRIMARY);
-        JButton confirm = makeButton("Confirm", BTN_APPROVE, Color.WHITE);
+    content.add(title);
+    content.add(Box.createVerticalStrut(6));
+    content.add(subtitle);
+    content.add(Box.createVerticalStrut(18));
 
-        cancel.addActionListener(e -> dialog.dispose());
-        confirm.addActionListener(e -> {
-            JOptionPane.showMessageDialog(dialog, "Confirm clicked");
-            String reason = reasonField.getText() == null ? "" : reasonField.getText().trim();
-            int artistId = song.getArtist() != null ? song.getArtist().getId() : -1;
+    // ── Moderation History ─────────────────────────────────────
 
-            boolean removed = adminController.onRemoveSongClicked(song.getId());
-            if (!removed) {
-                showMessage("Failed to remove song.");  // give feedback
-                dialog.dispose();
-                return;
+    if (!moderationHistory.isEmpty()) {
+
+        JLabel historyLabel = new JLabel("Previous strikes / bans");
+        historyLabel.setFont(FONT_BTN);
+        historyLabel.setForeground(TEXT_MUTED);
+        historyLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        content.add(historyLabel);
+        content.add(Box.createVerticalStrut(8));
+
+        JPanel historyPanel = new JPanel();
+        historyPanel.setLayout(new BoxLayout(historyPanel, BoxLayout.Y_AXIS));
+        historyPanel.setBackground(BG_CARD);
+
+        for (String entry : moderationHistory) {
+
+            JPanel row = new JPanel(new BorderLayout());
+            row.setOpaque(false);
+            row.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+            row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+
+            JLabel text = new JLabel("<html>" + entry + "</html>");
+            text.setFont(FONT_BODY);
+
+            if (entry.toUpperCase().contains("BAN")) {
+                text.setForeground(BTN_REJECT);
+            } else {
+                text.setForeground(new Color(0xF1, 0xC4, 0x0F));
             }
 
-            if (issueStrike.isSelected() && artistId >= 0)
-                adminController.onIssueStrikeClicked(artistId, reason);
-            else if (issueBan.isSelected() && artistId >= 0)
-                adminController.onIssueBanClicked(artistId, reason);
+            row.add(text, BorderLayout.CENTER);
 
-            dialog.dispose();
-            selectTab("Songs");  // re-fetch and refresh the songs list
-        });
+            historyPanel.add(row);
 
-        actions.add(cancel);
-        actions.add(confirm);
-        content.add(actions);
+            JPanel divider = new JPanel();
+            divider.setBackground(DIVIDER);
+            divider.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+            divider.setPreferredSize(new Dimension(Integer.MAX_VALUE, 1));
 
-        root.add(content, BorderLayout.CENTER);
-        dialog.setContentPane(root);
-        dialog.setPreferredSize(new Dimension(430, 320));
-        dialog.pack();
-        dialog.setMinimumSize(new Dimension(430, 320));
-        dialog.setLocationRelativeTo(ancestor != null ? ancestor : this);
-        dialog.setVisible(true);
+            historyPanel.add(divider);
+        }
+
+        JScrollPane historyScroll = new JScrollPane(historyPanel);
+        historyScroll.setBorder(BorderFactory.createLineBorder(DIVIDER));
+        historyScroll.setBackground(BG_CARD);
+        historyScroll.getViewport().setBackground(BG_CARD);
+
+        historyScroll.setPreferredSize(new Dimension(360, 120));
+        historyScroll.setMaximumSize(new Dimension(360, 120));
+
+        historyScroll.getVerticalScrollBar().setUI(new TunixScrollBarUI());
+
+        content.add(historyScroll);
+        content.add(Box.createVerticalStrut(18));
     }
+
+    // ── Punishment Options ────────────────────────────────────
+
+    JRadioButton removeOnly = new JRadioButton("Remove only");
+    JRadioButton issueStrike = new JRadioButton("Issue strike");
+    JRadioButton issueBan = new JRadioButton("Issue ban");
+
+    for (JRadioButton rb : new JRadioButton[]{removeOnly, issueStrike, issueBan}) {
+        rb.setOpaque(false);
+        rb.setForeground(TEXT_PRIMARY);
+        rb.setFont(FONT_BODY);
+        rb.setAlignmentX(Component.LEFT_ALIGNMENT);
+    }
+
+    removeOnly.setSelected(true);
+
+    ButtonGroup group = new ButtonGroup();
+    group.add(removeOnly);
+    group.add(issueStrike);
+    group.add(issueBan);
+
+    content.add(removeOnly);
+    content.add(Box.createVerticalStrut(6));
+    content.add(issueStrike);
+    content.add(Box.createVerticalStrut(6));
+    content.add(issueBan);
+    content.add(Box.createVerticalStrut(18));
+
+    // ── Reason Field ──────────────────────────────────────────
+
+    JLabel reasonLabel = new JLabel("Reason for the action (optional)");
+    reasonLabel.setFont(FONT_BTN);
+    reasonLabel.setForeground(TEXT_MUTED);
+    reasonLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    content.add(reasonLabel);
+    content.add(Box.createVerticalStrut(6));
+
+    JTextArea reasonField = new JTextArea();
+
+    reasonField.setFont(FONT_BODY);
+    reasonField.setForeground(TEXT_PRIMARY);
+    reasonField.setBackground(BG_CARD);
+    reasonField.setCaretColor(TEXT_PRIMARY);
+    reasonField.setLineWrap(true);
+    reasonField.setWrapStyleWord(true);
+
+    reasonField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(DIVIDER),
+            BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+
+    reasonField.setAlignmentX(Component.LEFT_ALIGNMENT);
+    reasonField.setPreferredSize(new Dimension(360, 72));
+    reasonField.setMaximumSize(new Dimension(360, 72));
+
+    content.add(reasonField);
+    content.add(Box.createVerticalStrut(18));
+
+    // ── Buttons ───────────────────────────────────────────────
+
+    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    actions.setOpaque(false);
+    actions.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    JButton cancel = makeButton("Cancel", BTN_REMOVE, TEXT_PRIMARY);
+    JButton confirm = makeButton("Confirm", BTN_APPROVE, Color.WHITE);
+
+    cancel.addActionListener(e -> dialog.dispose());
+
+    confirm.addActionListener(e -> {
+
+        String reason = reasonField.getText() == null
+                ? ""
+                : reasonField.getText().trim();
+
+        boolean removed = adminController.onRemoveSongClicked(song.getId());
+
+        if (!removed) {
+            showMessage("Failed to remove song.");
+            dialog.dispose();
+            return;
+        }
+
+        if (issueStrike.isSelected() && artistId >= 0) {
+            adminController.onIssueStrikeClicked(artistId, reason);
+        } else if (issueBan.isSelected() && artistId >= 0) {
+            adminController.onIssueBanClicked(artistId, reason);
+        }
+
+        dialog.dispose();
+        selectTab("Songs");
+    });
+
+    actions.add(cancel);
+    actions.add(confirm);
+
+    content.add(actions);
+
+    root.add(content, BorderLayout.CENTER);
+
+    dialog.setContentPane(root);
+    dialog.setPreferredSize(new Dimension(450, 500));
+    dialog.pack();
+
+    dialog.setMinimumSize(new Dimension(450, 500));
+    dialog.setLocationRelativeTo(ancestor != null ? ancestor : this);
+    dialog.setVisible(true);
+}
 
     public void onArtistRequestShowDetailsClicked(ArtistRequest ar) { showArtistRequestDetails(ar); }
 

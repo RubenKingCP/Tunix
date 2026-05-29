@@ -118,4 +118,8 @@ public class AdminController {
     public String getProfilePic(ArtistRequest ar) {
         return adminService.getProfilePic(ar);
     }
+
+    public List<String> getArtistModerationHistory(int artistId) {
+        return adminService.getArtistModerationHistory(artistId);
+    }
 }
