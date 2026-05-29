@@ -49,7 +49,7 @@ public class LibraryController {
         ;
     }
 
-    public void createPlaylist(PlaylistCreateRequest playlistRequest) {
+    public boolean createPlaylist(PlaylistCreateRequest playlistRequest) {
         System.out.println("LibraryControler: PlaylistCreationButtonClicked"  );
         List<ILibraryAsset> assets = libraryService.getLibraryAssets();
         boolean ok = playlistService.createPlaylist(playlistRequest, assets);
@@ -61,6 +61,7 @@ public class LibraryController {
         } else {
             System.err.println("Failed to create playlist");
         }
+        return ok;
     }
 
     public void playlistClicked(ILibraryAsset asset) {

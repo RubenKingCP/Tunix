@@ -536,11 +536,16 @@ public class AdminView extends JPanel {
 
         cancel.addActionListener(e -> dialog.dispose());
         confirm.addActionListener(e -> {
+            JOptionPane.showMessageDialog(dialog, "Confirm clicked");
             String reason = reasonField.getText() == null ? "" : reasonField.getText().trim();
             int artistId = song.getArtist() != null ? song.getArtist().getId() : -1;
 
             boolean removed = adminController.onRemoveSongClicked(song.getId());
-            if (!removed) { dialog.dispose(); return; }
+            if (!removed) {
+                showMessage("Failed to remove song.");  // give feedback
+                dialog.dispose();
+                return;
+            }
 
             if (issueStrike.isSelected() && artistId >= 0)
                 adminController.onIssueStrikeClicked(artistId, reason);
@@ -548,6 +553,7 @@ public class AdminView extends JPanel {
                 adminController.onIssueBanClicked(artistId, reason);
 
             dialog.dispose();
+            selectTab("Songs");  // re-fetch and refresh the songs list
         });
 
         actions.add(cancel);

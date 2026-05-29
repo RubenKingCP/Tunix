@@ -31,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -819,9 +820,18 @@ public class LibraryView extends JPanel {
                 return;
             }
 
-            PlaylistCreateRequest request = new PlaylistCreateRequest(name, descField.getText().trim(), chosenCoverPath[0], Long.valueOf(SessionService.Instance.getAccount().getLongId()));
-            createPlaylist(request);
-            dialog.dispose();
+            PlaylistCreateRequest request = new PlaylistCreateRequest(
+                    name, descField.getText().trim(), chosenCoverPath[0],
+                    Long.valueOf(SessionService.Instance.getAccount().getLongId()));
+
+            boolean success = createPlaylist(request);
+            if (success) {
+                dialog.dispose();
+            } else {
+                JOptionPane.showMessageDialog(dialog,
+                        "Failed to create playlist. Please try again.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
         buttonRow.add(cancelButton);
         buttonRow.add(createBtn);
@@ -845,10 +855,11 @@ public class LibraryView extends JPanel {
         dialog.getContentPane().setBackground(BG);
         dialog.setVisible(true);
     }
-    private void createPlaylist(PlaylistCreateRequest request) {
+    private boolean createPlaylist(PlaylistCreateRequest request) {
         if (libraryController != null) {
-            libraryController.createPlaylist(request);
+            return libraryController.createPlaylist(request);
         }
+        return false;
     }
     // Helper to keep field styling consistent
     private JTextField styledTextField(String placeholder) {
