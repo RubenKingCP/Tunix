@@ -12,6 +12,7 @@ public class ArtistResponse {
 
     private Long id;
     private Long accountId;
+    private String displayName;
     private String biography;
     private int followersCount;
     private boolean verified;
@@ -20,6 +21,7 @@ public class ArtistResponse {
         return new ArtistResponse(
                 artist.getId(),
                 artist.getAccount() != null ? artist.getAccount().getAccountId() : null,
+                artist.getDisplayName(),
                 artist.getBiography(),
                 artist.getFollowersCount(),
                 artist.isVerified()

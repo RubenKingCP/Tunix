@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import tunixserver.repository.SongBackendRepository;
 import tunixserver.service.SongBackendService;
 import tunixserver.dto.request.SongRequest;
 import tunixserver.dto.response.ApiResponse;
@@ -23,12 +22,10 @@ import tunixserver.entities.SongEntity;
 @RestController
 @RequestMapping("/songs")
 public class SongBackendController {
-    private final SongBackendRepository songBackendRepository;
     private final SongBackendService songService; 
 
-    public SongBackendController(SongBackendService songService, SongBackendRepository songBackendRepository) {
+    public SongBackendController(SongBackendService songService) {
         this.songService = songService;
-        this.songBackendRepository = songBackendRepository;
     }
 
     @PostMapping("/upload")

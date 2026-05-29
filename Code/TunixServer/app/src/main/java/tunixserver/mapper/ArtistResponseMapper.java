@@ -11,6 +11,7 @@ public class ArtistResponseMapper {
         return new ArtistResponse(
                 artist.getId(),
                 artist.getAccount() != null ? artist.getAccount().getAccountId() : null,
+                artist.getDisplayName(),
                 artist.getBiography(),
                 artist.getFollowersCount(),
                 artist.isVerified()

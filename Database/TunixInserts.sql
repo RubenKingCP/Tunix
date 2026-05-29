@@ -45,13 +45,14 @@ INSERT INTO artist (
     account_id,
     biography,
     followers_count,
-    verified
+    verified,
+    display_name
 ) VALUES
-(6, 'Electronic music producer from Berlin.', 1200, TRUE),
-(7, 'Indie pop vocalist and songwriter.', 890, TRUE),
-(8, 'Hip hop artist and beat maker.', 450, FALSE),
-(9, 'Lo-fi ambient music creator.', 2000, TRUE),
-(10, 'Experimental synthwave producer.', 670, FALSE);
+(6, 'Electronic music producer from Berlin.', 1200, TRUE, "ElectricNights"),
+(7, 'Indie pop vocalist and songwriter.', 890, TRUE, "IndianSupra"),
+(8, 'Hip hop artist and beat maker.', 450, FALSE, "MpampisOSougis"),
+(9, 'Lo-fi ambient music creator.', 2000, TRUE, "LaserKing"),
+(10, 'Experimental synthwave producer.', 670, FALSE, "Steve");
 
 -- =========================
 -- ADMIN

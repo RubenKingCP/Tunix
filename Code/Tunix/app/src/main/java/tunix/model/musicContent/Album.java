@@ -5,6 +5,7 @@ import java.util.List;
 
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
+import tunix.model.account.Account;
 import tunix.model.account.Artist;
 
 public class Album implements ILibraryAsset{
@@ -31,6 +32,11 @@ public class Album implements ILibraryAsset{
     @Override
     public int getId() {
         return albumId;
+    }
+
+    @Override
+    public Account getCreator(){
+        return artist;
     }
 
     @Override

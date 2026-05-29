@@ -11,6 +11,7 @@ public class ArtistResponse {
 
     private Long id;
     private Long accountId;
+    private String displayName;
     private String biography;
     private int followersCount;
     private boolean verified;

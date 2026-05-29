@@ -9,4 +9,5 @@ import tunixserver.entities.ArtistEntity;
 @Repository
 public interface ArtistBackendRepository extends JpaRepository<ArtistEntity, Long> {
     boolean existsByAccount(AccountEntity account);
+    java.util.List<ArtistEntity> findByDisplayNameContainingIgnoreCase(String displayName);
 }

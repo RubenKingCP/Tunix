@@ -5,12 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import tunixserver.dto.request.AlbumRequest;
 import tunixserver.dto.response.AlbumResponse;
-import tunixserver.dto.response.SongResponse;
 import tunixserver.entities.AlbumEntity;
 import tunixserver.entities.ArtistEntity;
-import tunixserver.entities.SongEntity;
 import tunixserver.mapper.AlbumResponseMapper;
-import tunixserver.mapper.SongMapper;
 import tunixserver.repository.AlbumBackendRepository;
 import tunixserver.repository.ArtistBackendRepository;
 

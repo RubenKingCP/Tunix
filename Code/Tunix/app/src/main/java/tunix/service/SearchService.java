@@ -6,11 +6,13 @@ import java.util.List;
 import org.checkerframework.checker.units.qual.s;
 
 import tunix.api.AlbumApi;
+import tunix.api.ArtistApi;
 import tunix.api.PlaylistApiClient;
 import tunix.api.SongApiClient;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.dto.response.AlbumResponse;
 import tunix.dto.response.ApiResponse;
+import tunix.dto.response.ArtistResponse;
 import tunix.dto.response.PlaylistResponse;
 import tunix.dto.response.SongResponse;
 import tunix.model.ILibraryAsset;
@@ -25,11 +27,13 @@ public class SearchService {
     private final SongApiClient songApiClient;
     private final PlaylistApiClient playlistApiClient;
     private final AlbumApi albumApiClient;
+    private final ArtistApi artistApiClient;
 
-    public SearchService(SongApiClient songApiClient, PlaylistApiClient playlistApiClient, AlbumApi albumApi) {
+    public SearchService(SongApiClient songApiClient, PlaylistApiClient playlistApiClient, AlbumApi albumApi, ArtistApi artistApi) {
         this.playlistApiClient = playlistApiClient;
         this.songApiClient = songApiClient;
         this.albumApiClient = albumApi;
+        this.artistApiClient = artistApi;
     }
     public ILibraryAsset getFullAsset(long id, LibraryAssetType type) {
     return switch (type) {
@@ -71,7 +75,14 @@ public class SearchService {
                 }
 
                 case "artist": {
-                    // artistApiClient.getArtistsByName(query);
+                    ApiResponse<List<ArtistResponse>> response = artistApiClient.getArtistsByName(query);
+
+                    if(response != null && response.isSuccess() && response.getData() != null) {
+                        return response.getData()
+                                .stream()
+                                .map(sr -> toArtist(sr))
+                                .toList();
+                    }
                     return List.of();
                 }
 
@@ -177,5 +188,9 @@ public class SearchService {
 
     public ILibraryAsset toPlaylist(PlaylistResponse playlistResponse) {
         return new Playlist(playlistResponse.getTitle(), playlistResponse.getId().intValue(), new Artist(playlistResponse.getCreatorId(), playlistResponse.getCreatorName(), null, null, 0, false));
+    }
+
+    public ILibraryAsset toArtist(ArtistResponse artistResponse) {
+        return new Artist(artistResponse.getId(), artistResponse.getDisplayName(), null, null, artistResponse.getFollowersCount(), artistResponse.isVerified());
     }
 }

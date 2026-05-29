@@ -222,3 +222,6 @@ CREATE TABLE library_artist (
 
     UNIQUE(library_id, artist_id)
 )ENGINE=InnoDB;
+
+ALTER TABLE artist
+ADD COLUMN display_name VARCHAR(255) NOT NULL DEFAULT '';

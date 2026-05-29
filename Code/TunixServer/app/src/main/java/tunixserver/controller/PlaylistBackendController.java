@@ -17,18 +17,16 @@ import tunixserver.service.PlaylistBackendService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import tunixserver.service.SongBackendService;
+
 
 
 @RestController
 @RequestMapping("/playlists")
 public class PlaylistBackendController {
-    private final SongBackendService songBackendService;
     private final PlaylistBackendService playlistBackendService;
 
-    public PlaylistBackendController(PlaylistBackendService playlistBackendService, SongBackendService songBackendService) {
+    public PlaylistBackendController(PlaylistBackendService playlistBackendService) {
         this.playlistBackendService = playlistBackendService;
-        this.songBackendService = songBackendService;
     }
 
     @PostMapping("/{playlistId}/add/{songId}")

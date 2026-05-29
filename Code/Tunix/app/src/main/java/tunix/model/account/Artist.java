@@ -27,6 +27,10 @@ public class Artist extends Account implements ILibraryAsset{
         this.verified = verified;
     }
 
+    @Override
+    public Account getCreator(){
+        return this;
+    }
     // =========================
     // DISPLAY
     // =========================

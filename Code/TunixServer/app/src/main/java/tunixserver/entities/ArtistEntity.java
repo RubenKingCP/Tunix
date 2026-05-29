@@ -19,6 +19,10 @@ public class ArtistEntity {
     @JoinColumn(name = "account_id", nullable = false, unique = true)
     private AccountEntity account;
 
+    @Column(nullable = false)
+    private String displayName;
+
+    @Column(columnDefinition = "TEXT")
     private String biography;
 
     private int followersCount;

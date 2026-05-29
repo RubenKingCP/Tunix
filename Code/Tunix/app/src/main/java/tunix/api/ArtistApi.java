@@ -1,5 +1,7 @@
 package tunix.api;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,16 @@ public class ArtistApi {
         }
         
         return new ArrayList<>();
+    }
+
+    public ApiResponse<List<ArtistResponse>> getArtistsByName(String query) {
+        System.out.println("ArtistApiClient: Artist search query");
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+
+        return apiClient.get(
+                "/account/artists/name?query=" + encodedQuery,
+                new TypeReference<ApiResponse<List<ArtistResponse>>>() {}
+        );
     }
     
 }

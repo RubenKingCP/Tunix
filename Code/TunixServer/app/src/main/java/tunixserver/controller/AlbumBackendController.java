@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import tunixserver.dto.request.AlbumRequest;
 import tunixserver.dto.response.AlbumResponse;
 import tunixserver.dto.response.ApiResponse;
-import tunixserver.dto.response.SongResponse;
 import tunixserver.entities.AlbumEntity;
 import tunixserver.service.AlbumBackendService;
 import org.springframework.web.bind.annotation.GetMapping;

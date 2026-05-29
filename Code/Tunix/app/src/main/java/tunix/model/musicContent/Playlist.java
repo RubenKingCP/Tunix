@@ -81,13 +81,16 @@ public class Playlist implements ILibraryAsset {
         return "Playlist • " + playlistItems.size() + " songs";
     }
 
+    @Override
+    public Account getCreator() {
+        return creator;
+    }
+    
     public List<PlaylistItem> getPlaylistItems() {
         return playlistItems;
     }
 
-    public Account getCreator() {
-        return creator;
-    }
+    
 
     public List<Account> getCoauthors() {
         return coauthors;

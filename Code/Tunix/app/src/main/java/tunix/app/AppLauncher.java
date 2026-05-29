@@ -103,7 +103,7 @@ public class AppLauncher {
                 LibraryService libraryService = new LibraryService(libraryApiClient);
                 PlaylistService playlistService = new PlaylistService(playlistApiClient);
                 MusicPlayerService musicPlayerService = new MusicPlayerService();
-                SearchService searchService = new SearchService(new SongApiClient(context.apiClient), playlistApiClient, albumApiClient);
+                SearchService searchService = new SearchService(new SongApiClient(context.apiClient), playlistApiClient, albumApiClient, artistApiClient);
                 SearchController searchController = new SearchController(searchService, context.eventBus);
 
                 LibraryController libraryController =

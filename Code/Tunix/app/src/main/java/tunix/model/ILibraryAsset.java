@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.List;
 
 import tunix.dto.enums.LibraryAssetType;
+import tunix.model.account.Account;
 import tunix.model.musicContent.Song;
 
 public interface ILibraryAsset {
@@ -15,6 +16,8 @@ public interface ILibraryAsset {
     LibraryAssetType getType();
 
     String getSubtitle();
+
+    Account getCreator();
 
     /**
      * Songs displayed inside MusicView table.

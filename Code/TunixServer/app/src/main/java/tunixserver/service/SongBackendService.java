@@ -9,9 +9,6 @@ import tunixserver.repository.ArtistBackendRepository;
 import tunixserver.repository.SongBackendRepository;
 
 import java.util.List;
-
-import javax.management.RuntimeErrorException;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -67,7 +64,7 @@ public class SongBackendService {
                 .toList();
     }
 
-        public List<SongResponse> searchByName(String query) {
+    public List<SongResponse> searchByName(String query) {
 
         List<SongEntity> songs = songRepository.findByTitleContainingIgnoreCase(query);
 

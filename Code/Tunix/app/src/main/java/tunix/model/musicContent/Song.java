@@ -4,6 +4,7 @@ import java.util.List;
 
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
+import tunix.model.account.Account;
 import tunix.model.account.Artist;
 
 public class Song implements ILibraryAsset {
@@ -21,6 +22,11 @@ public class Song implements ILibraryAsset {
         this.duration = duration;
         this.filePathUrl = filePathUrl;
         this.coverImageUrl = coverImageUrl;
+    }
+
+    @Override
+    public Account getCreator(){
+        return artist;
     }
 
     @Override
