@@ -10,9 +10,9 @@ public class AdminApi {
     public AdminApi(ApiClient apiClient) {
         this.apiClient = apiClient;
     }
-    public Boolean issueWarning(int artistId){
+    public Boolean issueWarning(BanRequest request){
         
-        return apiClient.post("/admin/issueWarning", artistId, boolean.class).getData();
+        return apiClient.post("/admin/issueWarning", request, boolean.class).getData();
     }
 
     public Boolean issueBan(BanRequest banRequest){

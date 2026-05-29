@@ -9,6 +9,7 @@ import tunix.service.ArtistRequestService;
 import tunix.service.SongService;
 import tunix.ui.views.admin.AdminView;
 import tunix.dto.enums.ArtistRequestStatus;
+import tunix.dto.request.BanRequest;
 import tunix.model.ArtistRequest;
 import tunix.model.musicContent.Song;
 
@@ -98,7 +99,10 @@ public class AdminController {
     }
 
     public boolean onIssueStrikeClicked(int artistId, String reason) {
-        boolean success = adminService.postIssueWarning(artistId);
+        BanRequest request = new BanRequest();
+        request.setArtistId(artistId);
+        request.setReason(reason);
+        boolean success = adminService.postIssueWarning(request);
         String note = reason == null || reason.isBlank() ? "" : " Reason: " + reason;
         adminView.showMessage(success ? "Strike issued successfully." + note : "Failed to issue strike.");
         return success;

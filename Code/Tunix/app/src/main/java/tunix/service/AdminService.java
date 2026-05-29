@@ -17,13 +17,13 @@ public class AdminService {
         this.api = api;
     }
 
-    public Boolean postIssueWarning(int artistId){
+    public Boolean postIssueWarning(BanRequest request){
         try{
-            Boolean result = api.issueWarning(artistId);
+            Boolean result = api.issueWarning(request);
             return result;
         }catch(Exception e){
             //Handle exception
-            return false; 
+            return false;
         }
     }
 

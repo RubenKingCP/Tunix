@@ -8,8 +8,6 @@ import tunixserver.dto.enums.Role;
 import tunixserver.dto.request.LoginRequest;
 import tunixserver.dto.request.RegisterRequest;
 import tunixserver.dto.response.AccountResponse;
-import tunixserver.dto.response.UserResponse;
-import tunixserver.dto.response.ArtistResponse;
 import tunixserver.entities.AccountEntity;
 import tunixserver.entities.UserEntity;
 import tunixserver.repository.AccountBackendRepository;
