@@ -62,7 +62,7 @@ public class ArtistRequestBackendController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-
+                System.out.println("Error approving artist request: " + e.getMessage());
             return ResponseEntity.ok(
                     new ApiResponse<>(
                             false,

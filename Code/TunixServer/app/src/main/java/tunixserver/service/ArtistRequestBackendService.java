@@ -55,38 +55,54 @@ public class ArtistRequestBackendService {
     // APPROVE REQUEST
     // =========================
     @Transactional
-    public ApiResponse<Void> approveArtistRequest(Long requestId) {
+public ApiResponse<Void> approveArtistRequest(Long requestId) {
 
-        ArtistRequestEntity request = artistRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
+    ArtistRequestEntity request = artistRequestRepository.findById(requestId)
+            .orElseThrow(() -> new RuntimeException("Request not found"));
 
-        if (request.getStatus() != RequestStatus.PENDING) {
-            return new ApiResponse<>(false, "Request already processed", null);
-        }
-
-        // 1. approve request
-        request.approve();
-
-        // 2. promote user
-        AccountEntity account = request.getUser().getAccount();
-
-        if (artistBackendRepository.existsByAccount(account)) {
-            return new ApiResponse<>(false, "User is already an artist", null);
-        }
-
-        ArtistEntity artist = new ArtistEntity();
-        artist.setAccount(account);
-        artist.setBiography(null);
-        artist.setFollowersCount(0);
-        artist.setVerified(false);
-
-        artistBackendRepository.save(artist);
-
-        account.setRole(Role.ARTIST);
-        accountBackendRepository.save(account);
-
-        return new ApiResponse<>(true, "User successfully promoted to artist", null);
+    // Check request status
+    if (request.getStatus() != RequestStatus.PENDING) {
+        return new ApiResponse<>(false, "Request already processed", null);
     }
+
+    // Get account
+    AccountEntity account = request.getUser().getAccount();
+
+    // Prevent duplicate artist creation
+    if (artistBackendRepository.existsByAccount(account)) {
+        return new ApiResponse<>(false, "User is already an artist", null);
+    }
+
+    // Approve request
+    request.approve();
+    artistRequestRepository.save(request);
+
+    // Create artist profile
+    ArtistEntity artist = new ArtistEntity();
+
+    artist.setAccount(account);
+
+    // REQUIRED FIELD
+    artist.setDisplayName(account.getUsername());
+
+    // Optional fields
+    artist.setBiography("");
+    artist.setFollowersCount(0);
+    artist.setVerified(false);
+
+    // Save artist
+    artistBackendRepository.save(artist);
+
+    // Promote account role
+    account.setRole(Role.ARTIST);
+    accountBackendRepository.save(account);
+
+    return new ApiResponse<>(
+            true,
+            "User successfully promoted to artist",
+            null
+    );
+}
 
     // =========================
     // REJECT REQUEST
