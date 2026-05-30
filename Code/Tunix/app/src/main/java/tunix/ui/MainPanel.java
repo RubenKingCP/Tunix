@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 import tunix.api.*;
 import tunix.controller.*;
-import tunix.controller.main.LibraryController.OpenSongViewEvent;
+import tunix.navigation.events.OpenSongViewEvent;
 import tunix.controller.main.center.MusicController;
 import tunix.dto.enums.Role;
 import tunix.model.AppContext;
