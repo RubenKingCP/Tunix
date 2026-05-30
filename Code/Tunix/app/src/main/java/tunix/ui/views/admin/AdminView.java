@@ -495,7 +495,7 @@ public class AdminView extends JPanel {
 
     if (!moderationHistory.isEmpty()) {
 
-        JLabel historyLabel = new JLabel("Previous strikes / bans");
+        JLabel historyLabel = new JLabel("Number Previous strikes / bans: " + moderationHistory.size());
         historyLabel.setFont(FONT_BTN);
         historyLabel.setForeground(TEXT_MUTED);
         historyLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
