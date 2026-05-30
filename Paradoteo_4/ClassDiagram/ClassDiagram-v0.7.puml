@@ -619,23 +619,155 @@ package "Frontend" as V {
             + isTrialEligible(void) : boolean
             + isPremiumTrialUsed(void) : boolean
         }
-        class Artist
-        class Admin
+        class Artist {
+            - biography : String
+            - followersCount : int
+            - displayName : String
+            - verified : boolean
+            --
+            + Artist(id : Long, username : String, email : String, biography : String, followersCount : int, verified : boolean)
+            + getCreator(void) : Artist
+            + getTitle(void) : String
+            + getSubtitle(void) : String
+            + isCircularAvatar(void) : boolean
+            + getBiography(void) : String
+            + setBiography(biography : String) : void
+            + getFollowersCount(void) : int
+            + setFollowersCount(followersCount : int) : void
+            + isVerified(void) : boolean
+            + setVerified(verified : boolean) : void
+            + getId(void) : int
+            + getType(void) : LibraryAssetType
+            + getDisplaySongs(void) : List<Song>
+        }
+        class Admin{
+            --
+            + Admin(id : Long, username : String, email : String)
+        }
 
-        class Library
+        class Library{
+            - assets : List<ILibraryAsset>
+            + Library(assets : List<ILibraryAsset>)
+            + getAssets(void) : List<ILibraryAsset>
+            + addAsset(asset : ILibraryAsset) : void
+            + removeAsset(asset : ILibraryAsset) : void
+        }
 
-        interface ILibraryAsset
-        class Album
-        class Playlist
-        class Song
-        class AlbumItem
+        interface ILibraryAsset{
+            getTitle(void) : String
+            getId(void) : int
+            getType(void) : LibraryAssetType
+            getSubtitle(void) : String
+            getCreator(void) : Account
+            getDisplaySongs(void) : List<Song>
+            isCircularAvatar(void) : boolean
+            getDisplayColor(void) : Color
+        }
+        class Album{
+            - artist : Artist
+            - title : String
+            - albumId : int
+            - songs : List<Song>
+            - releaseDate : Date 
+            --
+            + Album(title : String, albumId : int, artist : Artist, songs : List<Song>, releaseDate : Date)
+            + getTitle(void) : String
+            + getId(void) : int
+            + getCreator(void) : Account
+            + getType(void) : LibraryAssetType
+            + getSubtitle(void) : String
+            + getDisplaySongs(void) : List<Song>
+            + setTitle(title : String) : void
+            + getSongs(void) : List<Song>
+            + addSong(song : Song) : void
+            + removeSong(song : Song) : void
+            + getArtist(void) : Artist
+            + getReleaseDate(void) : Date
+        }
+        class Playlist{
+            - title : String
+            - id : int
+            - playlistItems : List<PlaylistItem>
+            - creator : Account
+            - coauthors : List<Account>
+            - createdAt : LocalDateTime
+            - updatedAt : LocalDateTime
+            - isPublic : boolean
+            --
+            + Playlist(title : String, id : int, creator : Account)
+            + addSong(song : Song) : void
+            + removeSong(song : Song) : void
+            + getTitle(void) : String
+            + getId(void) : int
+            + getType(void) : LibraryAssetType
+            + getName(void) : String
+            + getDisplaySongs(void) : List<Song>
+            + getSubtitle(void) : String
+            + getCreator(void) : Account
+            + getPlaylistItems(void) : List<PlaylistItem>
+            + getCoauthors(void) : List<Account>
+            + addCoauthor(user : User) : void
+            + removeCoauthor(user : User) : void
+            + toggleVisibility(void) : void
+        }
+        class Song{
+            - title : String
+            - songId : Long
+            - artist : Artist
+            - duration : int
+            - filePathUrl : String
+            - coverImageUrl : String
+            --
+            + Song(title : String, songId : Long, artist : Artist, duration : int, filePathUrl : String, coverImageUrl : String)
+            + getCreator(void) : Account
+            + getTitle(void) : String
+            + getid(void) : int
+            + getType(void) : LibraryAssetType
+            + getDisplaySongs(void) : List<Song>
+            + getSubtitle(void) : String
+            + getArtist(void) : Artist
+            + getDuration(void) : int
+            + getFilePathUrl(void) : String
+            + getCoverImageUrl(void) : String
+            
+        }
+        class AlbumItem{
+            - song : Song
+            - trackNumber : int
+            --
+            + AlbumItem(song : Song, trackNumber : int)
+            + getSong(void) : Song
+            + getTrackNumber(void) : int
+            + setTrackNumber(trackNumber : int) : void
+        }
 
-        class ArtistRequest
+        class ArtistRequest{
+            - applicantId : int
+            - stageName : String
+            - status : ArtistRequestStatus
+            - reason : String
+            --
+            + ArtistRequest(applicantId : int, stageName : String, status : ArtistRequestStatus, reason : String)
+            + getApplicantId(void) : int
+            + getStatus(void) : ArtistRequestStatus
+            + getReason(void) : String
+            + updateStatus(e : ArtistRequestStatus) : void
+            + getStageName(void) : String
+            + setStageName(stageName : String)
+        }
 
         class ListeningHistory
         class ListeningHistoryItem
 
-        class AppContext
+        class AppContext{
+            + apiClient : ApiClient
+            + eventBus : EventBus
+            - appWindow : AppWindow
+            --
+            + AppContext(apiClient : ApiClient, eventBus : EventBus)
+            + getAppWindow(void) : AppWindow
+            + setAppWindow(appWindow : AppWindow) : void 
+        }
 
         Artist *-- Song
         Artist *-- Album
@@ -658,23 +790,129 @@ package "Frontend" as V {
 
     package "DTO" {
         folder "Request" {
-            class AddSongRequest
+            class AddSongRequest{
+                - songId : int
+                --
+                + AddSongRequest(songId : int)
+                + getSongId(void) : int
+                + setSongId(songId : int) : void
+            }
             class ApproveArtistRequest
-            class AristRequest
-            class LoginRequest
-            class RegisterRequest
-            class PlaylistCreateRequest
-            class SongRequest
+            class ArtistApplicationRequest{
+                - userId : Long
+                - stageName : String
+                - reason : String
+            }
+            class LoginRequest{
+                - username : String
+                - password : String
+                --
+                + LoginRequest(username : String, password : String)
+                + getUsername(void) : String
+                + getPassword(void) : String
+            }
+            class RegisterRequest{
+                - username : String
+                - email : String
+                - password : String
+                - avatarUrl : String
+                --
+                + RegisterRequest(username : String, email : String, password : String)
+            }
+            class PlaylistCreateRequest{
+                - title : String
+                - description : String
+                - coverImagePath : String
+                - creatorId : Long
+                --
+                + PlaylistCreateRequest(title : String, description : String, coverImagePath : String, creatorId : Long)
+            }
+            class SongRequest{
+                - title : String
+                - artistId : Long
+                - duration : int
+                - filePathUrl : String
+                - coverImageUrl : String
+                --
+                + SongRequest(void)
+                + SongRequest(title : String, artistId : Long, fileUrlPath : String, duration : int, coverImage : String)
+            }
         }
 
         folder "Response" {
-            class AccountResponse
-            class ApiResponse
-            class ArtistRequestResponse
-            class ArtistResponse
-            class PlaylistResponse
-            class SongResponse
-            class UserResponse
+            class AccountResponse{
+                - accountId : Long
+                - username : String
+                - email : String
+                - role : Role
+                - user : UserResponse
+                - artist : ArtistResponse
+            }
+            class ApiResponse{
+                - success : boolean
+                - message : String
+                - data : T
+                --
+                + ApiResponse(void)
+                + ApiResponse(success : boolean, message : String, data : T)
+                + isSuccess(void) : boolean
+                + getMessage(void) : String
+                + getData(void) : T
+                + setSuccess(success : boolean) : void
+                + setMessage(message : String) : void
+                + setData(data : T) : void
+            }
+            class ArtistApplicationResponse{
+                - requestId : Long
+                - applicantId : Long
+                - username : String
+                - stageName : String
+                - reason : String
+                - profilePictureUrl : String
+                - status : String
+                - requestedAt : LocalDateTime
+                - reviewedAt : LocalDateTime
+                --
+                + ArtistApplicationResponse(requestId : Long, applicantId : Long, username : String, stageName : String, reason : String, profilePictureUrl : String, status : String, requestedAt : LocalDateTime, reviewedAt : LocalDateTime)
+            }
+            class ArtistResponse{
+                - id : Long
+                - accountId : Long
+                - displayName : String
+                - biography : String
+                - followersCount : int
+                - verified : boolean
+            }
+            class PlaylistResponse{
+                - id : Long
+                - title : String
+                - creatorId : Long
+                - creatorName : String
+                - isPublic : boolean
+                - createdAt : LocalDateTime
+                - updatedAt : LocalDateTime
+                - songs : List<SongResponse>
+                --
+                + toPlaylist(void) : Playlist
+            }
+            class SongResponse{
+                - id : Long
+                - title : String
+                - artistId : Long
+                - artistName : String
+                - duration : int
+                - filePathUrl : String
+                - coverImageUrl : String
+                --
+                + toSong(void) : Song
+            }
+            class UserResponse{
+                - id : Long
+                - displayName : String
+                - profilePictureUrl : String
+                - premium : boolean
+                - premiumTrialUsed : boolean
+            }
         }
     }
 
@@ -869,7 +1107,7 @@ folder "BackendService" {
         - artistBackendRepository : ArtistBackendRepository
         - accountBackendRepository : AccountBackendRepository
         --
-        + getAllArtistRequests() : List<ArtistRequestResponse>
+        + getAllArtistRequests() : List<ArtistApplicationResponse>
         + approveArtistRequest(requestId : Long)
         + rejectArtistRequest(requestId : Long)
         + createArtistRequest(dto : ArtistApplicationRequest)

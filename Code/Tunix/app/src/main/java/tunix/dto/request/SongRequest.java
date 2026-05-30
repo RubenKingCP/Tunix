@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class SongRequest {
-     private String title;
+    private String title;
     private Long artistId;
     private int duration;
     private String filePathUrl;
