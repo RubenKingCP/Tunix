@@ -44,13 +44,20 @@ public class UploadSongController {
 
         JFileChooser fileChooser = new JFileChooser();
 
-        int result =
-                fileChooser.showOpenDialog(uploadSongView);
+        fileChooser.setFileFilter(
+            new javax.swing.filechooser.FileNameExtensionFilter(
+                "Audio Files (*.mp3, *.wav, *.flac, *.aac, *.ogg)",
+                "mp3", "wav", "flac", "aac", "ogg"
+            )
+        );
+
+        fileChooser.setAcceptAllFileFilterUsed(false);
+
+        int result = fileChooser.showOpenDialog(uploadSongView);
 
         if (result == JFileChooser.APPROVE_OPTION) {
 
-            selectedSongFile =
-                    fileChooser.getSelectedFile();
+            selectedSongFile = fileChooser.getSelectedFile();
 
             uploadSongView.displaySelectedSongFile(
                     selectedSongFile.getAbsolutePath()
@@ -113,6 +120,22 @@ public class UploadSongController {
 
             uploadSongView.displayError(
                     "Please select a song file."
+            );
+
+            return;
+        }
+
+        String fileName = selectedSongFile.getName().toLowerCase();
+        boolean isAudio = fileName.endsWith(".mp3")
+                || fileName.endsWith(".wav")
+                || fileName.endsWith(".flac")
+                || fileName.endsWith(".aac")
+                || fileName.endsWith(".ogg");
+
+        if (!isAudio) {
+
+            uploadSongView.displayError(
+                    "Invalid file type. Please select an audio file (mp3, wav, flac, aac, ogg)."
             );
 
             return;
