@@ -80,9 +80,6 @@ public class MusicView extends JPanel {
                 musicAsset = fresh;
             }
         }
-
-        playlist = buildPlaylistForAsset(musicAsset);
-
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.DARK_GRAY);
         setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
@@ -99,28 +96,21 @@ public class MusicView extends JPanel {
     }
 
     public void setAsset(ILibraryAsset asset) {
+            if (asset == null) {
+                this.musicAsset = null;
+                initGui();
+                return;
+            }
 
-        if (asset == null) {
-            System.out.println("Asset is null");
-            this.musicAsset = null;
-            initGui();
-            return;
+            this.musicAsset = asset;
+            this.playlist = buildPlaylistForAsset(asset); // built here
+
+            initGui(); // initGui must NOT rebuild it
         }
 
-        System.out.println("Check to see what asset we got: " + asset.getTitle());
-
-        this.musicAsset = asset;
-
-        System.out.println("Check to see what asset we got in music asset: " + musicAsset.getTitle());
-
-        this.playlist = buildPlaylistForAsset(asset);
-
-        initGui();
-    }
-
-    public void refresh() {
-        initGui();
-    }
+            public void refresh() {
+                initGui();
+            }
 
 
 
