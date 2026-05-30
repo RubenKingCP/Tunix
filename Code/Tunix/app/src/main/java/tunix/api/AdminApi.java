@@ -23,5 +23,4 @@ public Boolean issueWarning(BanRequest request) {
         ApiResponse<List<String>> response = apiClient.get("/admin/artistModerationHistory/" + artistId, new com.fasterxml.jackson.core.type.TypeReference<ApiResponse<List<String>>>(){});
         return response.getData();
     }
-
 }

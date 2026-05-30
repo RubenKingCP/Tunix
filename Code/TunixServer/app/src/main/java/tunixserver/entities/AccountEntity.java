@@ -4,6 +4,9 @@ import tunixserver.dto.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -38,4 +41,12 @@ public class AccountEntity {
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private ArtistEntity artist;
+
+    @OneToMany(
+            mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<AccountWarningEntity> warnings = new ArrayList<>();
 }

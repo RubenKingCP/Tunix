@@ -13,9 +13,33 @@ CREATE TABLE account (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role ENUM('USER', 'ARTIST', 'ADMIN') NOT NULL,
+
     is_banned BOOLEAN NOT NULL DEFAULT FALSE,
     ban_reason VARCHAR(255) NULL,
+
+    warning_count INT NOT NULL DEFAULT 0,
+
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE account_warning (
+    warning_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    account_id BIGINT NOT NULL,
+
+    reason VARCHAR(255) NOT NULL,
+
+    warned_by BIGINT NULL,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (account_id)
+        REFERENCES account(account_id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (warned_by)
+        REFERENCES account(account_id)
+        ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- =================
