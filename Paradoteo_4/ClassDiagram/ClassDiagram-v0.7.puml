@@ -18,7 +18,7 @@ package "Frontend" as V {
 
     folder "Views" {
 
-        class AppWindow extends JFrame{
+        class AppWindow{
             - layout : CardLayout
             - root : JPanel
             - screens : Map<Class<?>, JPanel>
@@ -55,24 +55,13 @@ package "Frontend" as V {
             + register(key : Class<?>, panel : JPanel) : void
             + show(key : Class<?>) : void
         }
-        class ProfilePanel
-        class AdminPanel extends JFrame {
+        class AdminPanel  {
             - controller : AdminController
             --
             + AdminPanel(controller : AdminController)
         }
 
-        class LoginView extends JPanel{
-            - {static} BG_DARK : Color
-            - {static} BG_CARD : Color
-            - {static} BG_INPUT : Color
-            - {static} ACCENT : Color
-            - {static} ACCENT_DIM : Color
-            - {static} BORDER_COLOR : Color
-            - {static} BIN_PRIMARY : Color
-            - {static} BIN_PRIMARY_FG : Color
-            - {static} BIN_SECONDARY : Color
-            - {static} BIN_SEC_HOVER : Color
+        class LoginView {
             - usernameField : JTextField
             - passwordField : JPasswordField
             - loginButton : JButton
@@ -81,29 +70,12 @@ package "Frontend" as V {
             --
             + LoginView(void)
             - initUI(void) : void
-            - buildFieldStack(labelText : String, field : JComponent) : JPanel
-            - buildTextField(placeholder : String) : JTextField
-            - buildPasswordField(placeholder : String) : JPasswordField
-            - styleInputField(f : JTextField, placeholder : String) : void
-            - buildPrimaryButton(text : String) : JButton
-            - buildSecondaryButton(text : String) : JButton
-            - musicNoteIcon(void) : Icon
             - {static} class RoundedBorder extends AbstractBorder
             + setController(controller : LoginController) : void
             + onGoToRegisterButtonClicked(void) : void
             + onLoginButtonClicked(void) : void 
         }
-        class RegisterView extends JPanel {
-            - {static} BG_DARK : Color
-            - {static} BG_CARD : Color
-            - {static} BG_INPUT : Color
-            - {static} ACCENT : Color
-            - {static} ACCENT_DIM : Color
-            - {static} BORDER_COLOR : Color
-            - {static} BIN_PRIMARY : Color
-            - {static} BIN_PRIMARY_FG : Color
-            - {static} BIN_SECONDARY : Color
-            - {static} BIN_SEC_HOVER : Color
+        class RegisterView {
             - usernameField : JTextField
             - emailField : JTextField
             - passwordField : JPasswordField
@@ -113,41 +85,18 @@ package "Frontend" as V {
             --
             + RegisterView(void)
             - initUI(void) : void
-            - buildFieldStack(labelText : String, field : JComponent) : JPanel
-            - buildTextField(placeholder : String) : JTextField
-            - buildPasswordField(placeholder : String) : JPasswordField
-            - styleInputField(f : JTextField, placeholder : String) : void
-            - buildPrimaryButton(text : String) : JButton
-            - buildSecondaryButton(text : String) : JButton
-            - musicNoteIcon(void) : Icon
             - {static} class RoundedBorder extends AbstractBorder
             + setController(controller : RegisterController) : void
         }
 
-        class MusicPlayerView extends JPanel {
-            - {static} BG : Color
-            - {static} SURFACE : Color
-            - {static} BORDER : Color
-            - {static} FG_PRIMARY : Color
-            - {static} ACCENT : Color
-            - {static} BTN_HOVER : Color
-            - {static} BTN_PRESS : Color
+        class MusicPlayerView  {
             --
             + MusicPlayerView(void)
             - createControlButton(label : String, primary : boolean) : JButton
             + setController(musicPlayerController : MusicPlayerController) : void
         }
 
-        class TopBarView extends JPanel {
-            - {static} BG : Color
-            - {static} SURFACE : Color
-            - {static} BORDER : Color
-            - {static} BORDER_FOC : Color
-            - {static} FG_PRIMARY : Color
-            - {static} FG_MUTED : Color
-            - {static} ACCENT : Color
-            - {static} BTN_HOVER : Color
-            - {static} BTN_PRESS : Color
+        class TopBarView  {
             - topBarController : TopBarController
             --
             + TopBarView(void)
@@ -162,7 +111,7 @@ package "Frontend" as V {
             + onLogoutButtonClicked(void) : void
         }
 
-        class LibraryView extends JPanel{
+        class LibraryView{
             - isExpanded : boolean
             - isCollapsed : boolean
             - activeFilter : String
@@ -173,11 +122,6 @@ package "Frontend" as V {
             - contentPanel : JPanel
             - searchField : JTextField
             - sortButton : JButton
-            - {static} SIDEBAR_PCT : double
-            - {static} COLLAPSED_PCT : double
-            - {static} MIN_SIDEBAR : int
-            - {static} MIN_COLLAPSED : int
-            - {static} BG : Color
             - libraryController : LibraryController
             - libraryAsset : List<ILibraryAsset>
             --
@@ -192,14 +136,10 @@ package "Frontend" as V {
             - styleFilterButton(button : JToggleButton, selected : boolean) : void
             - showSortMenu(anchor : JButton) : void
             - addMenuSectionLabel(menu : JPopupMenu, text : String) : void
-            - styledMenuItem(text : String) : JMenuItem
-            - buildContent(void) : JPanel
             - refreshContent(void) : void
             - getVisibleAssets(void) : List<ILibraryAsset>
             - getComparator(void) : Comparator<ILibraryAsset>
             - isGridView(void) : boolean
-            - buildGridItem(asset : ILibraryAsset) : JPanel
-            - buildListItem(asset : ILibraryAsset) : JPanel
             - attachClickHandler(panel : JPanel, asset : ILibraryAsset) : void
             - buildImagePlaceholder(asset : ILibraryAsset, size : int) : JLabel
             - buildCollapsedStrip(void) : JPanel
@@ -221,7 +161,7 @@ package "Frontend" as V {
 
         class LibraryMusicView
 
-        class MusicView extends JPanel {
+        class MusicView{
             - musicAsset : ILibraryAsset
             - controller : MusicController
             - playlist : Playlist
@@ -233,16 +173,8 @@ package "Frontend" as V {
             + setAsset(asset : ILibraryAsset) : void
             + refresh(void) : void
             + styleScrollBar(JScrollBar scrollBar) : void
-            - buildPlaylistForAsset(asset : ILibraryAsset) : Playlist
             - createDummySong(void) : Song
             - getArtistName(void) : String
-            - buildHeader(void) : JPanel
-            - buildPlaylistCoverThumb(void) : JLabel
-            - buildPlaylistInfo(void) : JPanel
-            - buildActionsBar(void) : JPanel
-            - buildCirclePlayButton(void) : JButton
-            - buildActionButton(label : String) : JButton
-            - buildSongTable(void) : JScrollPane
             # getAvailablePlaylistNames(void) : List<String>
             + onPlayClicked(void) : void
             + onShuffleClicked(void) : void
@@ -254,24 +186,10 @@ package "Frontend" as V {
             + setController(controller : MusicController) : void
             + setSong(song : Song) : void
         }
-        class HomeView extends JPanel {
-            - {static} BG : Color
-            - {static} BG_CARD : Color
-            - {static} BG_HOVER : Color
-            - {static} FG_PRIMARY : Color
-            - {static} FG_SECONDARY : Color
-            - {static} FONT_TITLE : Font
-            - {static} FONT_SECTION : Font
-            - {static} FONT_CARD : Font
-            - {static} FONT_SUB : Font
+        class HomeView {
             --
             + HomeView(void)
             - buildTopBar(void) : JPanel
-            - iconButton(emoji : String, tooltip : String) : JButton
-            - buildSection(title : String, items : List<CardItem>) : JPanel
-            - buildCard(item : CardItem) : JPanel
-            - buildCover(item : CardItem) : JLabel
-            - buildPlayButton(void) : JButton
             - recentlyPlayed(void) : List<CardItem>
             - recommended(void) : List<CardItem>
             - fromLibrary(void) : List<CardItem>
@@ -279,21 +197,6 @@ package "Frontend" as V {
             + display(void) : void
         }
         class SearchView {
-            - {static} BG : Color
-            - {static} SURFACE : Color
-            - {static} SURFACE2 : Color
-            - {static} TEXT_PRIMARY : Color
-            - {static} TEXT_SECONDARY : Color
-            - {static} TAG_SONG : Color
-            - {static} TAG_ALBUM : Color
-            - {static} TAG_PLAYLIST : Color
-            - {static} FONT_TITLE : Font
-            - {static} FONT_SECTION : Font
-            - {static} FONT_CARD : Font
-            - {static} FONT_SUB : Font
-            - {static} FONT_TAG : Font
-            - {static} FONT_LETTER : Font
-            - {static} BROWSE_CATEGORIES : CardData[]
             - searchField : JTextField
             - contentPanel : JPanel
             - results : List<ILibraryAsset>
@@ -305,23 +208,12 @@ package "Frontend" as V {
             - buildContent(void) : JPanel
             - refreshContent(void) : void
             - populateContent(void) : void
-            - buildResultGrid(void) : JPanel
-            - buildResultCard(asset : ILibraryAsset) : JPanel
-            - browseGrid(void) : JPanel
-            - buildBrowseCard(data : CardData) : JPanel
-            - greetingLabel(void) : JLabel
-            - sectionLabel(text : String) : JLabel
-            - addHoverEffect(panel : JPanel) : void
             - openResult(asset : ILibraryAsset) : void
             - truncate(value : String, maxLength : int) : String
             - {static} tagText(type : LibraryAssetType) : String
-            - buildTopBar(void) : JPanel
-            - buildResultsSection(title : String, items : List<CardItem>) : JPanel
-            - buildCard(item : CardItem) : JPanel
-            - buildCover(item : CardItem) : JLabel
             + onSearchResults(results : List<CardItem>) : void
         }
-        class ArtistView extends JPanel{
+        class ArtistView{
             - artist : Artist
             - topSongs : List<Song>
             - albums : List<Album>
@@ -330,124 +222,57 @@ package "Frontend" as V {
             + ArtistView()
             + setArtistData(artist : Artist, topSongs : List<Song>, albums : List<Album>) : void
             - initGui(void) : void
-            - buildHeader(void) : JPanel
-            - buildArtistAvatar(void) : JLabel
-            - buildArtistInfo(void) : JPanel
-            - buildCirclePlayButton(void) : JButton
-            - buildActionButton(label : String) : JButton
-            - buildTopSongsSection(void) : JPanel
-            - buildAlbumsSection(void) : JScrollPane
-            - buildAlbumsSection(void) : JPanel
-            - buildAlbumCard(album : Album) : JPanel
-            - buildAlbumCover(void) : JLabel
             - styleScrollBar(scrollPane : JScrollPane) : void
             + setController(controller : ArtistController) : void
             - onFollowClicked(void) : void
             - onAlbumClicked(album : Album) : void
-            - buildActionsBar(void) : JPanel
         }
         class ILibraryAssetItem
 
         class AdminView {
-            - {static} BG_PRIMARY : Color
-            - {static} BG_CARD : Color
-            - {static} BG_TAB_BAR : Color
-            - {static} TEXT_PRIMARY : Color
-            - {static} TEXT_MUTED : Color
-            - {static} BTN_APPROVE : Color
-            - {static} BTN_REJECT : Color
-            - {static} BTN_REMOVE : Color
-            - {static} DIVIDER : Color
-            - {static} UNDERLINE : Color
-            - {static} FONT_HEADING : Font
-            - {static} FONT_BODY : Font
-            - {static} FONT_BTN : Font
             - AdminController : AdminController
             - songs : List<Song>
             - artistRequests : List<ArtistRequest> 
             - tapBar : JPanel
             - tabSongs : JButton
             - tabApplications : JButton
-            - contentArea : JPanel
-            - cardLayout : CardLayout
             - songsPanel : JPanel
             - artistApplicationsPanel : JPanel
             --
             + AdminView(controller : AdminController)
             + displaySongs(songs : List<Song>) : void
             + display(void) : void
-            - buildHeader(void) : JPanel
-            - makeTabButton(text : String) : JButton
             - selectTab(card : String) : void
-            - wrapScroll(inner : JPanel) : JScrollPane
-            - {static} makeButton(text : String, bg : Color, fg : Color) : JButton
             + setSongs(songs : List<Song>) : void
             + setArtistRequests(ar : List<ArtistRequest>) : void
             + onArtistRequestClicked(void) : void
             + displayArtistRequests(artistRequests : List<ArtistRequest>) : void
             - showArtistRequestDetails(ar : ArtistRequest) : void
-            - buildDetailRow(label : String, value : String) : JPanel
-            - buildReasonRow(reason : String) : JPanel
             + onArtistRequestShowDetailsClicked(ar : ArtistRequest) : void
             + onApproveArtistRequestClicked(id : int) : void
             + onRejectArtistRequestClicked(id : int) : void
             + showMessage(message : String) : void
-            - {static} colorThumb(seed : String) : JPanel
         }
-        class AdminArtistAccountApplicationView
-        class AdminArtistAccountApplicationDetails
-        class AdminDashboardView
 
         class UserProfileView {
-            - {static} BG : Color;
-            - {static} CARD_BG : Color;
-            - {static} CARD_HOVER : Color;
-            - {static} MUTED : Color;
-            - {static} PREMIUM : Color;
-
-            - planStatusLabel : JLabel;
-            - trialStatusLabel : JLabel;
-            - premiumPanel : JPanel;
             - controller : UserProfileController
             --
             + UserProfileView(UserProfileController controller)
             + initGUI(void) : void
             + refresh(void) : void
-            - buildheader(void) : JPanel
-            - buildAccountSection(void) : JPanel
-            - buildPremiumSection(void) : JPanel
-            - buildQuickActionSection(void) : JPanel
             - getCurrentUser(void) : User
-            - {static} getPremiumUiState(user : User) : PremiumUiState
-            - showArtistRequestForm(void) : void
-            - addDetailRow(container : JPanel, label : String, value : String) : void
-            - buildActionRow(title : String, subtitle : String) : JPanel
-            - makePrimaryButton(text : String, color : Color) : JButton
             + showPremiumTrialScreen(void) : void
             + showTrialStartedMessage(void) : void
         }
         class ArtistProfileView {
-                - {static} BG : Color;
-                - {static} CARD_BG : Color;
-                - {static} CARD_HOVER : Color;
-                - {static} MUTED : Color;
-                - {static} GREEN : Color;
-    
                 - uploadSongButton : JButton;
                 --
                 + ArtistProfileView(void)
                 + initGUI(void) : void
                 + refresh(void) : void
-                - buildheader(void) : JPanel
-                - buildArtistSection(void) : JPanel
-                - buildUploadSection(void) : JPanel
-                - buildSectionContainer(title : String) : JPanel
-                - buildQuickActionSection(void) : JPanel
                 - addDetailRow(container : JPanel, label : String, value : String) : void
-                - buildActionRow(title : String, subtitle : String) : JPanel
                 + setUploadSongListener(listener : ActionListener) : void
         }
-        class AdminProfileView
     }
 
     folder "Controllers" {
@@ -599,12 +424,23 @@ package "Frontend" as V {
     
 
     folder "Services" {
+        class AdminService{
+            - adminApiClient : AdminApiClient
+            --
+            + AdminService(adminApiClient : AdminApiClient)
+            + getAllSongs(void) : List<Song>
+            + getAllArtistRequests(void) : List<ArtistRequest>
+            + approveArtistRequest(requestId : int) : boolean
+            + rejectArtistRequest(requestId : int) : boolean
+            + removeSong(songId : int) : boolean
+            + issueStrike(artistId : int, reason : String) : boolean
+            + issueBan(artistId : int, reason : String) : boolean
+        }
         class ArtistRequestService {
             - artistRequestApiClient : ArtistRequestApiClient
             --
             + ArtistRequestService(artistRequestApiClient : ArtistRequestApiClient)
             + getArtistRequests(void) : List<ArtistRequest>
-            - mockArtistRequests(void) : List<ArtistRequest>
             - toModel(dto : ArtistApplicationResponse) : ArtistRequest
             + approveArtistRequest(requestId : int) : boolean
             + rejectArtistRequest(requestId : int) : boolean
@@ -656,9 +492,26 @@ package "Frontend" as V {
             + getDummySongs(void) : List<Song>
             + toModel(response : SongResponse) : Song
         }
+        class SearchService {
+            - apiClient : ApiClient
+            --
+            + SearchService(apiClient : ApiClient)
+            + search(query : String, type : String) : List<ILibraryAsset>
     }
 
     folder "Api" {
+        class AdminApi{
+            - apiClient : ApiClient
+            --
+            + AdminApi(apiClient : ApiClient)
+            + getAllSongs(void) : ApiResponse<List<SongResponse>>
+             + getAllArtistRequests(void) : ApiResponse<List<ArtistApplicationResponse>>
+            + approveArtistRequest(requestId : int) : ApiResponse<Void>
+            + rejectArtistRequest(requestId : int) : ApiResponse<Void>
+            + removeSong(songId : int) : ApiResponse<Void>
+            + issueStrike(artistId : int, reason : String) : ApiResponse<Void>
+            + issueBan(artistId : int, reason : String) : ApiResponse<Void>
+        }
         class ArtistRequestApiClient {
             - apiClient : ApiClient
             --
