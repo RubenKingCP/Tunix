@@ -456,7 +456,12 @@ public class MusicView extends JPanel {
                                 new JMenuItem("Remove from this playlist");
 
                         removeItem.addActionListener(ev -> {
-
+                            if (SessionService.Instance.getAccount().getUsername() != musicAsset.getCreator().getUsername()) {
+                                JOptionPane.showMessageDialog(
+                                        MusicView.this,
+                                        "You can only remove songs from playlists you created.");
+                                return;
+                            }
                             int confirm = JOptionPane.showConfirmDialog(
                                     MusicView.this,
                                     "Remove \"" + song.getTitle()
