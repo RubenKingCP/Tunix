@@ -6,13 +6,14 @@ actor "Γενικός\nΧρήστης" as GX
 
 boundary "Οθόνη Λίστας\nΑναπαραγωγής" as B_PL
 boundary "Menu Επιλογών\nΤραγουδιού" as B_SGM
+boundary "Popup αποτυχίας" as B_ERR #red
 
 control "Επιλογή Playlist" as C_PSEL
 control "Έλεγχος: Είναι\nΔημιουργός\nτης Playlist?" as C_ISC
-control "Εμφάνιση μενού επιλογών\nτραγουδιού με\nεπιλογή αφαίρεσης" as C_WRM
+control "Εμφάνιση μενού επιλογών\nτραγουδιού" as C_WRM
 control "Αφαίρεση τραγουδιού\nαπό την playlist" as C_RM
 control "Ενημέρωση\nDatabase" as C_UPDB
-control "Εμφάνιση μενού επιλογών\nτραγουδιού χωρίς\nεπιλογή αφαίρεσης" as C_WORM #red
+control "Εμφάνιση popup\nαποτυχίας" as C_ERR #red
 
 entity "Database" as E_DB
 entity "Playlist" as E_PL
@@ -23,19 +24,17 @@ usecase "Επιλογή Λίστας\nΑναπαραγωγής" as UC_PSEL
 C_PSEL --> UC_PSEL
 C_PSEL --> B_PL
 GX --> B_PL : "Επιλογή Τραγουδιού"
-B_PL --> C_ISC
+B_PL --> C_WRM
 C_ISC --> E_DB
 C_ISC --> E_USR
-C_ISC --> C_WRM : Ο Γενικός Χρήστης είναι\nδημιουργός της playlist
+C_ISC --> C_RM : Ο Γενικός Χρήστης είναι\nδημιουργός της playlist
 C_WRM --> B_SGM
 GX --> B_SGM : Επιλογή <<Remove from playlist>>
-B_SGM --> C_RM
+B_SGM --> C_ISC
 C_RM --> E_PL
 C_RM --> C_UPDB
 C_UPDB --> E_DB
-C_ISC -[#red]-> C_WORM : <font color="red">Ο Γενικός Χρήστης δεν είναι</font>\n<font color="red">δημιουργός της playlist</font>
-C_WORM -[#red]-> B_SGM
-B_SGM -[#red]-> GX : <font color="red">Ο Γενικός Χρήστης δεν έχει την επιλογή</font>\n<font color="red"><<Remove from playlist>>, άρα δεν μπορεί να την επιλέξει</font>
-
-
+C_ISC -[#red]-> C_ERR : <font color="red">Ο Γενικός Χρήστης δεν είναι</font>\n<font color="red">δημιουργός της playlist</font>
+C_ERR -[#red]-> B_ERR
+B_ERR -[#red]-> GX
 @enduml
