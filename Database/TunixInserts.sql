@@ -1,288 +1,364 @@
+-- =============================================
+-- TUNIX DATABASE SEED DATA
+-- =============================================
+
 USE Tunix;
 
--- =============
--- ACCOUNT (20 total: 10 users, 8 artists, 2 admins)
--- =============
-INSERT INTO account (account_id, username, email, password, role) VALUES
-(1,  'user1',       'john@example.com',    'pass123',  'USER'),
-(2,  'jane_smith',     'jane@example.com',    'pass123',  'USER'),
-(3,  'mike_jones',     'mike@example.com',    'pass123',  'USER'),
-(4,  'sara_lee',       'sara@example.com',    'pass123',  'USER'),
-(5,  'tom_brown',      'tom@example.com',     'pass123',  'USER'),
-(6,  'lucy_white',     'lucy@example.com',    'pass123',  'USER'),
-(7,  'kevin_black',    'kevin@example.com',   'pass123',  'USER'),
-(8,  'nina_hall',      'nina@example.com',    'pass123',  'USER'),
-(9,  'omar_king',      'omar@example.com',    'pass123',  'USER'),
-(10, 'petra_wood',     'petra@example.com',   'pass123', 'USER'),
-(11, 'artist_drake',   'drake@music.com',     'pass123', 'ARTIST'),
-(12, 'artist_adele',   'adele@music.com',     'pass123', 'ARTIST'),
-(13, 'artist_kendrick','kendrick@music.com',  'pass123', 'ARTIST'),
-(14, 'artist_taylor',  'taylor@music.com',    'pass123', 'ARTIST'),
-(15, 'artist_weeknd',  'weeknd@music.com',    'pass123', 'ARTIST'),
-(16, 'artist_billie',  'billie@music.com',    'pass123', 'ARTIST'),
-(17, 'artist_post',    'post@music.com',      'pass123', 'ARTIST'),
-(18, 'artist_doja',    'doja@music.com',      'pass123', 'ARTIST'),
-(19, 'artist_sza',     'sza@music.com',       'pass123', 'ARTIST'),
-(20, 'artist_future',  'future@music.com',    'pass123', 'ARTIST'),
-(21, 'admin_alice',    'alice@admin.com',     'pass123', 'ADMIN'),
-(22, 'admin_bob',      'bob@admin.com',       'pass123', 'ADMIN');
+-- =============================================
+-- ACCOUNTS
+-- =============================================
+-- Active users (1-5)
+INSERT INTO account (account_id, username, email, password, role, is_banned, ban_reason, warning_count) VALUES
+(1,  'user1',        'jdoe@email.com',        'pass123',  'USER',   FALSE, NULL, 0),
+(2,  'sarahm',      'sarah.m@email.com',     'pass123',  'USER',   FALSE, NULL, 1),
+(3,  'mike_b',      'mike.b@email.com',      'pass123',  'USER',   FALSE, NULL, 0),
+(4,  'nia_w',       'nia.w@email.com',       '$2b$12$hashedpw4',  'USER',   FALSE, NULL, 2),
+(5,  'carlos_r',    'carlos.r@email.com',    '$2b$12$hashedpw5',  'USER',   FALSE, NULL, 0),
 
--- =============
--- USER
--- =============
+-- Active artists (6-9)
+(6,  'neon_pulse',  'neon.pulse@music.com',  'pass123',  'ARTIST', FALSE, NULL, 1),
+(7,  'velvet_echo', 'velvet.echo@music.com', 'pass123',  'ARTIST', FALSE, NULL, 2),
+(8,  'drift_wave',  'drift.wave@music.com',  '$2b$12$hashedpw8',  'ARTIST', FALSE, NULL, 0),
+(9,  'luna_skye',   'luna.skye@music.com',   '$2b$12$hashedpw9',  'ARTIST', FALSE, NULL, 0),
+
+-- Banned artists (10-12)
+(10, 'rage_mxr',    'rage.mxr@music.com',    'pass123', 'ARTIST', TRUE,  'Repeated copyright violations', 3),
+(11, 'dropkingz',   'dropkingz@music.com',   '$2b$12$hashedpwB', 'ARTIST', TRUE,  'Harassment of other artists',   2),
+(12, 'ghostnote',   'ghostnote@music.com',   '$2b$12$hashedpwC', 'ARTIST', TRUE,  'Fraudulent streaming activity', 4),
+
+-- Admins (13-14)
+(13, 'admin_alex',  'admin.alex@tunix.com',  'pass123', 'ADMIN',  FALSE, NULL, 0),
+(14, 'admin_maya',  'admin.maya@tunix.com',  '$2b$12$hashedpwE', 'ADMIN',  FALSE, NULL, 0);
+
+
+-- =============================================
+-- WARNINGS
+-- =============================================
+INSERT INTO account_warning (account_id, reason, warned_by) VALUES
+-- sarahm (account 2) - 1 warning
+(2, 'Sharing unauthorized download links in community posts',          13),
+
+-- nia_w (account 4) - 2 warnings
+(4, 'Inappropriate playlist titles violating community guidelines',    13),
+(4, 'Spamming artist comment sections with promotional content',       14),
+
+-- neon_pulse (account 6) - 1 warning
+(6, 'Uploaded song with uncleared sample without proper attribution',  13),
+
+-- velvet_echo (account 7) - 2 warnings
+(7, 'Misleading track titles to game discovery algorithm',             14),
+(7, 'Submitted duplicate songs under different names',                 13),
+
+-- rage_mxr (account 10) - 3 warnings (now banned)
+(10, 'First copyright strike — unlicensed use of sampled material',   13),
+(10, 'Second copyright strike — continued violation after warning',    13),
+(10, 'Third copyright strike — uploaded entire copyrighted album',     14),
+
+-- dropkingz (account 11) - 2 warnings (now banned)
+(11, 'Sent threatening messages to competing artists',                 14),
+(11, 'Posted defamatory content targeting another artist profile',     13),
+
+-- ghostnote (account 12) - 4 warnings (now banned)
+(12, 'Coordinated fake stream inflation detected',                     13),
+(12, 'Second instance of bot-driven stream manipulation',              14),
+(12, 'Sold fake streams to third-party artists',                       13),
+(12, 'Created fake accounts to inflate follower count',                14);
+
+
+-- =============================================
+-- USERS
+-- =============================================
 INSERT INTO user (id, account_id, display_name, profile_picture_url, premium, premium_trial_used, downloaded_songs_count) VALUES
-(1,  1,  'John Doe',    'https://cdn.tunix.com/pfp/1.jpg',  TRUE,  TRUE,  12),
-(2,  2,  'Jane Smith',  'https://cdn.tunix.com/pfp/2.jpg',  FALSE, FALSE, 0),
-(3,  3,  'Mike Jones',  'https://cdn.tunix.com/pfp/3.jpg',  TRUE,  TRUE,  5),
-(4,  4,  'Sara Lee',    'https://cdn.tunix.com/pfp/4.jpg',  FALSE, TRUE,  0),
-(5,  5,  'Tom Brown',   'https://cdn.tunix.com/pfp/5.jpg',  TRUE,  TRUE,  20),
-(6,  6,  'Lucy White',  'https://cdn.tunix.com/pfp/6.jpg',  FALSE, FALSE, 0),
-(7,  7,  'Kevin Black', 'https://cdn.tunix.com/pfp/7.jpg',  TRUE,  TRUE,  8),
-(8,  8,  'Nina Hall',   'https://cdn.tunix.com/pfp/8.jpg',  FALSE, FALSE, 0),
-(9,  9,  'Omar King',   'https://cdn.tunix.com/pfp/9.jpg',  TRUE,  FALSE, 3),
-(10, 10, 'Petra Wood',  'https://cdn.tunix.com/pfp/10.jpg', FALSE, FALSE, 0);
+(1, 1,  'John Doe',    'https://cdn.tunix.io/avatars/jdoe.jpg',    TRUE,  TRUE,  12),
+(2, 2,  'Sarah M',     'https://cdn.tunix.io/avatars/sarah.jpg',   FALSE, FALSE, 0),
+(3, 3,  'Mike B',      'https://cdn.tunix.io/avatars/mikeb.jpg',   TRUE,  TRUE,  7),
+(4, 4,  'Nia W',       'https://cdn.tunix.io/avatars/niaw.jpg',    FALSE, TRUE,  0),
+(5, 5,  'Carlos R',    'https://cdn.tunix.io/avatars/carlos.jpg',  TRUE,  TRUE,  20);
 
--- =============
--- ARTIST
--- =============
-INSERT INTO artist (id, account_id, display_name, biography, followers_count, verified) VALUES
-(1,  11, 'Drake',    'Rapper and singer from Toronto.',           54000000, TRUE),
-(2,  12, 'Adele',    'Grammy-winning British singer-songwriter.', 48000000, TRUE),
-(3,  13, 'Kendrick', 'Pulitzer Prize-winning rapper from Compton.',38000000, TRUE),
-(4,  14, 'Taylor S', 'Pop icon and record-breaking songwriter.',   72000000, TRUE),
-(5,  15, 'The Weeknd','R&B and pop artist from Toronto.',          61000000, TRUE),
-(6,  16, 'Billie E', 'Alternative pop artist from Los Angeles.',   44000000, TRUE),
-(7,  17, 'Post Malone','Hip-hop and pop artist from Texas.',       39000000, TRUE),
-(8,  18, 'Doja Cat', 'Rapper and singer from Los Angeles.',        35000000, TRUE),
-(9,  19, 'SZA',      'R&B singer-songwriter from New Jersey.',     28000000, TRUE),
-(10, 20, 'Future',   'Trap pioneer from Atlanta.',                 31000000, TRUE);
 
--- =============
--- ADMIN
--- =============
+-- =============================================
+-- ARTISTS
+-- =============================================
+INSERT INTO artist (id, account_id, biography, followers_count, verified, display_name) VALUES
+(1, 6,  'Neon Pulse blends synthwave and dark electro. Based in Berlin.',                    84200, TRUE,  'Neon Pulse'),
+(2, 7,  'Velvet Echo crafts atmospheric indie folk from the Pacific Northwest.',             51000, TRUE,  'Velvet Echo'),
+(3, 8,  'Drift Wave is a lo-fi chill hop producer active since 2018.',                      39000, FALSE, 'Drift Wave'),
+(4, 9,  'Luna Skye mixes dream pop with ambient soundscapes.',                               62500, TRUE,  'Luna Skye'),
+(5, 10, 'Rage Mxr — account terminated due to repeated policy violations.',                     0, FALSE, 'Rage Mxr'),
+(6, 11, 'Dropkingz — account suspended for harassment of platform members.',                    0, FALSE, 'Dropkingz'),
+(7, 12, 'Ghostnote — account banned for fraudulent streaming activity.',                        0, FALSE, 'Ghostnote');
+
+
+-- =============================================
+-- ADMINS
+-- =============================================
 INSERT INTO admin (id, account_id) VALUES
-(1, 21),
-(2, 22);
+(1, 13),
+(2, 14);
 
--- =============
--- SONG (10 per artist = 100 total, we do 10 spread across artists)
--- =============
+
+-- =============================================
+-- SONGS — 20 per active artist (IDs 1–80)
+-- =============================================
+
+-- Neon Pulse (artist_id = 1) — songs 1-20
 INSERT INTO song (id, title, artist_id, duration, file_path_url, cover_image_url) VALUES
-(1,  'God\'s Plan',        1, 198, 'https://cdn.tunix.com/songs/1.mp3',  'https://cdn.tunix.com/covers/1.jpg'),
-(2,  'Hotline Bling',      1, 267, 'https://cdn.tunix.com/songs/2.mp3',  'https://cdn.tunix.com/covers/2.jpg'),
-(3,  'Hello',              2, 295, 'https://cdn.tunix.com/songs/3.mp3',  'https://cdn.tunix.com/covers/3.jpg'),
-(4,  'Rolling in the Deep',2, 228, 'https://cdn.tunix.com/songs/4.mp3',  'https://cdn.tunix.com/covers/4.jpg'),
-(5,  'HUMBLE.',            3, 177, 'https://cdn.tunix.com/songs/5.mp3',  'https://cdn.tunix.com/covers/5.jpg'),
-(6,  'DNA.',               3, 185, 'https://cdn.tunix.com/songs/6.mp3',  'https://cdn.tunix.com/covers/6.jpg'),
-(7,  'Shake It Off',       4, 219, 'https://cdn.tunix.com/songs/7.mp3',  'https://cdn.tunix.com/covers/7.jpg'),
-(8,  'Blank Space',        4, 231, 'https://cdn.tunix.com/songs/8.mp3',  'https://cdn.tunix.com/covers/8.jpg'),
-(9,  'Blinding Lights',    5, 200, 'https://cdn.tunix.com/songs/9.mp3',  'https://cdn.tunix.com/covers/9.jpg'),
-(10, 'Starboy',            5, 230, 'https://cdn.tunix.com/songs/10.mp3', 'https://cdn.tunix.com/covers/10.jpg'),
-(11, 'Bad Guy',            6, 194, 'https://cdn.tunix.com/songs/11.mp3', 'https://cdn.tunix.com/covers/11.jpg'),
-(12, 'Happier Than Ever',  6, 298, 'https://cdn.tunix.com/songs/12.mp3', 'https://cdn.tunix.com/covers/12.jpg'),
-(13, 'Circles',            7, 215, 'https://cdn.tunix.com/songs/13.mp3', 'https://cdn.tunix.com/covers/13.jpg'),
-(14, 'Rockstar',           7, 218, 'https://cdn.tunix.com/songs/14.mp3', 'https://cdn.tunix.com/covers/14.jpg'),
-(15, 'Say So',             8, 237, 'https://cdn.tunix.com/songs/15.mp3', 'https://cdn.tunix.com/covers/15.jpg'),
-(16, 'Kiss Me More',       8, 208, 'https://cdn.tunix.com/songs/16.mp3', 'https://cdn.tunix.com/covers/16.jpg'),
-(17, 'Good Days',          9, 272, 'https://cdn.tunix.com/songs/17.mp3', 'https://cdn.tunix.com/covers/17.jpg'),
-(18, 'Kill Bill',          9, 153, 'https://cdn.tunix.com/songs/18.mp3', 'https://cdn.tunix.com/covers/18.jpg'),
-(19, 'Mask Off',           10, 220,'https://cdn.tunix.com/songs/19.mp3', 'https://cdn.tunix.com/covers/19.jpg'),
-(20, 'Life Is Good',       10, 240,'https://cdn.tunix.com/songs/20.mp3', 'https://cdn.tunix.com/covers/20.jpg');
+(1,  'Midnight Grid',           1, 214, 'https://cdn.tunix.io/songs/np_001.mp3', 'https://cdn.tunix.io/covers/np_001.jpg'),
+(2,  'Neon Veins',              1, 198, 'https://cdn.tunix.io/songs/np_002.mp3', 'https://cdn.tunix.io/covers/np_002.jpg'),
+(3,  'Static Dreams',           1, 231, 'https://cdn.tunix.io/songs/np_003.mp3', 'https://cdn.tunix.io/covers/np_003.jpg'),
+(4,  'Pulse City',              1, 245, 'https://cdn.tunix.io/songs/np_004.mp3', 'https://cdn.tunix.io/covers/np_004.jpg'),
+(5,  'Chrome Heart',            1, 207, 'https://cdn.tunix.io/songs/np_005.mp3', 'https://cdn.tunix.io/covers/np_005.jpg'),
+(6,  'Ultraviolet Rift',        1, 263, 'https://cdn.tunix.io/songs/np_006.mp3', 'https://cdn.tunix.io/covers/np_006.jpg'),
+(7,  'Dark Prism',              1, 189, 'https://cdn.tunix.io/songs/np_007.mp3', 'https://cdn.tunix.io/covers/np_007.jpg'),
+(8,  'Signal Overload',         1, 218, 'https://cdn.tunix.io/songs/np_008.mp3', 'https://cdn.tunix.io/covers/np_008.jpg'),
+(9,  'Binary Sunset',           1, 252, 'https://cdn.tunix.io/songs/np_009.mp3', 'https://cdn.tunix.io/covers/np_009.jpg'),
+(10, 'Voltage',                 1, 174, 'https://cdn.tunix.io/songs/np_010.mp3', 'https://cdn.tunix.io/covers/np_010.jpg'),
+(11, 'Phantom Circuit',         1, 236, 'https://cdn.tunix.io/songs/np_011.mp3', 'https://cdn.tunix.io/covers/np_011.jpg'),
+(12, 'Glass Horizon',           1, 201, 'https://cdn.tunix.io/songs/np_012.mp3', 'https://cdn.tunix.io/covers/np_012.jpg'),
+(13, 'The Last Frequency',      1, 289, 'https://cdn.tunix.io/songs/np_013.mp3', 'https://cdn.tunix.io/covers/np_013.jpg'),
+(14, 'Neural Rush',             1, 193, 'https://cdn.tunix.io/songs/np_014.mp3', 'https://cdn.tunix.io/covers/np_014.jpg'),
+(15, 'Infrared',                1, 222, 'https://cdn.tunix.io/songs/np_015.mp3', 'https://cdn.tunix.io/covers/np_015.jpg'),
+(16, 'Synthetic Dawn',          1, 244, 'https://cdn.tunix.io/songs/np_016.mp3', 'https://cdn.tunix.io/covers/np_016.jpg'),
+(17, 'Laser Maze',              1, 209, 'https://cdn.tunix.io/songs/np_017.mp3', 'https://cdn.tunix.io/covers/np_017.jpg'),
+(18, 'Electric Ghost',          1, 230, 'https://cdn.tunix.io/songs/np_018.mp3', 'https://cdn.tunix.io/covers/np_018.jpg'),
+(19, 'Resonance Chamber',       1, 256, 'https://cdn.tunix.io/songs/np_019.mp3', 'https://cdn.tunix.io/covers/np_019.jpg'),
+(20, 'Neon Requiem',            1, 278, 'https://cdn.tunix.io/songs/np_020.mp3', 'https://cdn.tunix.io/covers/np_020.jpg'),
 
--- =============
--- ALBUM
--- =============
+-- Velvet Echo (artist_id = 2) — songs 21-40
+(21, 'Porch Light',             2, 203, 'https://cdn.tunix.io/songs/ve_001.mp3', 'https://cdn.tunix.io/covers/ve_001.jpg'),
+(22, 'Cedar Creek',             2, 247, 'https://cdn.tunix.io/songs/ve_002.mp3', 'https://cdn.tunix.io/covers/ve_002.jpg'),
+(23, 'Salt & Smoke',            2, 218, 'https://cdn.tunix.io/songs/ve_003.mp3', 'https://cdn.tunix.io/covers/ve_003.jpg'),
+(24, 'Overgrown',               2, 265, 'https://cdn.tunix.io/songs/ve_004.mp3', 'https://cdn.tunix.io/covers/ve_004.jpg'),
+(25, 'Hollow Hills',            2, 231, 'https://cdn.tunix.io/songs/ve_005.mp3', 'https://cdn.tunix.io/covers/ve_005.jpg'),
+(26, 'Morning Rust',            2, 194, 'https://cdn.tunix.io/songs/ve_006.mp3', 'https://cdn.tunix.io/covers/ve_006.jpg'),
+(27, 'Ember Road',              2, 259, 'https://cdn.tunix.io/songs/ve_007.mp3', 'https://cdn.tunix.io/covers/ve_007.jpg'),
+(28, 'Barefoot on Glass',       2, 214, 'https://cdn.tunix.io/songs/ve_008.mp3', 'https://cdn.tunix.io/covers/ve_008.jpg'),
+(29, 'Foxglove',                2, 243, 'https://cdn.tunix.io/songs/ve_009.mp3', 'https://cdn.tunix.io/covers/ve_009.jpg'),
+(30, 'Winter Thread',           2, 272, 'https://cdn.tunix.io/songs/ve_010.mp3', 'https://cdn.tunix.io/covers/ve_010.jpg'),
+(31, 'Silverline',              2, 199, 'https://cdn.tunix.io/songs/ve_011.mp3', 'https://cdn.tunix.io/covers/ve_011.jpg'),
+(32, 'The Orchard',             2, 236, 'https://cdn.tunix.io/songs/ve_012.mp3', 'https://cdn.tunix.io/covers/ve_012.jpg'),
+(33, 'Tangled Roots',           2, 221, 'https://cdn.tunix.io/songs/ve_013.mp3', 'https://cdn.tunix.io/covers/ve_013.jpg'),
+(34, 'June Haze',               2, 248, 'https://cdn.tunix.io/songs/ve_014.mp3', 'https://cdn.tunix.io/covers/ve_014.jpg'),
+(35, 'Quiet Cartography',       2, 287, 'https://cdn.tunix.io/songs/ve_015.mp3', 'https://cdn.tunix.io/covers/ve_015.jpg'),
+(36, 'Swallowed by the Field',  2, 304, 'https://cdn.tunix.io/songs/ve_016.mp3', 'https://cdn.tunix.io/covers/ve_016.jpg'),
+(37, 'River Mouth',             2, 228, 'https://cdn.tunix.io/songs/ve_017.mp3', 'https://cdn.tunix.io/covers/ve_017.jpg'),
+(38, 'Still Life',              2, 213, 'https://cdn.tunix.io/songs/ve_018.mp3', 'https://cdn.tunix.io/covers/ve_018.jpg'),
+(39, 'Ghost Season',            2, 252, 'https://cdn.tunix.io/songs/ve_019.mp3', 'https://cdn.tunix.io/covers/ve_019.jpg'),
+(40, 'Last Song Before Autumn', 2, 296, 'https://cdn.tunix.io/songs/ve_020.mp3', 'https://cdn.tunix.io/covers/ve_020.jpg'),
+
+-- Drift Wave (artist_id = 3) — songs 41-60
+(41, 'Afternoon Rain',          3, 175, 'https://cdn.tunix.io/songs/dw_001.mp3', 'https://cdn.tunix.io/covers/dw_001.jpg'),
+(42, 'Slow Ride Home',          3, 192, 'https://cdn.tunix.io/songs/dw_002.mp3', 'https://cdn.tunix.io/covers/dw_002.jpg'),
+(43, 'Sunday Noodles',          3, 163, 'https://cdn.tunix.io/songs/dw_003.mp3', 'https://cdn.tunix.io/covers/dw_003.jpg'),
+(44, 'Warm Blanket',            3, 188, 'https://cdn.tunix.io/songs/dw_004.mp3', 'https://cdn.tunix.io/covers/dw_004.jpg'),
+(45, 'City Window',             3, 204, 'https://cdn.tunix.io/songs/dw_005.mp3', 'https://cdn.tunix.io/covers/dw_005.jpg'),
+(46, 'Cassette Tape No.3',      3, 171, 'https://cdn.tunix.io/songs/dw_006.mp3', 'https://cdn.tunix.io/covers/dw_006.jpg'),
+(47, 'Rooftop Garden',          3, 198, 'https://cdn.tunix.io/songs/dw_007.mp3', 'https://cdn.tunix.io/covers/dw_007.jpg'),
+(48, 'Foggy Commute',           3, 183, 'https://cdn.tunix.io/songs/dw_008.mp3', 'https://cdn.tunix.io/covers/dw_008.jpg'),
+(49, 'Late Night Ramen',        3, 207, 'https://cdn.tunix.io/songs/dw_009.mp3', 'https://cdn.tunix.io/covers/dw_009.jpg'),
+(50, 'Study Session',           3, 195, 'https://cdn.tunix.io/songs/dw_010.mp3', 'https://cdn.tunix.io/covers/dw_010.jpg'),
+(51, 'Paperback Sky',           3, 179, 'https://cdn.tunix.io/songs/dw_011.mp3', 'https://cdn.tunix.io/covers/dw_011.jpg'),
+(52, 'Half Awake',              3, 211, 'https://cdn.tunix.io/songs/dw_012.mp3', 'https://cdn.tunix.io/covers/dw_012.jpg'),
+(53, 'Gentle Loop',             3, 167, 'https://cdn.tunix.io/songs/dw_013.mp3', 'https://cdn.tunix.io/covers/dw_013.jpg'),
+(54, 'Tea Time',                3, 185, 'https://cdn.tunix.io/songs/dw_014.mp3', 'https://cdn.tunix.io/covers/dw_014.jpg'),
+(55, 'Bicycle Path',            3, 193, 'https://cdn.tunix.io/songs/dw_015.mp3', 'https://cdn.tunix.io/covers/dw_015.jpg'),
+(56, 'Overgrown Arcade',        3, 218, 'https://cdn.tunix.io/songs/dw_016.mp3', 'https://cdn.tunix.io/covers/dw_016.jpg'),
+(57, 'Amber Hour',              3, 201, 'https://cdn.tunix.io/songs/dw_017.mp3', 'https://cdn.tunix.io/covers/dw_017.jpg'),
+(58, 'Drift Off',               3, 226, 'https://cdn.tunix.io/songs/dw_018.mp3', 'https://cdn.tunix.io/covers/dw_018.jpg'),
+(59, 'Interlude No.7',          3, 158, 'https://cdn.tunix.io/songs/dw_019.mp3', 'https://cdn.tunix.io/covers/dw_019.jpg'),
+(60, 'The Last Tape',           3, 245, 'https://cdn.tunix.io/songs/dw_020.mp3', 'https://cdn.tunix.io/covers/dw_020.jpg'),
+
+-- Luna Skye (artist_id = 4) — songs 61-80
+(61, 'Celestial Drift',         4, 238, 'https://cdn.tunix.io/songs/ls_001.mp3', 'https://cdn.tunix.io/covers/ls_001.jpg'),
+(62, 'Moonpool',                4, 254, 'https://cdn.tunix.io/songs/ls_002.mp3', 'https://cdn.tunix.io/covers/ls_002.jpg'),
+(63, 'Stardust Lullaby',        4, 271, 'https://cdn.tunix.io/songs/ls_003.mp3', 'https://cdn.tunix.io/covers/ls_003.jpg'),
+(64, 'Aurora Fade',             4, 246, 'https://cdn.tunix.io/songs/ls_004.mp3', 'https://cdn.tunix.io/covers/ls_004.jpg'),
+(65, 'Orbit',                   4, 217, 'https://cdn.tunix.io/songs/ls_005.mp3', 'https://cdn.tunix.io/covers/ls_005.jpg'),
+(66, 'Halo Weather',            4, 263, 'https://cdn.tunix.io/songs/ls_006.mp3', 'https://cdn.tunix.io/covers/ls_006.jpg'),
+(67, 'Solstice Dream',          4, 295, 'https://cdn.tunix.io/songs/ls_007.mp3', 'https://cdn.tunix.io/covers/ls_007.jpg'),
+(68, 'Pale Blue Signal',        4, 231, 'https://cdn.tunix.io/songs/ls_008.mp3', 'https://cdn.tunix.io/covers/ls_008.jpg'),
+(69, 'Cloud Cartography',       4, 258, 'https://cdn.tunix.io/songs/ls_009.mp3', 'https://cdn.tunix.io/covers/ls_009.jpg'),
+(70, 'Lunar Static',            4, 242, 'https://cdn.tunix.io/songs/ls_010.mp3', 'https://cdn.tunix.io/covers/ls_010.jpg'),
+(71, 'Aphelion',                4, 283, 'https://cdn.tunix.io/songs/ls_011.mp3', 'https://cdn.tunix.io/covers/ls_011.jpg'),
+(72, 'Vellichor',               4, 269, 'https://cdn.tunix.io/songs/ls_012.mp3', 'https://cdn.tunix.io/covers/ls_012.jpg'),
+(73, 'Tide & Echo',             4, 237, 'https://cdn.tunix.io/songs/ls_013.mp3', 'https://cdn.tunix.io/covers/ls_013.jpg'),
+(74, 'Quiet Universe',          4, 312, 'https://cdn.tunix.io/songs/ls_014.mp3', 'https://cdn.tunix.io/covers/ls_014.jpg'),
+(75, 'Nebula Pop',              4, 224, 'https://cdn.tunix.io/songs/ls_015.mp3', 'https://cdn.tunix.io/covers/ls_015.jpg'),
+(76, 'Soft Gravity',            4, 248, 'https://cdn.tunix.io/songs/ls_016.mp3', 'https://cdn.tunix.io/covers/ls_016.jpg'),
+(77, 'Tidal Reverie',           4, 265, 'https://cdn.tunix.io/songs/ls_017.mp3', 'https://cdn.tunix.io/covers/ls_017.jpg'),
+(78, 'Phases',                  4, 291, 'https://cdn.tunix.io/songs/ls_018.mp3', 'https://cdn.tunix.io/covers/ls_018.jpg'),
+(79, 'The Sky Remembers',       4, 307, 'https://cdn.tunix.io/songs/ls_019.mp3', 'https://cdn.tunix.io/covers/ls_019.jpg'),
+(80, 'Last Light (Reprise)',     4, 334, 'https://cdn.tunix.io/songs/ls_020.mp3', 'https://cdn.tunix.io/covers/ls_020.jpg');
+
+
+-- =============================================
+-- ALBUMS — 2 per artist, 5 songs each
+-- =============================================
+
 INSERT INTO album (id, title, artist_id, release_date) VALUES
-(1,  'Scorpion',        1,  '2018-06-29'),
-(2,  '21',              2,  '2011-01-24'),
-(3,  'DAMN.',           3,  '2017-04-14'),
-(4,  '1989',            4,  '2014-10-27'),
-(5,  'After Hours',     5,  '2020-03-20'),
-(6,  'Happier Than Ever',6, '2021-07-30'),
-(7,  'Hollywood\'s Bleeding',7,'2019-09-06'),
-(8,  'Planet Her',      8,  '2021-06-25'),
-(9,  'SOS',             9,  '2022-12-09'),
-(10, 'HNDRXX',          10, '2017-02-24');
+-- Neon Pulse albums
+(1, 'Grid City',         1, '2022-03-14'),
+(2, 'Signal Decay',      1, '2024-01-20'),
+-- Velvet Echo albums
+(3, 'Cedar & Salt',      2, '2021-09-05'),
+(4, 'The Quiet Season',  2, '2023-11-18'),
+-- Drift Wave albums
+(5, 'Afternoon Loops',   3, '2020-06-22'),
+(6, 'Cassette Dreams',   3, '2023-04-08'),
+-- Luna Skye albums
+(7, 'Moonpool EP',       4, '2022-07-30'),
+(8, 'Aphelion',          4, '2024-02-14');
 
--- =============
--- ALBUM_SONG (10 join rows + 10 extra = 20)
--- =============
+-- Album songs
+-- Grid City (album 1): songs 1-5
 INSERT INTO album_song (album_id, song_id) VALUES
--- Base 10
-(1,  1),
-(1,  2),
-(2,  3),
-(2,  4),
-(3,  5),
-(3,  6),
-(4,  7),
-(4,  8),
-(5,  9),
-(5,  10),
--- Extra 10
-(6,  11),
-(6,  12),
-(7,  13),
-(7,  14),
-(8,  15),
-(8,  16),
-(9,  17),
-(9,  18),
-(10, 19),
-(10, 20);
+(1, 1),(1, 2),(1, 3),(1, 4),(1, 5),
+-- Signal Decay (album 2): songs 6-10
+(2, 6),(2, 7),(2, 8),(2, 9),(2, 10),
+-- Cedar & Salt (album 3): songs 21-25
+(3, 21),(3, 22),(3, 23),(3, 24),(3, 25),
+-- The Quiet Season (album 4): songs 26-30
+(4, 26),(4, 27),(4, 28),(4, 29),(4, 30),
+-- Afternoon Loops (album 5): songs 41-45
+(5, 41),(5, 42),(5, 43),(5, 44),(5, 45),
+-- Cassette Dreams (album 6): songs 46-50
+(6, 46),(6, 47),(6, 48),(6, 49),(6, 50),
+-- Moonpool EP (album 7): songs 61-65
+(7, 61),(7, 62),(7, 63),(7, 64),(7, 65),
+-- Aphelion (album 8): songs 66-70
+(8, 66),(8, 67),(8, 68),(8, 69),(8, 70);
 
--- =============
--- PLAYLIST
--- =============
-INSERT INTO playlist (id, title, creator_id, is_public) VALUES
-(1,  'Morning Vibes',     1,  TRUE),
-(2,  'Late Night Feels',  2,  FALSE),
-(3,  'Workout Bangers',   3,  TRUE),
-(4,  'Chill Sunday',      4,  TRUE),
-(5,  'Road Trip Mix',     5,  FALSE),
-(6,  'Study Session',     6,  TRUE),
-(7,  'Party Hits',        7,  TRUE),
-(8,  'Throwback Jams',    8,  FALSE),
-(9,  'RnB Lounge',        9,  TRUE),
-(10, 'Top Charts',        10, TRUE);
 
--- =============
--- PLAYLIST_COAUTHOR (10 rows)
--- =============
-INSERT INTO playlist_coauthor (playlist_id, account_id) VALUES
-(1,  2),
-(2,  3),
-(3,  4),
-(4,  5),
-(5,  6),
-(6,  7),
-(7,  8),
-(8,  9),
-(9,  10),
-(10, 1);
-
--- =============
--- PLAYLIST_ITEM (10 base + 10 extra = 20, unique playlist_id+position combos)
--- =============
-INSERT INTO playlist_item (playlist_id, song_id, position) VALUES
--- Base 10
-(1,  1,  1),
-(1,  3,  2),
-(2,  5,  1),
-(2,  9,  2),
-(3,  2,  1),
-(3,  6,  2),
-(4,  11, 1),
-(4,  15, 2),
-(5,  7,  1),
-(5,  13, 2),
--- Extra 10
-(6,  17, 1),
-(6,  19, 2),
-(7,  4,  1),
-(7,  8,  2),
-(8,  10, 1),
-(8,  12, 2),
-(9,  14, 1),
-(9,  16, 2),
-(10, 18, 1),
-(10, 20, 2);
-
--- =============
--- ARTIST_REQUEST (10 rows from users)
--- =============
-INSERT INTO artist_request (user_id, stage_name, reason, profile_picture_url, status, reviewed_at) VALUES
-(1,  'DJ Johnny',    'I produce electronic music professionally.',     'https://cdn.tunix.com/req/1.jpg', 'APPROVED', '2024-02-10 10:00:00'),
-(2,  'Jane Vibes',   'Singer-songwriter with 5 years experience.',     'https://cdn.tunix.com/req/2.jpg', 'PENDING',  NULL),
-(3,  'MC Mikey',     'Rapper with 3 released mixtapes.',               'https://cdn.tunix.com/req/3.jpg', 'REJECTED', '2024-01-15 14:00:00'),
-(4,  'Sara Melodies','Classically trained pianist.',                   'https://cdn.tunix.com/req/4.jpg', 'PENDING',  NULL),
-(5,  'Tom Beats',    'Beat producer with YouTube channel.',            'https://cdn.tunix.com/req/5.jpg', 'APPROVED', '2024-03-05 09:00:00'),
-(6,  'Lucy Luna',    'Jazz vocalist performing live for 3 years.',     'https://cdn.tunix.com/req/6.jpg', 'PENDING',  NULL),
-(7,  'Kev Rhymes',   'Hip-hop artist with 10k SoundCloud followers.',  'https://cdn.tunix.com/req/7.jpg', 'APPROVED', '2024-03-20 11:00:00'),
-(8,  'Nina Notes',   'Indie pop artist with self-released EP.',        'https://cdn.tunix.com/req/8.jpg', 'REJECTED', '2024-02-28 16:00:00'),
-(9,  'Omar Waves',   'R&B singer from New York.',                      'https://cdn.tunix.com/req/9.jpg', 'PENDING',  NULL),
-(10, 'Petra Pop',    'Pop artist with viral TikTok covers.',           'https://cdn.tunix.com/req/10.jpg','APPROVED', '2024-04-01 08:00:00');
-
--- =============
--- LIBRARY (one per account, 10 users + 10 artists = 20)
--- =============
+-- =============================================
+-- LIBRARIES — one per account
+-- =============================================
 INSERT INTO library (id, account_id) VALUES
-(1,  1),  (2,  2),  (3,  3),  (4,  4),  (5,  5),
-(6,  6),  (7,  7),  (8,  8),  (9,  9),  (10, 10),
-(11, 11), (12, 12), (13, 13), (14, 14), (15, 15),
-(16, 16), (17, 17), (18, 18), (19, 19), (20, 20);
+(1, 1),(2, 2),(3, 3),(4, 4),(5, 5),
+(6, 6),(7, 7),(8, 8),(9, 9);
 
--- =============
--- LIBRARY_SONG (10 base + 10 extra = 20)
--- =============
+
+-- =============================================
+-- PLAYLISTS — 3-4 per user, public mix
+-- =============================================
+INSERT INTO playlist (id, title, creator_id, is_public) VALUES
+-- John Doe (account 1) — 4 playlists
+(1,  'Late Night Drive',         1, TRUE),
+(2,  'Morning Focus',            1, TRUE),
+(3,  'Rainy Day Mix',            1, FALSE),
+(4,  'Gym Bangers',              1, FALSE),
+-- Sarah M (account 2) — 3 playlists
+(5,  'Folk & Chill',             2, TRUE),
+(6,  'Autumn Feels',             2, TRUE),
+(7,  'Study Playlist',           2, FALSE),
+-- Mike B (account 3) — 4 playlists
+(8,  'Synth Classics',           3, TRUE),
+(9,  'Deep Focus',               3, FALSE),
+(10, 'Weekend Vibes',            3, TRUE),
+(11, 'Throwback Electro',        3, FALSE),
+-- Nia W (account 4) — 3 playlists
+(12, 'Dream Pop Essentials',     4, TRUE),
+(13, 'Coffee Shop Sounds',       4, TRUE),
+(14, 'Night Sky',                4, FALSE),
+-- Carlos R (account 5) — 4 playlists
+(15, 'Chill Beats Collection',   5, TRUE),
+(16, 'Late Night Chill',         5, FALSE),
+(17, 'Luna Favorites',           5, TRUE),
+(18, 'Best of Everything',       5, FALSE);
+
+
+-- =============================================
+-- PLAYLIST ITEMS — 5-6 songs per playlist
+-- =============================================
+
+-- Playlist 1: Late Night Drive (synthwave heavy)
+INSERT INTO playlist_item (playlist_id, song_id, position) VALUES
+(1,  1,  1),(1,  4,  2),(1,  6,  3),(1,  9,  4),(1, 11,  5),(1, 18,  6),
+-- Playlist 2: Morning Focus (ambient/lo-fi)
+(2, 41,  1),(2, 50,  2),(2, 54,  3),(2, 61,  4),(2, 68,  5),(2, 74,  6),
+-- Playlist 3: Rainy Day Mix (folk + dream pop)
+(3, 22,  1),(3, 27,  2),(3, 30,  3),(3, 35,  4),(3, 63,  5),
+-- Playlist 4: Gym Bangers (energetic electro)
+(4,  2,  1),(4,  8,  2),(4, 10,  3),(4, 14,  4),(4, 16,  5),(4, 20,  6),
+-- Playlist 5: Folk & Chill
+(5, 21,  1),(5, 24,  2),(5, 26,  3),(5, 33,  4),(5, 37,  5),
+-- Playlist 6: Autumn Feels
+(6, 28,  1),(6, 30,  2),(6, 35,  3),(6, 39,  4),(6, 40,  5),(6, 63,  6),
+-- Playlist 7: Study Playlist (lo-fi focused)
+(7, 43,  1),(7, 44,  2),(7, 50,  3),(7, 52,  4),(7, 53,  5),(7, 59,  6),
+-- Playlist 8: Synth Classics
+(8,  1,  1),(8,  3,  2),(8,  7,  3),(8, 13,  4),(8, 17,  5),(8, 19,  6),
+-- Playlist 9: Deep Focus
+(9, 45,  1),(9, 47,  2),(9, 55,  3),(9, 69,  4),(9, 71,  5),
+-- Playlist 10: Weekend Vibes
+(10, 21, 1),(10, 41, 2),(10, 45, 3),(10, 61, 4),(10, 65, 5),(10, 75, 6),
+-- Playlist 11: Throwback Electro
+(11,  5, 1),(11,  9, 2),(11, 12, 3),(11, 15, 4),(11, 18, 5),
+-- Playlist 12: Dream Pop Essentials
+(12, 61, 1),(12, 63, 2),(12, 66, 3),(12, 72, 4),(12, 76, 5),(12, 79, 6),
+-- Playlist 13: Coffee Shop Sounds
+(13, 41, 1),(13, 43, 2),(13, 48, 3),(13, 54, 4),(13, 57, 5),
+-- Playlist 14: Night Sky
+(14, 64, 1),(14, 67, 2),(14, 70, 3),(14, 73, 4),(14, 78, 5),(14, 80, 6),
+-- Playlist 15: Chill Beats Collection
+(15, 42, 1),(15, 46, 2),(15, 51, 3),(15, 56, 4),(15, 58, 5),(15, 60, 6),
+-- Playlist 16: Late Night Chill
+(16,  1, 1),(16, 11, 2),(16, 62, 3),(16, 70, 4),(16, 74, 5),
+-- Playlist 17: Luna Favorites
+(17, 61, 1),(17, 64, 2),(17, 67, 3),(17, 71, 4),(17, 77, 5),(17, 80, 6),
+-- Playlist 18: Best of Everything
+(18,  4, 1),(18, 22, 2),(18, 44, 3),(18, 63, 4),(18, 16, 5),(18, 75, 6);
+
+
+-- =============================================
+-- LIBRARY SONGS (saved songs per user)
+-- =============================================
 INSERT INTO library_song (library_id, song_id) VALUES
-(1, 1),  (2, 3),  (3, 5),  (4, 7),  (5, 9),
-(6, 11), (7, 13), (8, 15), (9, 17), (10, 19),
--- Extra 10
-(1, 2),  (2, 4),  (3, 6),  (4, 8),  (5, 10),
-(6, 12), (7, 14), (8, 16), (9, 18), (10, 20);
+-- John (lib 1)
+(1, 1),(1, 4),(1, 11),(1, 18),(1, 61),(1, 74),
+-- Sarah (lib 2)
+(2, 22),(2, 27),(2, 35),(2, 40),(2, 63),
+-- Mike (lib 3)
+(3, 3),(3, 9),(3, 13),(3, 17),(3, 19),(3, 20),
+-- Nia (lib 4)
+(4, 62),(4, 66),(4, 72),(4, 76),(4, 78),(4, 80),
+-- Carlos (lib 5)
+(5, 41),(5, 50),(5, 56),(5, 58),(5, 60),(5, 75);
 
--- =============
--- LIBRARY_ALBUM (10 base + 10 extra = 20)
--- =============
+-- =============================================
+-- LIBRARY ALBUMS
+-- =============================================
 INSERT INTO library_album (library_id, album_id) VALUES
-(1, 1),  (2, 2),  (3, 3),  (4, 4),  (5, 5),
-(6, 6),  (7, 7),  (8, 8),  (9, 9),  (10, 10),
--- Extra 10
-(11, 1), (12, 2), (13, 3), (14, 4), (15, 5),
-(16, 6), (17, 7), (18, 8), (19, 9), (20, 10);
+(1, 1),(1, 7),
+(2, 3),(2, 4),
+(3, 1),(3, 2),
+(4, 7),(4, 8),
+(5, 5),(5, 6),(5, 8);
 
--- =============
--- LIBRARY_PLAYLIST (10 base + 10 extra = 20)
--- =============
+-- =============================================
+-- LIBRARY PLAYLISTS (saved public playlists)
+-- =============================================
 INSERT INTO library_playlist (library_id, playlist_id) VALUES
-(1, 1),  (2, 2),  (3, 3),  (4, 4),  (5, 5),
-(6, 6),  (7, 7),  (8, 8),  (9, 9),  (10, 10),
--- Extra 10
-(11, 1), (12, 2), (13, 3), (14, 4), (15, 5),
-(16, 6), (17, 7), (18, 8), (19, 9), (20, 10);
+(1, 5),(1, 12),
+(2, 1),(2, 8),
+(3, 12),(3, 15),
+(4, 1),(4, 10),
+(5, 6),(5, 8);
 
--- =============
--- LIBRARY_ARTIST (10 base + 10 extra = 20)
--- =============
+-- =============================================
+-- LIBRARY ARTISTS (followed artists)
+-- =============================================
 INSERT INTO library_artist (library_id, artist_id) VALUES
-(1, 2),  (2, 3),  (3, 4),  (4, 5),  (5, 6),
-(6, 7),  (7, 8),  (8, 9),  (9, 10), (10, 1),
--- Extra 10
-(11, 1), (12, 2), (13, 3), (14, 4), (15, 5),
-(16, 6), (17, 7), (18, 8), (19, 9), (20, 10);
+(1, 1),(1, 4),
+(2, 2),(2, 4),
+(3, 1),(3, 2),(3, 3),
+(4, 4),(4, 2),
+(5, 3),(5, 4),(5, 1);
 
--- =========================
--- BANNED ARTIST ACCOUNTS
--- =========================
-INSERT INTO account (
-    account_id,
-    username,
-    email,
-    password,
-    role,
-    is_banned,
-    ban_reason
-) VALUES
-(23, 'artist_kanye',  'kanye@music.com',  'pass123', 'ARTIST', TRUE, 'Hate speech violations'),
-(24, 'artist_travis', 'travis@music.com', 'pass123', 'ARTIST', TRUE, 'Repeated copyright strikes'),
-(25, 'artist_carti',  'carti@music.com',  'pass123', 'ARTIST', TRUE, 'Community guideline violations'),
-(26, 'artist_uzi',    'uzi@music.com',    'pass123', 'ARTIST', TRUE, 'Fraudulent streaming activity'),
-(27, 'artist_x',      'x@music.com',      'pass123', 'ARTIST', TRUE, 'Abusive behavior toward users');
-
--- =========================
--- BANNED ARTISTS
--- =========================
-INSERT INTO artist (
-    id,
-    account_id,
-    display_name,
-    biography,
-    followers_count,
-    verified
-) VALUES
-(11, 23, 'Kanye West', 'American rapper and producer.', 65000000, TRUE),
-(12, 24, 'Travis Scott', 'Houston rapper and performer.', 47000000, TRUE),
-(13, 25, 'Playboi Carti', 'Atlanta rapper and performer.', 32000000, TRUE),
-(14, 26, 'Lil Uzi Vert', 'Philadelphia rapper and artist.', 36000000, TRUE),
-(15, 27, 'XXXTentacion', 'Florida rapper and songwriter.', 41000000, TRUE);
+-- =============================================
+-- ARTIST REQUESTS (some pending/approved/rejected)
+-- =============================================
+INSERT INTO artist_request (user_id, stage_name, reason, profile_picture_url, status, reviewed_at) VALUES
+(1, 'J-Doe Beats',    'I produce electronic music and want to upload my EP.',    'https://cdn.tunix.io/req/jdoe.jpg',   'PENDING',  NULL),
+(2, 'Echo Sarah',     'Singer-songwriter with 2 self-released albums.',           'https://cdn.tunix.io/req/sarah.jpg',  'APPROVED', '2024-11-10 14:32:00'),
+(4, 'Nia Waves',      'Bedroom pop artist, active on SoundCloud with 10k plays.', 'https://cdn.tunix.io/req/niaw.jpg',   'REJECTED', '2024-10-05 09:15:00'),
+(5, 'Carlos RMX',     'DJ and remixer, want to publish my original tracks.',       'https://cdn.tunix.io/req/carlos.jpg', 'PENDING',  NULL);

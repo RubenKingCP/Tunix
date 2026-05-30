@@ -11,7 +11,6 @@ import tunixserver.dto.request.BanRequest;
 import tunixserver.dto.response.ApiResponse;
 import tunixserver.service.AdminBackendService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController

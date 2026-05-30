@@ -99,7 +99,7 @@ public class ApiClient {
             HttpResponse<String> response =
                     httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // System.out.println("RAW RESPONSE: " + response.body());
+            System.out.println("RAW RESPONSE: " + response.body());
 
             int status = response.statusCode();
 
