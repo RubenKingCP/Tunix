@@ -458,6 +458,7 @@ package "Frontend" as V {
             + removeSong(songId : int) : boolean
             + issueStrike(artistId : int, reason : String) : boolean
             + issueBan(artistId : int, reason : String) : boolean
+
         }
         class ArtistRequestService {
             - artistRequestApiClient : ArtistRequestApiClient
@@ -1272,8 +1273,9 @@ folder "BackendService" {
         - artistBackendRepository : ArtistBackendRepository
         - songBackendRepository : SongBackendRepository
         --
-        + issueWarning(artistId : int) : Boolean
-        + issueBan(artistId : int) : Boolean
+        + issueWarning(artistId : int, reason : String) : boolean
+        + banArtist(artistId : int, reason : String) : boolean
+        + getWarningsById(artistId : int) : List<String>
     }
 
     class AlbumBackendService {
@@ -1350,16 +1352,42 @@ folder "BackendService" {
 folder "Backend Repository" {
 
     interface JpaRepository
-    interface AccountBackendRepository
+    interface AccountBackendRepository{
+        + findById(id)
+        + save(account)
+        + findByUsernameAndPassword(username, password)
+    }
     class AdminBackendRepository
-    interface AlbumBackendRepository
-    interface ArtistBackendRepository
-    interface ArtistRequestBackendRepository
-    interface LibraryBackendRepository
+    interface AlbumBackendRepository{
+        + findByTitleContainingIgnoreCase(query)
+    }
+    interface ArtistBackendRepository{
+        + existsByAccount(account)
+        + findByDisplayNameContainingIgnoreCase(query)
+    }
+    interface ArtistRequestBackendRepository{
+        + existsByUser(user)
+        + findAll()
+        + findById(id)
+        + save(request)
+    }
+    interface AccountWarningBackendRepository{
+        + findByAccount_AccountId(accountId)
+        + save(warning)
+    }
+    interface LibraryBackendRepository{
+        + findByAccount_AccountId(accountId)
+    }
     class ListeningHistoryBackendRepository
-    interface PlaylistBackendRepository
-    interface SongBackendRepository
-    interface UserBackendRepository
+    interface PlaylistBackendRepository{
+        + findByTitleAndCreator_AccountId(title, creatorId)
+    }
+    interface SongBackendRepository{
+        + existsByTitleAndArtist_Id(title, artistId)
+    }
+    interface UserBackendRepository{
+        + findByAccount_AccountId(userId)
+    }
 
 }
 
@@ -1371,6 +1399,8 @@ LibraryBackendRepository --|> JpaRepository
 PlaylistBackendRepository --|> JpaRepository
 SongBackendRepository --|> JpaRepository
 UserBackendRepository --|> JpaRepository
+
+
 
 folder "Mappers" {
 
@@ -1411,6 +1441,9 @@ folder "Entities" {
         - role : Role
         - user : UserEntity
         - artist : ArtistEntity
+        + banned : boolean
+        + banReason : String
+        + warnings : List<AccountWarningEntity>
     }
 
     class AdminEntity {
@@ -1488,6 +1521,7 @@ folder "Entities" {
         - updatedAt : LocalDateTime
         - songs : List<SongEntity>
         - coauthors : List<AccountEntity>
+        + items : List<PlaylistItemEntity>
     }
 
     class SongEntity {
@@ -1532,6 +1566,7 @@ SongBackendController -- SongBackendService
 
 AdminBackendService -- ArtistBackendRepository
 AdminBackendService -- SongBackendRepository
+AdminBackendService --> AccountWarningBackendRepository
 
 AlbumBackendService -- ArtistBackendRepository
 AlbumBackendService -- AlbumBackendRepository
@@ -1544,6 +1579,11 @@ ArtistRequestBackendService -- AccountBackendRepository
 
 LibraryBackendService -- LibraryBackendRepository
 LibraryBackendService -- AccountBackendRepository
+
+LibraryBackendService ..> LibraryArtistEntity
+LibraryBackendService ..> LibraryPlaylistEntity
+LibraryBackendService ..> LibrarySongEntity
+LibraryBackendService ..> LibraryAlbumEntity
 
 ListeningHistoryBackendService -- ListeningHistoryBackendRepository
 
@@ -1596,5 +1636,13 @@ ApiClient -- ArtistRequestBackendController
 ApiClient -- SongBackendController
 ApiClient -- LibraryBackendController
 ApiClient -- AdminBackendController
+
+LoginController -- LoginService
+RegisterController -- RegisterService
+
+LoginService -- LoginApiClient
+RegisterService -- RegisterApiClient
+
+AccountBackendController -- UserBackendService
 
 @enduml
