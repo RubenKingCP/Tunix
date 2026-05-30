@@ -6,25 +6,19 @@ actor "Γενικός Χρήστης" as GX
 actor "Τραπεζικό Σύστημα" as BNK
 
 boundary "Οθόνη Πληρωμής" as B_PAY
-control "Έλεγχος: υπάρχουν\nαποθηκευμένα τα τραπεζικά\nστοιχεία του ΓΧ?" as C_ISSAVED
-control "Εμφάνιση Οθόνης Πληρωμής" as C_DSPPAY
+boundary "Popup Αποτυχίας" as B_ERROR #red
+
 control "Αποστολή αιτήματος\nμεταφοράς χρημάτων" as C_MONEYREQ
 control "Εκτέλεση\nμεταφοράς\nχρημάτων" as C_SENDMONEY
-control "Άντληση τραπεζικών\nστοιχείων του Γενικού Χρήστη" as C_FETCHBNKDATA #red
-control "Αποθήκευση τραπεζικών\nστοιχείων του Γενικού Χρήστη" as C_SVBNK
+control "Έλεγχος εγκυρότητας στοιχείων" as C_ISVALID
+control "Εμφάνιση popup αποτυχίας" as C_ERROR #red
 
-entity "Database" as E_DB
-
-C_ISSAVED --> E_DB
-C_ISSAVED --> C_DSPPAY : οχι
-C_DSPPAY --> B_PAY
 GX --> B_PAY : Εισαγωγή τραπεζικών στοιχείων
-B_PAY --> C_SVBNK
-C_SVBNK --> E_DB
-C_SVBNK --> C_MONEYREQ
+B_PAY --> C_ISVALID
+C_ISVALID --> C_MONEYREQ : Τα στοιχεία είναι έγκυρα
 C_MONEYREQ --> BNK
 BNK --> C_SENDMONEY
-C_ISSAVED -[#red]-> C_FETCHBNKDATA : <font color="red">ναι</font>
-C_FETCHBNKDATA -[#red]-> E_DB
-C_FETCHBNKDATA -[#red]-> C_MONEYREQ
+C_ISVALID -[#red]-> C_ERROR : <font color="red">Τα στοιχεία είναι άκυρα</font>
+C_ERROR -[#red]-> B_ERROR
+B_ERROR -[#red]-> GX
 @enduml
