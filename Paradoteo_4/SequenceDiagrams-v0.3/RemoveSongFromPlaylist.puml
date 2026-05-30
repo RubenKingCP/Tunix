@@ -18,19 +18,21 @@ ref over MusicView, MusicController
 SelectPlaylist
 end ref
 activate MusicView
-User -> MusicView : right click on song
-MusicView -> MusicController : checkIfUserIsOwner(playlist)
-activate MusicController
-MusicController -> PlaylistService : checkIfUserIsOwner(playlist)
-activate PlaylistService
-PlaylistService --> MusicController : return isOwner
-deactivate PlaylistService
-MusicController --> MusicView : return isOwner
-deactivate MusicController
-alt isOwner
+User -> MusicView : click on three dots of a song in the playlist
+
+
     MusicView -> MusicView : showSongContextMenu()
     activate MusicView
     User -> MusicView : click "Remove Song From Playlist"
+    MusicView -> MusicController : checkIfUserIsOwner(playlist)
+    activate MusicController
+    MusicController -> PlaylistService : checkIfUserIsOwner(playlist)
+    activate PlaylistService
+    PlaylistService --> MusicController : return isOwner
+    deactivate PlaylistService
+    MusicController --> MusicView : return isOwner
+    deactivate MusicController
+    alt isOwner
     MusicView -> MusicController : removeSongFromPlaylist(playlistId, songId)
     activate MusicController
     MusicController -> PlaylistService : removeSongFromPlaylist(playlistId, songId)
@@ -57,7 +59,8 @@ alt isOwner
     deactivate PlaylistApi
     PlaylistService --> MusicController : return succes/fail
     deactivate PlaylistService
-else !isOwner
-    MusicView -> MusicView : showSongContextMenu("Remove From Playlist")
-    'an overloaded method where the argument is the excluded element
+    else !isOwner
+    MusicView -> MusicController : showErrorMessage("Only the playlist owner can remove songs")
+    deactivate MusicController
+    end
 @enduml

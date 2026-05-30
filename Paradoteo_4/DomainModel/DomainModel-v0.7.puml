@@ -53,7 +53,6 @@ package "Frontend" as V {
         class LoginController
         class RegisterController
 
-        
         class TopBarController
         class LibraryController
 
@@ -70,7 +69,6 @@ package "Frontend" as V {
         class PaymentController
         class UploadSongController
     }
-    
 
     folder "Services" {
         class AdminService
@@ -103,15 +101,18 @@ package "Frontend" as V {
         class UserApiClient
         class ApiClient
 
+        ApiClient *-- AdminApiClient
+        ApiClient *-- AlbumApiClient
+        ApiClient *-- ArtistApiClient
         ApiClient *-- ArtistRequestApiClient
         ApiClient *-- LoginApiClient
         ApiClient *-- RegisterApiClient
         ApiClient *-- PlaylistApiClient
         ApiClient *-- SongApiClient
         ApiClient *-- LibraryApiClient
+        ApiClient *-- PaymentApiClient
+        ApiClient *-- UserApiClient
     }
-
-
 
     folder "Models" {
 
@@ -132,9 +133,6 @@ package "Frontend" as V {
 
         class ListeningHistory
         class ListeningHistoryItem
-
-        class ArtistRequest
-
 
         class AppContext
 
@@ -221,11 +219,12 @@ package "Frontend" as V {
 
     AdminView -- AdminController
 
+    PaymentView -- PaymentController
+    UploadSongView -- UploadSongController
+
     UserProfileView -- UserProfileController
     ArtistProfileView -- ArtistProfileController
     AdminProfileView -- AdminProfileController
-
-
 
 ' =====================================================
 ' VIEW COMPOSITION
@@ -245,11 +244,8 @@ package "Frontend" as V {
 
     LibraryView *-- LibraryMusicView
     MusicView *-- ILibraryAssetItem
-    AdminPanel *-- AdminArtistAccountApplicationView
 
     AdminPanel *-- AdminView
-    AdminArtistAccountApplicationView *-- AdminArtistAccountApplicationDetails
-    AdminView *-- AdminDashboardView
     ProfilePanel *-- UserProfileView
     ProfilePanel *-- ArtistProfileView
     ProfilePanel *-- AdminProfileView
@@ -258,19 +254,70 @@ package "Frontend" as V {
 ' CONTROLLER → SERVICE
 ' =====================================================
 
-LoginController -- LoginService
-RegisterController -- RegisterService
-MusicController -- MusicPlayerService
+    LoginController        -- LoginService
+    RegisterController     -- RegisterService
+    MusicController        -- MusicPlayerService
+    MusicController        -- PlaylistService
 
-' ==============================
-' Service -> Api
-' ===========================
-PlaylistService -- PlaylistApiClient
-ArtistRequestService -- ArtistRequestApiClient
-LibraryService -- LibraryApiClient
-LoginService -- LoginApiClient
-RegisterService -- RegisterApiClient
-SongService -- SongApiClient
+    TopBarController       -- SearchService
+    TopBarController       -- UserService
+
+    LibraryController      -- LibraryService
+    LibraryController      -- PlaylistService
+
+    HomeController         -- SongService
+    HomeController         -- AlbumService
+    HomeController         -- ArtistService
+
+    SearchController       -- SearchService
+
+    ArtistController       -- ArtistService
+    ArtistController       -- SongService
+    ArtistController       -- AlbumService
+    ArtistController       -- FollowService
+
+    AdminController        -- AdminService
+    AdminController        -- ArtistRequestService
+
+    UserProfileController  -- UserService
+    UserProfileController  -- PlaylistService
+
+    ArtistProfileController -- ArtistService
+    ArtistProfileController -- SongService
+    ArtistProfileController -- AlbumService
+
+    AdminProfileController -- AdminService
+    AdminProfileController -- UserService
+
+    PaymentController      -- PaymentService
+
+    UploadSongController   -- SongService
+    UploadSongController   -- AlbumService
+
+' =====================================================
+' SERVICE → API CLIENT
+' =====================================================
+
+    LoginService          -- LoginApiClient
+    RegisterService       -- RegisterApiClient
+    PlaylistService       -- PlaylistApiClient
+    ArtistRequestService  -- ArtistRequestApiClient
+    LibraryService        -- LibraryApiClient
+    SongService           -- SongApiClient
+
+    AdminService          -- AdminApiClient
+    AlbumService          -- AlbumApiClient
+    ArtistService         -- ArtistApiClient
+    FollowService         -- ArtistApiClient
+    MusicPlayerService    -- SongApiClient
+    PaymentService        -- PaymentApiClient
+    SearchService         -- SongApiClient
+    SearchService         -- ArtistApiClient
+    UserService           -- UserApiClient
+
+' =====================================================
+' BACKEND PACKAGE
+' =====================================================
 
 package "Backend" {
 
@@ -307,7 +354,7 @@ package "Backend" {
         class PlaylistBackendRepository
     }
 
-    folder "DTO" as backend{
+    folder "DTO" as backend {
         folder "Requests" {
             class AlbumRequestB
             class BanRequestB
@@ -333,49 +380,71 @@ package "Backend" {
     }
 
     folder "Entities" {
-            class AccountEntity
-            class AccountWarningEntity
-            class AdminEntity
-            class AlbumEntity
-            class ArtistEntity
-            class AristRequestEntity
-            class LibraryEntity
-            class LibraryAlbumEntity
-            class LibraryArtistEntity
-            class LibraryPlaylistEntity
-            class LibraryArtistEntity
-            class PlaylistEntity
-            class SongEntity
-            class UserEntity
-        }
+        class AccountEntity
+        class AccountWarningEntity
+        class AdminEntity
+        class AlbumEntity
+        class ArtistEntity
+        class AristRequestEntity
+        class LibraryEntity
+        class LibraryAlbumEntity
+        class LibraryArtistEntity
+        class LibraryPlaylistEntity
+        class PlaylistEntity
+        class SongEntity
+        class UserEntity
+    }
 
-    '===========================
-    ' BackendController - Service
-    '===================
-        AlbumBackendController -- AlbumBackendService
+    ' =====================================================
+    ' BACKEND CONTROLLER → BACKEND SERVICE
+    ' =====================================================
+        AccountBackendController    -- UserBackendService
+        AdminBackendController      -- AdminBackendService
+        AlbumBackendController      -- AlbumBackendService
+        ArtistBackendController     -- ArtistBackendService
         ArtistRequestBackendController -- ArtistRequestBackendService
-        PlaylistBackendController -- PlaylistBackendService
-        SongBackendController -- SongBackendService
-        UserBackendController -- UserBackendService
+        PlaylistBackendController   -- PlaylistBackendService
+        SongBackendController       -- SongBackendService
 
-    '==================
-    'Service - Repostiroy
+    ' =====================================================
+    ' BACKEND SERVICE → REPOSITORY
+    ' =====================================================
+        AdminBackendService         -- AdminBackendRepository
+        AdminBackendService         -- AccountBackendRepository
+        AdminBackendService         -- AccoutnWarningBackendRepository
+
+        AlbumBackendService         -- SongBackendRepository
+
+        ArtistBackendService        -- ArtistBackendRepository
+        ArtistBackendService        -- AccountBackendRepository
+
         ArtistRequestBackendService -- ArtistRequestBackendRepository
-        PlaylistBackendService -- SongBackendRepository
-        PlaylistBackendService -- PlaylistBackendRepository
-        SongBackendService -- SongBackendRepository
-        UserBackendService -- AccountBackendRepository
+        ArtistRequestBackendService -- AccountBackendRepository
 
+        LibraryBackendService       -- LibraryBackendRepository
+        LibraryBackendService       -- SongBackendRepository
+        LibraryBackendService       -- PlaylistBackendRepository
+
+        PlaylistBackendService      -- PlaylistBackendRepository
+        PlaylistBackendService      -- SongBackendRepository
+
+        SongBackendService          -- SongBackendRepository
+        SongBackendService          -- ArtistBackendRepository
+
+        UserBackendService          -- AccountBackendRepository
+        UserBackendService          -- UserBackendRepository
 }
 
+' =====================================================
+' API CLIENT → BACKEND CONTROLLER (front to back)
+' =====================================================
 
-'===================
-'Front to back
-'===================
+    ApiClient -- AccountBackendController
+    ApiClient -- AdminBackendController
+    ApiClient -- AlbumBackendController
+    ApiClient -- ArtistBackendController
+    ApiClient -- ArtistRequestBackendController
+    ApiClient -- PlaylistBackendController
+    ApiClient -- SongBackendController
 
-ApiClient -- UserBackendController
-ApiClient -- AlbumBackendController
-ApiClient -- PlaylistBackendController
-ApiClient -- ArtistRequestBackendController
-ApiClient -- SongBackendController
 @enduml

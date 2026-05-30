@@ -158,7 +158,7 @@ public class MainPanel extends JPanel {
             return artistController.getView();
         }
         if (controllerClass == ArtistProfileController.class) {
-            return new ArtistProfileController(new ArtistProfileService(context.eventBus), context.eventBus).getView();
+            return new ArtistProfileController(context.eventBus).getView();
         }
         if (controllerClass == UploadSongController.class) {
         return new UploadSongController(
