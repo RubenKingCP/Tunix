@@ -288,6 +288,23 @@ package "Frontend" as V {
             + fetchFreshAsset(asset : ILibraryAsset) : ILibraryAsset
             + getCachedPlaylists(void) : List<Playlist>
         }
+        class MusicPlayerController {
+            - musicPlayerService : MusicPlayerService
+            - musicPlayerView : MusicPlayerView
+            - eventBus : EventBus
+            - currentSongOrder : List<Song>
+            - shuffledSongOrder : List<Song>
+            - isShuffled : boolean
+            - currentSongIndex : int
+            --
+            + MusicPlayerController(musicPlayerService : MusicPlayerService, eventBus : EventBus)
+            + onSongSelected(event : SongSelectedEvent) : void
+            + getView(void) : JPanel
+            + onNextButtonClicked(void) : void
+            + onPreviousButtonClicked(void) : void
+            + onPlayPauseButtonClicked(void) : void
+            + onShuffleButtonClicked(void) : void
+        }
         class LoginController {
             - loginView : LoginView
             - loginService : LoginService
@@ -424,6 +441,12 @@ package "Frontend" as V {
     
 
     folder "Services" {
+        class AlbumService {
+            - albumApi : AlbumApi
+            --
+            + AlbumService(albumApi : AlbumApi)
+            + getAlbumById(albumId : int) : Album
+        }
         class AdminService{
             - adminApiClient : AdminApiClient
             --
@@ -497,6 +520,7 @@ package "Frontend" as V {
             --
             + SearchService(apiClient : ApiClient)
             + search(query : String, type : String) : List<ILibraryAsset>
+    }
     }
 
     folder "Api" {
@@ -936,7 +960,8 @@ package "Frontend" as V {
     LoginView -- LoginController
     RegisterView -- RegisterController
 
-    MusicPlayerView -- MusicController
+    MusicController *-- MusicPlayerView
+    MusicPlayerView --> MusicPlayerController
     TopBarView -- TopBarController
     LibraryView -- LibraryController
 
@@ -985,7 +1010,9 @@ package "Frontend" as V {
 
 LoginController -- LoginService
 RegisterController -- RegisterService
-MusicController -- MusicPlayerService
+MusicController -- PlaylistService
+MusicController -- AlbumService
+MusicController -- EventBus
 
 ' ::::::::::::::::::::::::::::::
 ' Service -> Api
@@ -1124,6 +1151,9 @@ package "Events" {
 
     MusicController ..> UpdateLibraryEvent : publish
     MusicController ..> SongUploadedEvent : publish
+    MusicController ..> SongSelectedEvent : publish
+
+    MusicPlayerController ..> SongSelectedEvent : subscribe
 
     UploadSongController ..> SongUploadedEvent : publish
 
