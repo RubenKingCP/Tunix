@@ -40,9 +40,8 @@ package "Frontend" as V {
         class ILibraryAssetItem
 
         class AdminView
-        class AdminArtistAccountApplicationView
-        class AdminArtistAccountApplicationDetails
-        class AdminDashboardView
+        class PaymentView
+        class UploadSongView
 
         class UserProfileView
         class ArtistProfileView
@@ -67,26 +66,41 @@ package "Frontend" as V {
         class UserProfileController
         class ArtistProfileController
         class AdminProfileController
+
+        class PaymentController
+        class UploadSongController
     }
     
 
     folder "Services" {
+        class AdminService
+        class AlbumService
+        class ArtistService
         class ArtistRequestService
+        class FollowService
         class LoginService
         class RegisterService
+        class PaymentService
+        class SearchService
         class MusicPlayerService
         class LibraryService
         class PlaylistService
         class SongService
+        class UserService
     }
 
     folder "Api" {
+        class AdminApiClient
+        class AlbumApiClient
+        class ArtistApiClient
         class ArtistRequestApiClient
         class LoginApiClient
         class LibraryApiClient
+        class PaymentApiClient
         class RegisterApiClient
         class PlaylistApiClient
         class SongApiClient
+        class UserApiClient
         class ApiClient
 
         ApiClient *-- ArtistRequestApiClient
@@ -118,6 +132,9 @@ package "Frontend" as V {
 
         class ListeningHistory
         class ListeningHistoryItem
+
+        class ArtistRequest
+
 
         class AppContext
 
@@ -258,16 +275,21 @@ SongService -- SongApiClient
 package "Backend" {
 
     folder "BackendController" {
+        class AccountBackendController
+        class AdminBackendController
         class AlbumBackendController
+        class ArtistBackendController
         class ArtistRequestBackendController
         class PlaylistBackendController
         class SongBackendController
-        class UserBackendController
     }
 
     folder "BackendService" {
+        class AdminBackendService
         class AlbumBackendService
+        class ArtistBackendService
         class ArtistRequestBackendService
+        class LibraryBackendService
         class PlaylistBackendService
         class SongBackendService
         class UserBackendService
@@ -275,7 +297,12 @@ package "Backend" {
 
     folder "Backend Repository" {
         class AccountBackendRepository
+        class AccoutnWarningBackendRepository
+        class AdminBackendRepository
+        class ArtistBackendRepository
         class ArtistRequestBackendRepository
+        class LibraryBackendRepository
+        class UserBackendRepository
         class SongBackendRepository
         class PlaylistBackendRepository
     }
@@ -283,6 +310,7 @@ package "Backend" {
     folder "DTO" as backend{
         folder "Requests" {
             class AlbumRequestB
+            class BanRequestB
             class LoginRequestB
             class RegisterRequestB
             class SongRequestB
@@ -293,8 +321,10 @@ package "Backend" {
         folder "Responses" {
             class AccountResponse
             class AlbumResponse
+            class ApiResponse
             class ArtistRequestResponse
             class ArtistResponse
+            class LibraryResponse
             class PlaylistResponse
             class RegisterResponse
             class SongResponse
@@ -304,10 +334,16 @@ package "Backend" {
 
     folder "Entities" {
             class AccountEntity
+            class AccountWarningEntity
             class AdminEntity
+            class AlbumEntity
             class ArtistEntity
             class AristRequestEntity
             class LibraryEntity
+            class LibraryAlbumEntity
+            class LibraryArtistEntity
+            class LibraryPlaylistEntity
+            class LibraryArtistEntity
             class PlaylistEntity
             class SongEntity
             class UserEntity
