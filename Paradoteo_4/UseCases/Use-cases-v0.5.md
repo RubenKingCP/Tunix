@@ -15,7 +15,6 @@ Actor "Εξωτερικό\nΤραπεζικό Σύστημα" as BANK
 GX <|-- BX
 GX <|-- PX
 GX <|-- DIAX
-BX <|-- KAL
 PX <|-- KAL
 
 ' =====================
@@ -88,8 +87,7 @@ rectangle "Σύστημα Μουσικής" {
   usecase "Ακύρωση Συνδρομής" as UC_CANCEL_SUB
 
   UC_BUY_PREMIUM ..> UC_PAYMENT : <<include>>
-  UC_TRIAL_PREMIUM ..> UC_PAYMENT : <<include>>
-
+  
   ' --- Εποπτεία ---
   usecase "Εποπτεία Περιεχομένου" as UC_MODERATE
 
@@ -126,6 +124,8 @@ DIAX -- UC_MODERATE
 
 ' Εξωτερικό Τραπεζικό Σύστημα
 BANK -- UC_PAYMENT
+
+@enduml
 
 @enduml
 -->
