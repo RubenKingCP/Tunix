@@ -1,8 +1,9 @@
 package tunix.controller.main.center;
-
 import java.util.List;
 import javax.swing.JPanel;
 import tunix.navigation.events.EventBus;
+import tunix.navigation.events.OpenSongViewEvent;
+import tunix.navigation.events.SongSelectedEvent;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
 import tunix.model.musicContent.Album;
@@ -16,7 +17,6 @@ import tunix.ui.views.main.center.MusicView;
 import tunix.navigation.events.UpdateLibraryEvent;
 
 public class MusicController {
-
     private final MusicView musicView;
     private final PlaylistService playlistService;
     private final AlbumService albumService;
@@ -27,7 +27,6 @@ public class MusicController {
             LibraryView libraryPanel,
             PlaylistService playlistService,
             AlbumService albumService) {
-
         this.eventBus = eventBus;
         this.playlistService = playlistService;
         this.musicView = new MusicView(this, libraryPanel);
@@ -35,7 +34,7 @@ public class MusicController {
         this.albumService = albumService;
     }
 
-    public JPanel getView() { //You sure?
+    public JPanel getView() {
         return musicView;
     }
 
@@ -73,6 +72,33 @@ public class MusicController {
             return fresh != null ? fresh : asset;
         }
         return asset;
+    }
+
+    public void onSongClicked(Song song) {
+        ILibraryAsset musicViewAsset = musicView.getCurrentMusicAsset();
+
+        List<Song> allSongs = null;
+        if (musicViewAsset instanceof Playlist pl) {
+            allSongs = pl.getDisplaySongs();
+        } else if (musicViewAsset instanceof Album al) {
+            allSongs = al.getSongs();
+        }
+
+        List<Song> songOrder;
+        if (allSongs == null) {
+            songOrder = List.of(song);
+        } else {
+            int index = -1;
+            for (int i = 0; i < allSongs.size(); i++) {
+                if (allSongs.get(i).getId() == song.getId()) {
+                    index = i;
+                    break;
+                }
+            }
+            songOrder = index >= 0 ? allSongs.subList(index, allSongs.size()) : List.of(song);
+        }
+
+        eventBus.publish(new SongSelectedEvent(songOrder));
     }
 
     public List<Playlist> getCachedPlaylists() {

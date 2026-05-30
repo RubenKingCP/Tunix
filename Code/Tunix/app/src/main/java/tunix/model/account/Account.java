@@ -50,8 +50,8 @@ public abstract class Account{
                 dto.getEmail(),
                 dto.getUsername(), // displayName default
                 null,              // profile picture
-                false,             // premium
-                false,             // premium trial used
+                dto.getUser().isPremium(),             // premium
+                dto.getUser().isPremiumTrialUsed(),             // premium trial used
                 0                  // downloaded songs
         );
 

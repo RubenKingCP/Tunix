@@ -45,6 +45,8 @@ SongApiClient -> ApiClient : post(/songs/getById, songId)
 activate ApiClient
 ApiClient -> SongBackendController : getSongById(songId)
 activate SongBackendController
+SongBackendController -> SongBackendService : getSongById(songId)
+activate SongBackendService
 SongBackendService -> SongBackendRepository : getSongById(songId)
 activate SongBackendRepository
 SongBackendRepository --> SongBackendService : return song

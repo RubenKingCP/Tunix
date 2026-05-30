@@ -17,6 +17,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import tunix.controller.main.MusicPlayerController;
+import tunix.model.musicContent.Song;
 
 public class MusicPlayerView extends JPanel {
 
@@ -30,6 +31,7 @@ public class MusicPlayerView extends JPanel {
     private static final Color BTN_PRESS   = new Color(0x383838);   // button press fill
 
     private MusicPlayerController musicPlayerController;
+    private JLabel songTitleLabel;
 
     public MusicPlayerView() {
         setLayout(new BorderLayout());
@@ -41,7 +43,7 @@ public class MusicPlayerView extends JPanel {
         ));
 
         // ── Song title (left side) ───────────────────────────────────────────
-        JLabel songTitleLabel = new JLabel("Song Title");
+        songTitleLabel = new JLabel("Song Title");
         songTitleLabel.setForeground(FG_PRIMARY);
         songTitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         songTitleLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
@@ -142,4 +144,13 @@ public class MusicPlayerView extends JPanel {
     public void onPreviousButtonClicked()  { musicPlayerController.onPreviousButtonClicked();  }
     public void onPlayPauseButtonClicked() { musicPlayerController.onPlayPauseButtonClicked(); }
     public void onNextButtonClicked()      { musicPlayerController.onNextButtonClicked();      }
+
+    public void updateSongInfo(Song song) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateSongInfo'");
+    }
+
+    public void updateCurrentSong(Song song) {
+        songTitleLabel.setText(song != null ? song.getTitle() : "");
+    }
 }

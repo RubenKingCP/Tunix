@@ -78,5 +78,18 @@ public class SongService {
                 response.getCoverImageUrl()
         );
     }
+    public Song getSongById(int songId) {
+        try {
+            System.out.println("SongService: Fetching song with id: " + songId);
+            ApiResponse<SongResponse> response = songApiClient.getSongById(songId);
+            if (response == null || !response.isSuccess() || response.getData() == null) {
+                throw new RuntimeException("Failed to fetch song with id: " + songId);
+            }
+            return toModel(response.getData());
+        } catch(Exception exception) {
+            System.out.println("Caught exception " + exception);
+            return null;
+        }
+    }
 }
 
