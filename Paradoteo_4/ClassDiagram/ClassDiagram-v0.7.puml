@@ -916,64 +916,6 @@ package "Frontend" as V {
         }
     }
 
-folder "Events" {
-    class EventBus
-    class AdminLoginEvent
-    class GoToLoginButtonClicked
-    class GoToProfileEvent
-    class GoToRegisterButtonClicked
-    class LibraryPlaylistClicked
-    class LoginSuccessEvent
-    class LogoutEvent
-    class OpenAlbumViewEvent
-    class OpenArtistViewEvent
-    class OpenSongUploadViewEvent
-    class RegisterSuccessfulEvent
-    class SongUploadedEvent
-    class SwitchCenterScreenEvent
-    class SwitchProfileScreenEvent
-    class SwitchScreenEvent
-    class UpdateLibraryEvent
-}
-
-' Publishers
-LoginController ..> GoToRegisterButtonClicked : publish
-RegisterController ..> GoToLoginButtonClicked : publish
-MusicController ..> UpdateLibraryEvent : publish
-LibraryController ..> LibraryPlaylistClicked : publish
-LibraryController ..> OpenAlbumViewEvent : publish
-LibraryController ..> OpenSongViewEvent : publish
-LibraryController ..> OpenArtistViewEvent : publish
-TopBarController ..> SwitchCenterScreenEvent : publish
-TopBarController ..> SwitchProfileScreenEvent : publish
-TopBarController ..> LogoutEvent : publish
-AdminController ..> LogoutEvent : publish
-ArtistProfileController ..> SwitchCenterScreenEvent : publish
-SearchController ..> OpenArtistViewEvent : publish
-SearchController ..> OpenAlbumViewEvent : publish
-SearchController ..> LibraryPlaylistClicked : publish
-UploadSongController ..> SongUploadedEvent : publish
-LoginService ..> LoginSuccessEvent : publish
-LoginService ..> SwitchScreenEvent : publish
-LoginService ..> SwitchCenterScreenEvent : publish
-RegisterService ..> RegisterSuccessfulEvent : publish
-
-' Subscribers
-AppWindow ..> SwitchScreenEvent : subscribe
-LibraryController ..> UpdateLibraryEvent : subscribe
-LoginService ..> LogoutEvent : subscribe
-SessionService ..> RegisterSuccessfulEvent : subscribe
-SessionService ..> LoginSuccessEvent : subscribe
-AuthPanel ..> GoToRegisterButtonClicked : subscribe
-AuthPanel ..> GoToLoginButtonClicked : subscribe
-MainPanel ..> SwitchCenterScreenEvent : subscribe
-MainPanel ..> OpenSongViewEvent : subscribe
-MainPanel ..> OpenAlbumViewEvent : subscribe
-MainPanel ..> LibraryPlaylistClicked : subscribe
-MainPanel ..> OpenArtistViewEvent : subscribe
-MainPanel ..> SwitchProfileScreenEvent : subscribe
-
-}
 
 ' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 ' INHERITANCE / MODEL STRUCTURE
@@ -1054,6 +996,177 @@ LibraryService -- LibraryApiClient
 LoginService -- LoginApiClient
 RegisterService -- RegisterApiClient
 SongService -- SongApiClient
+
+package "Events" {
+
+
+    class EventBus {
+        + subscribe(Class<T> eventType, Consumer<T> handler) : void
+        + publish(Object event) : void
+    }
+
+    class SwitchScreenEvent {
+        - screen : Class<?>
+        --
+        + SwitchScreenEvent(screen : Class<?>)
+        + getScreen() : Class<?>
+    }
+
+    class SwitchCenterScreenEvent {
+        - controllerClass : Class<?>
+        --
+        + SwitchCenterScreenEvent(controllerClass : Class<?>)
+        + getControllerClass() : Class<?>
+    }
+
+    class SwitchProfileScreenEvent {
+        - viewClass : Class<?>
+        --
+        + SwitchProfileScreenEvent(viewClass : Class<?>)
+        + getViewClass() : Class<?>
+    }
+
+    class GoToLoginButtonClicked {
+        + GoToLoginButtonClicked()
+    }
+
+    class GoToRegisterButtonClicked {
+        + GoToRegisterButtonClicked()
+    }
+
+    class LoginSuccessEvent {
+        - account : Account
+        --
+        + LoginSuccessEvent(account : Account)
+        + getAccount() : Account
+    }
+
+    class RegisterSuccessfulEvent {
+        - account : Account
+        --
+        + RegisterSuccessfulEvent(account : Account)
+        + getAccount() : Account
+    }
+
+    class LogoutEvent {
+        + LogoutEvent()
+    }
+
+    class AdminLoginEvent {
+        + AdminLoginEvent()
+    }
+
+    class LibraryPlaylistClicked {
+        - playlist : ILibraryAsset
+        --
+        + LibraryPlaylistClicked(playlist : ILibraryAsset)
+        + getPlaylist() : ILibraryAsset
+    }
+
+    class OpenAlbumViewEvent {
+        - album : Album
+        --
+        + OpenAlbumViewEvent(album : Album)
+        + getAlbum() : Album
+    }
+
+    class OpenArtistViewEvent {
+        - artist : Artist
+        --
+        + OpenArtistViewEvent(artist : Artist)
+        + getArtist() : Artist
+    }
+
+    class OpenSongViewEvent {
+        - song : Song
+        --
+        + OpenSongViewEvent(song : Song)
+        + getSong() : Song
+    }
+
+    class OpenSongUploadViewEvent {
+        + OpenSongUploadViewEvent()
+    }
+
+
+    class SongUploadedEvent {
+        + SongUploadedEvent()
+    }
+
+    class UpdateLibraryEvent {
+        + UpdateLibraryEvent()
+    }
+
+
+    ' :::::::::::::::::::::::::::::::::::::::::::::::::::::
+    ' EVENT RELATIONSHIPS (PUBLISHERS)
+    ' :::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    LoginController ..> GoToRegisterButtonClicked : publish
+    RegisterController ..> GoToLoginButtonClicked : publish
+
+    LoginService ..> LoginSuccessEvent : publish
+    LoginService ..> RegisterSuccessfulEvent : publish
+    LoginService ..> SwitchScreenEvent : publish
+    LoginService ..> SwitchCenterScreenEvent : publish
+    LoginService ..> LogoutEvent : publish
+
+    RegisterService ..> RegisterSuccessfulEvent : publish
+
+    LibraryController ..> LibraryPlaylistClicked : publish
+    LibraryController ..> OpenAlbumViewEvent : publish
+    LibraryController ..> OpenArtistViewEvent : publish
+    LibraryController ..> OpenSongViewEvent : publish
+
+    SearchController ..> LibraryPlaylistClicked : publish
+    SearchController ..> OpenAlbumViewEvent : publish
+    SearchController ..> OpenArtistViewEvent : publish
+
+    MusicController ..> UpdateLibraryEvent : publish
+    MusicController ..> SongUploadedEvent : publish
+
+    UploadSongController ..> SongUploadedEvent : publish
+
+    TopBarController ..> SwitchCenterScreenEvent : publish
+    TopBarController ..> SwitchProfileScreenEvent : publish
+    TopBarController ..> LogoutEvent : publish
+
+    ArtistProfileController ..> SwitchCenterScreenEvent : publish
+
+    AdminController ..> LogoutEvent : publish
+
+
+    ' :::::::::::::::::::::::::::::::::::::::::::::::::::::
+    ' EVENT SUBSCRIPTIONS (RUNTIME BINDINGS)
+    ' :::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    AppWindow ..> SwitchScreenEvent : subscribe
+
+    AppWindow ..> SwitchCenterScreenEvent : subscribe
+    AppWindow ..> SwitchProfileScreenEvent : subscribe
+
+    AppWindow ..> OpenSongViewEvent : subscribe
+    AppWindow ..> OpenAlbumViewEvent : subscribe
+    AppWindow ..> OpenArtistViewEvent : subscribe
+    AppWindow ..> LibraryPlaylistClicked : subscribe
+
+
+    AuthPanel ..> GoToLoginButtonClicked : subscribe
+    AuthPanel ..> GoToRegisterButtonClicked : subscribe
+
+
+    MainPanel ..> SwitchCenterScreenEvent : subscribe
+    MainPanel ..> SwitchProfileScreenEvent : subscribe
+
+    MainPanel ..> OpenSongViewEvent : subscribe
+    MainPanel ..> OpenAlbumViewEvent : subscribe
+    MainPanel ..> OpenArtistViewEvent : subscribe
+    MainPanel ..> LibraryPlaylistClicked : subscribe
+
+
+    SessionService ..> LoginSuccessEvent : subscribe
+    SessionService ..> RegisterSuccessfulEvent : subscribe
+}
 
 
 
