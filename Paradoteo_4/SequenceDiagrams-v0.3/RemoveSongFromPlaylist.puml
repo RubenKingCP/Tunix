@@ -32,6 +32,7 @@ User -> MusicView : click on three dots of a song in the playlist
     deactivate PlaylistService
     MusicController --> MusicView : return isOwner
     deactivate MusicController
+    deactivate MusicView
     alt isOwner
     MusicView -> MusicController : removeSongFromPlaylist(playlistId, songId)
     activate MusicController
@@ -59,8 +60,9 @@ User -> MusicView : click on three dots of a song in the playlist
     deactivate PlaylistApi
     PlaylistService --> MusicController : return succes/fail
     deactivate PlaylistService
-    else !isOwner
-    MusicView -> MusicController : showErrorMessage("Only the playlist owner can remove songs")
     deactivate MusicController
+    else !isOwner
+    MusicView -> MusicView : showErrorMessage("Only the playlist owner can remove songs")
+    
     end
 @enduml
