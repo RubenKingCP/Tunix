@@ -44,23 +44,22 @@ public class SearchView extends JPanel {
     private static final Font FONT_TITLE = new Font("SansSerif", Font.BOLD, 22);
     private static final Font FONT_SECTION = new Font("SansSerif", Font.BOLD, 16);
     private static final Font FONT_CARD = new Font("SansSerif", Font.PLAIN, 13);
-    private static final Font FONT_SUB = new Font("SansSerif", Font.PLAIN, 11);
     private static final Font FONT_TAG = new Font("SansSerif", Font.BOLD, 9);
     private static final Font FONT_LETTER = new Font("SansSerif", Font.BOLD, 32);
 
     private static final CardData[] BROWSE_CATEGORIES = {
-        new CardData("♪", "Podcasts", "", new Color(0x8B5CF6)),
-        new CardData("♬", "Live Events", "", new Color(0xEC4899)),
-        new CardData("♩", "Made For You", "", new Color(0x3B82F6)),
-        new CardData("★", "New Releases", "", new Color(0x10B981)),
-        new CardData("♫", "Hip-Hop", "", new Color(0xF59E0B)),
-        new CardData("♭", "Pop", "", new Color(0xEF4444)),
-        new CardData("♮", "Rock", "", new Color(0x6366F1)),
-        new CardData("♯", "Electronic", "", new Color(0x14B8A6)),
-        new CardData("♪", "Indie", "", new Color(0xF97316)),
-        new CardData("♬", "R&B", "", new Color(0x8B5CF6)),
-        new CardData("♩", "Jazz", "", new Color(0x059669)),
-        new CardData("♫", "Classical", "", new Color(0xDC2626)),
+        new CardData("♪", "Podcasts",  new Color(0x8B5CF6)),
+        new CardData("♬", "Live Events",  new Color(0xEC4899)),
+        new CardData("♩", "Made For You",  new Color(0x3B82F6)),
+        new CardData("★", "New Releases",  new Color(0x10B981)),
+        new CardData("♫", "Hip-Hop",  new Color(0xF59E0B)),
+        new CardData("♭", "Pop",  new Color(0xEF4444)),
+        new CardData("♮", "Rock",  new Color(0x6366F1)),
+        new CardData("♯", "Electronic",  new Color(0x14B8A6)),
+        new CardData("♪", "Indie",  new Color(0xF97316)),
+        new CardData("♬", "R&B",  new Color(0x8B5CF6)),
+        new CardData("♩", "Jazz",  new Color(0x059669)),
+        new CardData("♫", "Classical",  new Color(0xDC2626)),
     };
 
     private JPanel contentPanel;
@@ -177,12 +176,6 @@ public class SearchView extends JPanel {
         title.setBounds(8, 126, 124, 18);
         panel.add(title);
 
-        JLabel sub = new JLabel(truncate(asset.getSubtitle(), 20));
-        sub.setFont(FONT_SUB);
-        sub.setForeground(TEXT_SECONDARY);
-        sub.setBounds(8, 146, 124, 16);
-        panel.add(sub);
-
         addHoverEffect(panel);
         panel.addMouseListener(new MouseAdapter() {
 
@@ -294,7 +287,7 @@ public class SearchView extends JPanel {
         private final String title;
         private final Color color;
 
-        private CardData(String letter, String title, String subtitle, Color color) {
+        private CardData(String letter, String title,  Color color) {
             this.letter = letter;
             this.title = title;
             this.color = color;
