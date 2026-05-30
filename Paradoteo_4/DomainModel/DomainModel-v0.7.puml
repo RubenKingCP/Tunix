@@ -20,7 +20,6 @@ package "Frontend" as V {
         class AppWindow
         class AuthPanel
         class MainPanel
-        class ProfilePanel
         class AdminPanel
 
         class LoginView
@@ -85,6 +84,7 @@ package "Frontend" as V {
         class PlaylistService
         class SongService
         class UserService
+        class SearchService
     }
 
     folder "Api" {

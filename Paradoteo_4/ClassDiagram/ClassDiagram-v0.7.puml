@@ -18,7 +18,7 @@ package "Frontend" as V {
 
     folder "Views" {
 
-        class AppWindow extends JFrame{
+        class AppWindow{
             - layout : CardLayout
             - root : JPanel
             - screens : Map<Class<?>, JPanel>
@@ -55,7 +55,6 @@ package "Frontend" as V {
             + register(key : Class<?>, panel : JPanel) : void
             + show(key : Class<?>) : void
         }
-        class ProfilePanel
         class AdminPanel  {
             - controller : AdminController
             --
@@ -254,9 +253,6 @@ package "Frontend" as V {
             + onRejectArtistRequestClicked(id : int) : void
             + showMessage(message : String) : void
         }
-        class AdminArtistAccountApplicationView
-        class AdminArtistAccountApplicationDetails
-        class AdminDashboardView
 
         class UserProfileView {
             - controller : UserProfileController
@@ -428,6 +424,18 @@ package "Frontend" as V {
     
 
     folder "Services" {
+        class AdminService{
+            - adminApiClient : AdminApiClient
+            --
+            + AdminService(adminApiClient : AdminApiClient)
+            + getAllSongs(void) : List<Song>
+            + getAllArtistRequests(void) : List<ArtistRequest>
+            + approveArtistRequest(requestId : int) : boolean
+            + rejectArtistRequest(requestId : int) : boolean
+            + removeSong(songId : int) : boolean
+            + issueStrike(artistId : int, reason : String) : boolean
+            + issueBan(artistId : int, reason : String) : boolean
+        }
         class ArtistRequestService {
             - artistRequestApiClient : ArtistRequestApiClient
             --
@@ -484,9 +492,26 @@ package "Frontend" as V {
             + getDummySongs(void) : List<Song>
             + toModel(response : SongResponse) : Song
         }
+        class SearchService {
+            - apiClient : ApiClient
+            --
+            + SearchService(apiClient : ApiClient)
+            + search(query : String, type : String) : List<ILibraryAsset>
     }
 
     folder "Api" {
+        class AdminApi{
+            - apiClient : ApiClient
+            --
+            + AdminApi(apiClient : ApiClient)
+            + getAllSongs(void) : ApiResponse<List<SongResponse>>
+             + getAllArtistRequests(void) : ApiResponse<List<ArtistApplicationResponse>>
+            + approveArtistRequest(requestId : int) : ApiResponse<Void>
+            + rejectArtistRequest(requestId : int) : ApiResponse<Void>
+            + removeSong(songId : int) : ApiResponse<Void>
+            + issueStrike(artistId : int, reason : String) : ApiResponse<Void>
+            + issueBan(artistId : int, reason : String) : ApiResponse<Void>
+        }
         class ArtistRequestApiClient {
             - apiClient : ApiClient
             --
