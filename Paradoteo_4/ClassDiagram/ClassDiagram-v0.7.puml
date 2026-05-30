@@ -916,17 +916,63 @@ package "Frontend" as V {
         }
     }
 
-    folder "Events" {
-        class EventBus
-        class GoToLoginEvent
-        class GoToRegisterEvent
-        class LoginSuccessEvent
-        class LogoutEvent
-        class OpenSongUploadViewEvent
-        class RegisterSuccessfulEvent
-        class SongUploadedEvent
-        class SwitchMainScreenEvent
-    }
+folder "Events" {
+    class EventBus
+    class AdminLoginEvent
+    class GoToLoginButtonClicked
+    class GoToProfileEvent
+    class GoToRegisterButtonClicked
+    class LibraryPlaylistClicked
+    class LoginSuccessEvent
+    class LogoutEvent
+    class OpenAlbumViewEvent
+    class OpenArtistViewEvent
+    class OpenSongUploadViewEvent
+    class RegisterSuccessfulEvent
+    class SongUploadedEvent
+    class SwitchCenterScreenEvent
+    class SwitchProfileScreenEvent
+    class SwitchScreenEvent
+    class UpdateLibraryEvent
+}
+
+' Publishers
+LoginController ..> GoToRegisterButtonClicked : publish
+RegisterController ..> GoToLoginButtonClicked : publish
+MusicController ..> UpdateLibraryEvent : publish
+LibraryController ..> LibraryPlaylistClicked : publish
+LibraryController ..> OpenAlbumViewEvent : publish
+LibraryController ..> OpenSongViewEvent : publish
+LibraryController ..> OpenArtistViewEvent : publish
+TopBarController ..> SwitchCenterScreenEvent : publish
+TopBarController ..> SwitchProfileScreenEvent : publish
+TopBarController ..> LogoutEvent : publish
+AdminController ..> LogoutEvent : publish
+ArtistProfileController ..> SwitchCenterScreenEvent : publish
+SearchController ..> OpenArtistViewEvent : publish
+SearchController ..> OpenAlbumViewEvent : publish
+SearchController ..> LibraryPlaylistClicked : publish
+UploadSongController ..> SongUploadedEvent : publish
+LoginService ..> LoginSuccessEvent : publish
+LoginService ..> SwitchScreenEvent : publish
+LoginService ..> SwitchCenterScreenEvent : publish
+RegisterService ..> RegisterSuccessfulEvent : publish
+
+' Subscribers
+AppWindow ..> SwitchScreenEvent : subscribe
+LibraryController ..> UpdateLibraryEvent : subscribe
+LoginService ..> LogoutEvent : subscribe
+SessionService ..> RegisterSuccessfulEvent : subscribe
+SessionService ..> LoginSuccessEvent : subscribe
+AuthPanel ..> GoToRegisterButtonClicked : subscribe
+AuthPanel ..> GoToLoginButtonClicked : subscribe
+MainPanel ..> SwitchCenterScreenEvent : subscribe
+MainPanel ..> OpenSongViewEvent : subscribe
+MainPanel ..> OpenAlbumViewEvent : subscribe
+MainPanel ..> LibraryPlaylistClicked : subscribe
+MainPanel ..> OpenArtistViewEvent : subscribe
+MainPanel ..> SwitchProfileScreenEvent : subscribe
+
 }
 
 ' :::::::::::::::::::::::::::::::::::::::::::::::::::::
