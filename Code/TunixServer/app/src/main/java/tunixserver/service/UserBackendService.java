@@ -27,28 +27,25 @@ public class UserBackendService {
 
         public AccountResponse registerUser(RegisterRequest req) {
 
-                AccountEntity account = AccountEntity.builder()
-                        .username(req.getUsername())
-                        .email(req.getEmail())
-                        .password(req.getPassword())
-                        .role(Role.USER)
-                        .build();
+    UserEntity user = new UserEntity();
+    user.setDisplayName(req.getUsername());
+    user.setPremium(false);
+    user.setPremiumTrialUsed(false);
 
-                AccountEntity savedAccount = accountRepo.save(account);
+    AccountEntity account = AccountEntity.builder()
+            .username(req.getUsername())
+            .email(req.getEmail())
+            .password(req.getPassword())
+            .role(Role.USER)
+            .user(user)  // set relationship here
+            .build();
 
-                UserEntity user = new UserEntity();
-                user.setAccount(savedAccount);
-                user.setDisplayName(req.getUsername());
-                user.setPremium(false);
-                user.setPremiumTrialUsed(false);
+    user.setAccount(account); // set both sides of the relationship
 
-                userRepo.save(user);
+    AccountEntity savedAccount = accountRepo.save(account); // cascade saves user too
 
-                savedAccount.setUser(user);
-
-                return AccountResponse.fromEntity(savedAccount);
-        }
-
+    return AccountResponse.fromEntity(savedAccount);
+}
         public AccountResponse loginUser(LoginRequest req) {
 
                 Optional<AccountEntity> optional = accountRepo
@@ -79,7 +76,7 @@ public class UserBackendService {
                 System.out.println("START PREMIUM SERVICE");
                 System.out.println("User ID: " + userId);
 
-                UserEntity user = userRepo.findById(userId.intValue())
+                UserEntity user = userRepo.findById(userId)
                         .orElseThrow(() -> new RuntimeException("User not found"));
 
                 System.out.println("Found user: " + user.getId());
@@ -98,8 +95,8 @@ public class UserBackendService {
                 System.out.println("CANCEL PREMIUM SERVICE");
                 System.out.println("User ID: " + userId);
 
-                UserEntity user = userRepo.findById(userId.intValue())
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+                UserEntity user = userRepo.findByAccount_AccountId(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
 
                 System.out.println("Found user: " + user.getId());
 
@@ -116,9 +113,9 @@ public class UserBackendService {
 
                 System.out.println("START PREMIUM SERVICE");
                 System.out.println("User ID: " + userId);
-
-                UserEntity user = userRepo.findById(userId.intValue())
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+                
+                UserEntity user = userRepo.findByAccount_AccountId(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
 
                 System.out.println("Found user: " + user.getId());
 
