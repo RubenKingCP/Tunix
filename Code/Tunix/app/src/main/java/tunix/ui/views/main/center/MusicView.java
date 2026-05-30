@@ -37,15 +37,21 @@ import tunix.controller.main.center.MusicController;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
 import tunix.model.PlaylistItem;
+import tunix.model.account.Account;
+import tunix.model.account.User;
 import tunix.model.musicContent.Playlist;
 import tunix.model.musicContent.Song;
 import tunix.ui.views.main.LibraryView;
+import tunix.service.auth.SessionService;
 
 public class MusicView extends JPanel {
 
     private ILibraryAsset musicAsset;
     private MusicController controller;
     private Playlist playlist;
+
+    // ── Mock constants for download use-case simulation ──────────────────────
+private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false για να δοκιμάσεις εναλλακτική ροή 2
 
     public MusicView(
             MusicController controller,
@@ -115,10 +121,6 @@ public class MusicView extends JPanel {
 
 
     private Playlist buildPlaylistForAsset(ILibraryAsset asset) {
-        // var currentUser =
-        //         SessionService.Instance == null
-        //                 ? null
-        //                 : SessionService.Instance.getAccount();
 
         Playlist builtPlaylist = new Playlist(
                 asset == null ? "Testing" : asset.getTitle(),
@@ -433,7 +435,10 @@ public class MusicView extends JPanel {
                 Song song = item.getSong();
 
                 // DOWNLOAD — no-op for now
-                if (col == 4) return;
+                if (col == 4) {
+                    simulateDownload(song);
+                    return;
+                }
 
                 // CONTEXT MENU
                 if (col == 5) {
@@ -593,7 +598,55 @@ public class MusicView extends JPanel {
     public void onPlayClicked()     {}
     public void onShuffleClicked()  {}
     public void onSaveClicked()     {}
-    public void onDownloadClicked() {}
+    public void onDownloadClicked() {
+        if (playlist == null || playlist.getPlaylistItems().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No songs to download.");
+            return;
+        }
+        // Κατεβάζει το πρώτο τραγούδι όταν πατάς το κουμπί στο header
+        Song firstSong = playlist.getPlaylistItems().get(0).getSong();
+        simulateDownload(firstSong);
+    }
+    private void simulateDownload(Song song) {
+        Account currentUser =
+                SessionService.Instance == null
+                        ? null
+                        : SessionService.Instance.getAccount();
+
+        // Βήμα 4-5: Έλεγχος Premium
+        boolean isPremium = controller.canDownload();
+
+        if (!isPremium) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "This feature is available for Premium users only.\n"
+                            + "Upgrade to Premium to download songs!",
+                    "Premium Required",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Βήμα 6-7.α.1: Έλεγχος διαθέσιμου χώρου
+        if (!MOCK_HAS_SPACE) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Not enough storage space to download \""
+                            + song.getTitle() + "\".\n"
+                            + "Please free up space and try again.",
+                    "Insufficient Storage",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Βήμα 7-8: Επιτυχής λήψη
+        String mockPath = System.getProperty("user.home") + "/Music/" + song.getTitle() + ".mp3";
+        JOptionPane.showMessageDialog(
+                this,
+                "\"" + song.getTitle() + "\" downloaded successfully!\n"
+                        + "Saved to: " + mockPath,
+                "Download Complete",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
     public void onAddSongClicked()  {}
     public void onOptionsClicked()  {}
 

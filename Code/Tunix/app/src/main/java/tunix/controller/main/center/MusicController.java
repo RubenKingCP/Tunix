@@ -10,6 +10,7 @@ import tunix.model.musicContent.Playlist;
 import tunix.model.musicContent.Song;
 import tunix.service.AlbumService;
 import tunix.service.PlaylistService;
+import tunix.service.auth.SessionService;
 import tunix.ui.views.main.LibraryView;
 import tunix.ui.views.main.center.MusicView;
 import tunix.navigation.events.UpdateLibraryEvent;
@@ -76,5 +77,9 @@ public class MusicController {
 
     public List<Playlist> getCachedPlaylists() {
         return playlistService.getCachedPlaylists();
+    }
+
+    public boolean canDownload() {
+        return SessionService.Instance.getUser().isPremium();
     }
 }
