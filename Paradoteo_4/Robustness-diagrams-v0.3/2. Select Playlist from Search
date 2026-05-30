@@ -35,5 +35,5 @@ B_MUSIC --> GX
 C_SG -[#red]-> C_EM : <font color="red">δεν βρέθηκαν</font>\n<font color="red">τραγούδια</font>
 C_EM -[#red]-> B_EMPTY
 B_EMPTY -[#red]-> GX
-
+B_SRC -[#orange]->GX : <font color="orange">η αναζήτηση ήταν ανεπιτυχής,</font>\n<font color="orange">ο ΓΧ δεν μπορεί να επιλέξει playlist</font>
 @enduml
