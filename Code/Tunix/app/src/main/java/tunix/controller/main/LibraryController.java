@@ -18,7 +18,7 @@ import tunix.navigation.events.OpenArtistViewEvent;
 import tunix.navigation.events.UpdateLibraryEvent;
 import tunix.navigation.events.OpenAlbumViewEvent;
 import tunix.model.musicContent.Album;
-
+import tunix.navigation.events.OpenSongViewEvent;
 
 public class LibraryController {
     private final LibraryService libraryService;
@@ -76,18 +76,7 @@ public class LibraryController {
     public void songClicked(Song song) {
         appContext.eventBus.publish(new OpenSongViewEvent(song));
     }
-    public final class OpenSongViewEvent {
 
-        private final Song song;
-
-        public OpenSongViewEvent(Song song) {
-            this.song = song;
-        }
-
-        public Song getSong() {
-            return song;
-        }
-    }
     
     public void artistClicked(Artist artist) {
     appContext.eventBus.publish(
