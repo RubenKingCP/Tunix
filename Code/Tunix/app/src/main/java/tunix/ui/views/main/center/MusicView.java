@@ -456,12 +456,12 @@ public class MusicView extends JPanel {
                                 new JMenuItem("Remove from this playlist");
 
                         removeItem.addActionListener(ev -> {
-                            if (SessionService.Instance.getAccount().getUsername() != musicAsset.getCreator().getUsername()) {
+                            if (!SessionService.Instance.getAccount().getUsername().equals(musicAsset.getCreator().getUsername())) {
                                 JOptionPane.showMessageDialog(
                                         MusicView.this,
                                         "You can only remove songs from playlists you created.");
-                                return;
-                            }
+                            } else {
+                        
                             int confirm = JOptionPane.showConfirmDialog(
                                     MusicView.this,
                                     "Remove \"" + song.getTitle()
@@ -495,12 +495,14 @@ public class MusicView extends JPanel {
                                         MusicView.this,
                                         "Failed to remove song: " + ex.getMessage());
                             }
+                        }
                         });
 
                         menu.add(removeItem);
                         menu.addSeparator();
                     }
 
+                    controller.ensurePlaylistsLoaded();
                     List<Playlist> playlists = controller.getCachedPlaylists();
 
                     if (playlists == null || playlists.isEmpty()) {

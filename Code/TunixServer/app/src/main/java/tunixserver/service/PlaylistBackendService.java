@@ -21,7 +21,8 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -30,7 +31,8 @@ public class PlaylistBackendService {
     private final SongBackendRepository songBackendRepository;
     private final AccountBackendRepository accountBackendRepository;
     private final LibraryBackendRepository libraryBackendRepository;
-
+        @PersistenceContext
+    private EntityManager entityManager;
     public PlaylistBackendService(AccountBackendRepository accountBackendRepository, PlaylistBackendRepository playlistBackendRepository, SongBackendRepository songBackendRepository, LibraryBackendRepository libraryBackendRepository) {
         this.playlistBackendRepository = playlistBackendRepository;
         this.songBackendRepository = songBackendRepository;
@@ -68,15 +70,11 @@ public class PlaylistBackendService {
 
         PlaylistEntity playlist = playlistBackendRepository.findById(playlistId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Playlist not found"));
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Playlist not found"));
 
-        SongEntity song = songBackendRepository.findById(songId)
+        songBackendRepository.findById(songId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Song not found"));
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Song not found"));
 
         PlaylistItemEntity itemToRemove = playlist.getItems()
                 .stream()
@@ -84,20 +82,29 @@ public class PlaylistBackendService {
                 .findFirst()
                 .orElse(null);
 
-        // song not in playlist
         if (itemToRemove == null) {
             return false;
         }
 
-        // remove item
+        int removedPosition = itemToRemove.getPosition();
+
         playlist.getItems().remove(itemToRemove);
+        entityManager.remove(entityManager.contains(itemToRemove) 
+            ? itemToRemove 
+            : entityManager.merge(itemToRemove));
 
-        // re-order positions
-        for (int i = 0; i < playlist.getItems().size(); i++) {
-            playlist.getItems().get(i).setPosition(i);
-        }
+        entityManager.flush(); // ← forces DELETE to DB NOW, before any UPDATEs
+        entityManager.clear(); // ← detaches stale state
 
-        playlistBackendRepository.save(playlist);
+        // Re-fetch the playlist fresh after flush
+        PlaylistEntity refreshedPlaylist = playlistBackendRepository.findById(playlistId)
+                .orElseThrow();
+
+        refreshedPlaylist.getItems().stream()
+                .filter(item -> item.getPosition() > removedPosition)
+                .forEach(item -> item.setPosition(item.getPosition() - 1));
+
+        playlistBackendRepository.save(refreshedPlaylist);
 
         return true;
     }
