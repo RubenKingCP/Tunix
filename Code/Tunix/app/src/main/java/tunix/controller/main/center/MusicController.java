@@ -104,6 +104,10 @@ public class MusicController {
     }
 
     public boolean canDownload() {
-        return SessionService.Instance.getUser().isPremium();
+        try {
+            return SessionService.Instance.getUser().isPremium();
+        } catch (Exception e) {
+            return SessionService.Instance.getArtist() != null;
+        }
     }
 }
