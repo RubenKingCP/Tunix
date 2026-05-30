@@ -5,13 +5,17 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import tunix.dto.response.ApiResponse;
+import tunix.dto.response.SongResponse;
 import tunix.dto.response.AlbumResponse;
 import tunix.model.ILibraryAsset;
+import tunix.model.account.Artist;
 import tunix.model.musicContent.Album;
+import tunix.model.musicContent.Song;
 
 public class AlbumApi {
     private final ApiClient apiClient;
@@ -43,16 +47,32 @@ public class AlbumApi {
     }
 
     public ILibraryAsset getById(long id) {
-    ApiResponse<AlbumResponse> response = apiClient.get(
-        "/albums/" + id,
-        new TypeReference<ApiResponse<AlbumResponse>>() {}
-    );
-    if (response == null || !response.isSuccess()) return null;
+        ApiResponse<AlbumResponse> response = apiClient.get(
+            "/albums/" + id,
+            new TypeReference<ApiResponse<AlbumResponse>>() {}
+        );
+        if (response == null || !response.isSuccess()) return null;
 
-    AlbumResponse album = response.getData();
-    Date releaseDate = album.getReleaseDate() != null
-        ? Date.valueOf(album.getReleaseDate()) : null;
+        AlbumResponse data = response.getData();
 
-    return new Album(album.getTitle(), album.getId().intValue(), null, new ArrayList<>(), releaseDate);
-}
+        // DEBUG
+        System.out.println("AlbumResponse.getSongResponses() = " + data.getSongResponses());
+
+        List<Song> songs = data.getSongResponses() == null ? new ArrayList<>() :
+            data.getSongResponses().stream()
+                .map(SongResponse::toSong)
+                .collect(Collectors.toList());
+
+        System.out.println("Mapped songs count: " + songs.size());
+
+        Artist artist = new Artist(data.getArtistId(), null, null, null, 0, false);
+
+        return new Album(
+            data.getTitle(),
+            data.getId().intValue(),
+            artist,
+            songs,
+            data.getReleaseDate() != null ? Date.valueOf(data.getReleaseDate()) : null
+        );
+    }
 }

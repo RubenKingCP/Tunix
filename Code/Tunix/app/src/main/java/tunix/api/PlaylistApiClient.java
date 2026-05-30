@@ -61,12 +61,10 @@ public class PlaylistApiClient {
 
         return assets;
     }
-
     public ILibraryAsset getById(long id) {
-
         ApiResponse<PlaylistResponse> response = apiClient.get(
-                "/playlists/" + id,
-                new TypeReference<ApiResponse<PlaylistResponse>>() {}
+            "/playlists/" + id,
+            new TypeReference<ApiResponse<PlaylistResponse>>() {}
         );
 
         if (response == null || !response.isSuccess() || response.getData() == null) {
@@ -74,26 +72,13 @@ public class PlaylistApiClient {
         }
 
         PlaylistResponse dto = response.getData();
+        Playlist playlist = dto.toPlaylist(); // songs already added here
 
-        // Playlist playlist = new Playlist(
-        //         dto.getTitle(),
-        //         dto.getId().intValue(),
-        //         SessionService.Instance.getAccount()
-        // );
-
-        Playlist playlist = dto.toPlaylist();
-
-        // visibility
         if (dto.isPublic()) {
             playlist.toggleVisibility();
         }
 
-        // songs
-        if (dto.getSongs() != null) {
-            dto.getSongs().stream()
-                    .map(SongResponse::toSong)
-                    .forEach(playlist::addSong);
-        }
+        // REMOVED: the manual song-adding loop — toPlaylist() already does this
 
         return playlist;
     }

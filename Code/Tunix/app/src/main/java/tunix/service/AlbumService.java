@@ -16,7 +16,7 @@ public class AlbumService {
 
     public Album getAlbumById(int albumId) {
         ILibraryAsset asset = albumApi.getById(albumId);
-        System.out.println();
+        System.out.println("AlbumService.getAlbumById -> asset: " + asset + " | type: " + (asset == null ? "null" : asset.getClass().getName()));
         return asset instanceof Album ? (Album) asset : new Album("Placeholder", 12323, null, List.of(new Song("adsads", 123L, null, albumId, null, null)), null);
     }
 }

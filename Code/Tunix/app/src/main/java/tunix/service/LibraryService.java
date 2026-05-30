@@ -1,12 +1,14 @@
 package tunix.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import tunix.model.ILibraryAsset;
 import tunix.model.account.Account;
+import tunix.model.account.Artist;
+import tunix.model.musicContent.Album;
 import tunix.service.auth.SessionService;
 import tunix.api.*;
-import tunix.dto.response.AlbumResponse;
 import tunix.dto.response.ApiResponse;
 import tunix.dto.response.LibraryResponse;
 import tunix.dto.response.PlaylistResponse;
@@ -45,11 +47,17 @@ public class LibraryService {
 
 
         // ALBUMS
+        // ALBUMS
         List<ILibraryAsset> albums = response.getData().getAlbums()
-                .stream()
-                .map(AlbumResponse::toAlbum)
-                .map(a -> (ILibraryAsset) a)
-                .toList();
+        .stream()
+        .map(a -> (ILibraryAsset) new Album(
+                a.getTitle(),
+                a.getId().intValue(),
+                new Artist(a.getArtistId(), null, null, null, 0, false),
+                new ArrayList<>(), // intentionally empty — songs loaded on demand via AlbumApi.getById
+                a.getReleaseDate() != null ? Date.valueOf(a.getReleaseDate()) : null
+        ))
+        .toList();
 
         System.out.println("ALBUMS mapped: " + albums.size());
         albums.forEach(a -> System.out.println(" -> " + a.getTitle()));

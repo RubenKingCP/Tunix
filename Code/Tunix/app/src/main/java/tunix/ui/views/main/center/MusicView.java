@@ -80,9 +80,6 @@ public class MusicView extends JPanel {
             repaint();
             return;
         }
-        if (controller != null) {
-            controller.ensurePlaylistsLoaded();
-        }
 
         if (controller != null && musicAsset != null) {
             ILibraryAsset fresh = controller.fetchFreshAsset(musicAsset);
@@ -90,6 +87,10 @@ public class MusicView extends JPanel {
                 musicAsset = fresh;
             }
         }
+
+        // THEN build playlist from the fresh asset
+        this.playlist = buildPlaylistForAsset(musicAsset);
+    
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.DARK_GRAY);
         setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
@@ -111,11 +112,8 @@ public class MusicView extends JPanel {
             initGui();
             return;
         }
-
         this.musicAsset = asset;
-        this.playlist = buildPlaylistForAsset(asset);
-
-        initGui();
+        initGui(); // playlist built inside initGui after fresh fetch
     }
 
     public void refresh() {
@@ -130,6 +128,9 @@ public class MusicView extends JPanel {
                 asset == null ? null : asset.getCreator());
 
         List<Song> songs = asset == null ? List.of() : asset.getDisplaySongs();
+        System.out.println("buildPlaylistForAsset: asset=" + asset.getTitle() 
+            + " | songs=" + (songs == null ? "null" : songs.size()));
+        
         if (songs == null) {
             songs = List.of();
         }
@@ -655,17 +656,7 @@ public class MusicView extends JPanel {
     }
 
     public void setSong(Song song) {
-
         if (song == null) return;
-
-        this.musicAsset = song;
-
-        Playlist singleSongPlaylist = new Playlist(
-                song.getTitle(), song.getId(), song.getArtist());
-        singleSongPlaylist.addSong(song);
-
-        this.playlist = singleSongPlaylist;
-
-        initGui();
+        setAsset(song); // setAsset → initGui → fetchFreshAsset → buildPlaylistForAsset
     }
 }

@@ -2,8 +2,6 @@ package tunix.controller.main;
 
 import java.util.List;
 
-import javax.swing.JPanel;
-
 import tunix.controller.main.center.MusicController;
 import tunix.dto.request.PlaylistCreateRequest;
 import tunix.model.AppContext;

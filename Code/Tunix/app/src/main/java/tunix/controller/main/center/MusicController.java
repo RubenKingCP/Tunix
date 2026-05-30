@@ -2,7 +2,6 @@ package tunix.controller.main.center;
 import java.util.List;
 import javax.swing.JPanel;
 import tunix.navigation.events.EventBus;
-import tunix.navigation.events.OpenSongViewEvent;
 import tunix.navigation.events.SongSelectedEvent;
 import tunix.dto.enums.LibraryAssetType;
 import tunix.model.ILibraryAsset;
@@ -40,7 +39,6 @@ public class MusicController {
 
     public void drawView() {
         ensurePlaylistsLoaded();
-        musicView.initGui();
     }
 
     public void ensurePlaylistsLoaded() {
