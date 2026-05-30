@@ -46,4 +46,11 @@ public class SongApiClient {
                 new TypeReference<ApiResponse<Void>>() {}
         );
     }
+    public ApiResponse<SongResponse> getSongById(int songId) {
+        System.out.println("SongApiClient: Fetching song with id: " + songId);
+        return apiClient.get(
+                "/songs/" + songId,
+                new TypeReference<ApiResponse<SongResponse>>() {}
+        );
+    }
 }

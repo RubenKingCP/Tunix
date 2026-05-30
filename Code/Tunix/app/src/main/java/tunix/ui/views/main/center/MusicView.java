@@ -51,13 +51,17 @@ public class MusicView extends JPanel {
     private Playlist playlist;
 
     // ── Mock constants for download use-case simulation ──────────────────────
-private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false για να δοκιμάσεις εναλλακτική ροή 2
+    private final boolean MOCK_HAS_SPACE  = true;
 
     public MusicView(
             MusicController controller,
             LibraryView libraryPanel) {
 
         this.controller = controller;
+    }
+
+    public ILibraryAsset getCurrentMusicAsset() {
+        return musicAsset;
     }
 
     public void initGui(){
@@ -102,23 +106,21 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
     }
 
     public void setAsset(ILibraryAsset asset) {
-            if (asset == null) {
-                this.musicAsset = null;
-                initGui();
-                return;
-            }
-
-            this.musicAsset = asset;
-            this.playlist = buildPlaylistForAsset(asset); // built here
-
-            initGui(); // initGui must NOT rebuild it
+        if (asset == null) {
+            this.musicAsset = null;
+            initGui();
+            return;
         }
 
-            public void refresh() {
-                initGui();
-            }
+        this.musicAsset = asset;
+        this.playlist = buildPlaylistForAsset(asset);
 
+        initGui();
+    }
 
+    public void refresh() {
+        initGui();
+    }
 
     private Playlist buildPlaylistForAsset(ILibraryAsset asset) {
 
@@ -151,12 +153,10 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
 
         if (musicAsset.getType() == LibraryAssetType.ALBUM) {
 
-            // BEST: use album creator
             if (musicAsset.getCreator() != null) {
                 return musicAsset.getCreator().getUsername();
             }
 
-            // fallback: derive from first song
             if (!playlist.getPlaylistItems().isEmpty()) {
                 Song first = playlist.getPlaylistItems().get(0).getSong();
                 if (first != null && first.getArtist() != null) {
@@ -346,6 +346,7 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
             scrollPane.getViewport().add(emptyPanel, BorderLayout.CENTER);
             return scrollPane;
         }
+
         Object[][] rows = new Object[playlistItems.size()][6];
 
         for (int i = 0; i < playlistItems.size(); i++) {
@@ -434,7 +435,7 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
                 PlaylistItem item = playlistItems.get(row);
                 Song song = item.getSong();
 
-                // DOWNLOAD — no-op for now
+                // DOWNLOAD
                 if (col == 4) {
                     simulateDownload(song);
                     return;
@@ -442,14 +443,12 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
 
                 // CONTEXT MENU
                 if (col == 5) {
-
                     JPopupMenu menu = new JPopupMenu();
 
                     boolean isPlaylist =
                             musicAsset != null
                                     && musicAsset.getType() == LibraryAssetType.PLAYLIST;
 
-                    // ── Remove from this playlist (only when viewing a playlist) ──
                     if (isPlaylist) {
 
                         JMenuItem removeItem =
@@ -496,7 +495,6 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
                         menu.addSeparator();
                     }
 
-                    // ── Add to playlist ───────────────────────────────────────────
                     List<Playlist> playlists = controller.getCachedPlaylists();
 
                     if (playlists == null || playlists.isEmpty()) {
@@ -536,7 +534,11 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
                     }
 
                     menu.show(table, e.getX(), e.getY());
+                    return;
                 }
+
+                // SONG ROW — dispatch selection event
+                controller.onSongClicked(song);
             }
         });
 
@@ -603,17 +605,16 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
             JOptionPane.showMessageDialog(this, "No songs to download.");
             return;
         }
-        // Κατεβάζει το πρώτο τραγούδι όταν πατάς το κουμπί στο header
         Song firstSong = playlist.getPlaylistItems().get(0).getSong();
         simulateDownload(firstSong);
     }
+
     private void simulateDownload(Song song) {
         Account currentUser =
                 SessionService.Instance == null
                         ? null
                         : SessionService.Instance.getAccount();
 
-        // Βήμα 4-5: Έλεγχος Premium
         boolean isPremium = controller.canDownload();
 
         if (!isPremium) {
@@ -626,7 +627,6 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
             return;
         }
 
-        // Βήμα 6-7.α.1: Έλεγχος διαθέσιμου χώρου
         if (!MOCK_HAS_SPACE) {
             JOptionPane.showMessageDialog(
                     this,
@@ -638,7 +638,6 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
             return;
         }
 
-        // Βήμα 7-8: Επιτυχής λήψη
         String mockPath = System.getProperty("user.home") + "/Music/" + song.getTitle() + ".mp3";
         JOptionPane.showMessageDialog(
                 this,
@@ -647,6 +646,7 @@ private final boolean MOCK_HAS_SPACE  = true;   // αλλάζεις σε false �
                 "Download Complete",
                 JOptionPane.INFORMATION_MESSAGE);
     }
+
     public void onAddSongClicked()  {}
     public void onOptionsClicked()  {}
 
