@@ -19,7 +19,7 @@ public class FollowService {
     }
 
     public void followArtist(int userId, int artistId) {
-        ApiResponse<LibraryResponse> response = libraryApiClient.followArtist(artistId);
+        ApiResponse<LibraryResponse> response = libraryApiClient.followArtist(artistId,userId);
         if (response == null || !response.isSuccess()) {
             String msg = response != null ? response.getMessage() : "Unknown error";
             throw new RuntimeException("followArtist failed: " + msg);
@@ -27,7 +27,7 @@ public class FollowService {
     }
 
     public void unfollowArtist(int userId, int artistId) {
-        ApiResponse<LibraryResponse> response = libraryApiClient.unfollowArtist(artistId);
+        ApiResponse<LibraryResponse> response = libraryApiClient.unfollowArtist(artistId,userId);
         if (response == null || !response.isSuccess()) {
             String msg = response != null ? response.getMessage() : "Unknown error";
             throw new RuntimeException("unfollowArtist failed: " + msg);

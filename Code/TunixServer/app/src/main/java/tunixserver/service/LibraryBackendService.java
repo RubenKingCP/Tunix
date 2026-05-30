@@ -9,8 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import tunixserver.dto.response.LibraryResponse;
 import tunixserver.entities.AccountEntity;
+import tunixserver.entities.ArtistEntity;
+import tunixserver.entities.LibraryArtistEntity;
 import tunixserver.entities.LibraryEntity;
 import tunixserver.repository.AccountBackendRepository;
+import tunixserver.repository.ArtistBackendRepository;
 import tunixserver.repository.LibraryBackendRepository;
 
 @Service
@@ -20,6 +23,7 @@ public class LibraryBackendService {
 
     private final LibraryBackendRepository libraryBackendRepository;
     private final AccountBackendRepository accountBackendRepository;
+    private final ArtistBackendRepository artistBackendRepository;
 
     public LibraryResponse getLibrary(Long accountId) {
 
@@ -47,4 +51,52 @@ public class LibraryBackendService {
 
         return libraryBackendRepository.save(library);
     }
+
+    public LibraryResponse followArtist(Long artistId, Long userId) {
+
+        LibraryEntity library = libraryBackendRepository
+                .findByAccount_AccountId(userId)
+                .orElseGet(() -> createEmptyLibrary(userId));
+
+        ArtistEntity artist = artistBackendRepository.findById(artistId)
+                .orElseThrow(() -> new RuntimeException("Artist not found"));
+
+        boolean alreadyFollowing = library.getArtists()
+                .stream()
+                .anyMatch(libraryArtist ->
+                        libraryArtist.getArtist()
+                                .getId()
+                                .equals(artistId));
+
+        if (!alreadyFollowing) {
+
+            LibraryArtistEntity libraryArtist = new LibraryArtistEntity();
+
+            libraryArtist.setLibrary(library);
+            libraryArtist.setArtist(artist);
+
+            library.getArtists().add(libraryArtist);
+
+            libraryBackendRepository.save(library);
+        }
+
+        return LibraryResponse.fromEntity(library);
+    }
+
+   public LibraryResponse unfollowArtist(Long artistId, Long userId) {
+    LibraryEntity library = libraryBackendRepository
+            .findByAccount_AccountId(userId)
+            .orElseThrow(() -> new RuntimeException("Library not found"));
+
+    boolean removed = library.getArtists().removeIf(
+            libraryArtist -> libraryArtist.getArtist().getId().equals(artistId)
+    );
+
+    if (!removed) {
+        throw new RuntimeException("Artist is not followed");
+    }
+
+    libraryBackendRepository.save(library);
+    return LibraryResponse.fromEntity(library);
+}
 }

@@ -10,5 +10,6 @@ import tunixserver.entities.LibraryEntity;
 @Repository
 public interface LibraryBackendRepository extends JpaRepository<LibraryEntity, Long> {
 
-    Optional<LibraryEntity> findByAccount_AccountId(Long accountId); 
+    Optional<LibraryEntity> findByAccount_AccountId(Long accountId);
+
 }

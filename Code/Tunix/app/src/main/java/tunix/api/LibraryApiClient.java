@@ -24,13 +24,13 @@ public class LibraryApiClient {
         );
     }
 
-    public ApiResponse<LibraryResponse> followArtist(int artistId) {
-        return apiClient.post("/library/add/" + artistId, artistId, LibraryResponse.class);
+    public ApiResponse<LibraryResponse> followArtist(int artistId,int userId) {
+        return apiClient.post("/library/add/" + artistId + "/" + userId, artistId, LibraryResponse.class);
     }
 
-    public ApiResponse<LibraryResponse> unfollowArtist(int artistId) {
+    public ApiResponse<LibraryResponse> unfollowArtist(int artistId, int userId) {
         return apiClient.delete(
-            "/library/remove/" + artistId,
+            "/library/remove/" + artistId + "/" + userId,
             new TypeReference<ApiResponse<LibraryResponse>>() {}
         );
     }
