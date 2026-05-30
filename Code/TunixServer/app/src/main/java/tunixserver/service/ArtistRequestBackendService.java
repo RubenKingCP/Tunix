@@ -57,7 +57,7 @@ public class ArtistRequestBackendService {
     @Transactional
 public ApiResponse<Void> approveArtistRequest(Long requestId) {
 
-    ArtistRequestEntity request = artistRequestRepository.findById(requestId)
+    ArtistRequestEntity request = artistRequestRepository.findByUser_Id(requestId)
             .orElseThrow(() -> new RuntimeException("Request not found"));
 
     // Check request status
@@ -110,7 +110,7 @@ public ApiResponse<Void> approveArtistRequest(Long requestId) {
     @Transactional
     public ApiResponse<Void> rejectArtistRequest(Long requestId) {
 
-        ArtistRequestEntity request = artistRequestRepository.findById(requestId)
+        ArtistRequestEntity request = artistRequestRepository.findByUser_Id(requestId)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
 
         if (request.getStatus() != RequestStatus.PENDING) {
