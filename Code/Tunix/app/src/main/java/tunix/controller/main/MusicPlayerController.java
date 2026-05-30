@@ -13,6 +13,8 @@ public class MusicPlayerController {
     private final MusicPlayerView musicPlayerView;
     private final EventBus eventBus;
     private java.util.List<Song> currentSongOrder;
+    private boolean isShuffled = false;
+    private java.util.List<Song> shuffledSongOrder;
     private int currentSongIndex;
 
     public MusicPlayerController(MusicPlayerService musicPlayerService, EventBus eventBus){
@@ -42,6 +44,11 @@ public class MusicPlayerController {
         System.out.println("Next button clicked");
         if (currentSongIndex < currentSongOrder.size() - 1) {
             currentSongIndex++;
+            if (isShuffled) {
+                musicPlayerService.loadSong(shuffledSongOrder.get(currentSongIndex)); // Load the next song in the shuffled order
+                musicPlayerView.updateCurrentSong(shuffledSongOrder.get(currentSongIndex)); // Update the view to show the current song
+                return;
+            }
             musicPlayerService.loadSong(currentSongOrder.get(currentSongIndex)); // Load the next song in the order
             musicPlayerView.updateCurrentSong(currentSongOrder.get(currentSongIndex)); // Update the view to show the current song
         } else {
@@ -58,15 +65,21 @@ public class MusicPlayerController {
         System.out.println("Previous button clicked");
         if (currentSongIndex > 0){
             currentSongIndex--;
-            musicPlayerService.loadSong(currentSongOrder.get(currentSongIndex)); // Load the previous song in the order
-            musicPlayerView.updateCurrentSong(currentSongOrder.get(currentSongIndex)); // Update the view to show the current song
+            if (!isShuffled) {
+                musicPlayerService.loadSong(currentSongOrder.get(currentSongIndex)); // Load the previous song in the order
+                musicPlayerView.updateCurrentSong(currentSongOrder.get(currentSongIndex)); // Update the view to show the current song
+            } else {
+                musicPlayerService.loadSong(shuffledSongOrder.get(currentSongIndex)); // Load the previous song in the shuffled order
+                musicPlayerView.updateCurrentSong(shuffledSongOrder.get(currentSongIndex)); // Update the view to show the current song
+            }
         } else {
             System.out.println("Already at the beginning of the song list");
         }
     }
 
     public void onShuffleButtonClicked() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'onShuffleButtonClicked'");
+        shuffledSongOrder = new java.util.ArrayList<>(currentSongOrder);
+        java.util.Collections.shuffle(shuffledSongOrder);
+        isShuffled = !isShuffled;
     }
 }
