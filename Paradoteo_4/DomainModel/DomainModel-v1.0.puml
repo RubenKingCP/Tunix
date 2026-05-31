@@ -44,7 +44,6 @@ package "Frontend" as V {
 
         class UserProfileView
         class ArtistProfileView
-        class AdminProfileView
     }
 
     folder "Controllers" {
@@ -63,7 +62,6 @@ package "Frontend" as V {
 
         class UserProfileController
         class ArtistProfileController
-        class AdminProfileController
 
         class PaymentController
         class UploadSongController
@@ -224,7 +222,6 @@ package "Frontend" as V {
 
     UserProfileView -- UserProfileController
     ArtistProfileView -- ArtistProfileController
-    AdminProfileView -- AdminProfileController
 
 ' =====================================================
 ' VIEW COMPOSITION
@@ -248,7 +245,6 @@ package "Frontend" as V {
     AdminPanel *-- AdminView
     ProfilePanel *-- UserProfileView
     ProfilePanel *-- ArtistProfileView
-    ProfilePanel *-- AdminProfileView
 
 ' =====================================================
 ' CONTROLLER → SERVICE
@@ -286,8 +282,6 @@ package "Frontend" as V {
     ArtistProfileController -- SongService
     ArtistProfileController -- AlbumService
 
-    AdminProfileController -- AdminService
-    AdminProfileController -- UserService
 
     PaymentController      -- PaymentService
 
