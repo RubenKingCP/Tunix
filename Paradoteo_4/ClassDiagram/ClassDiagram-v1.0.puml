@@ -295,6 +295,7 @@ package "Frontend" as V {
             - currentSongOrder : List<Song>
             - shuffledSongOrder : List<Song>
             - isShuffled : boolean
+            - isPlaying : boolean
             - currentSongIndex : int
             --
             + MusicPlayerController(musicPlayerService : MusicPlayerService, eventBus : EventBus)
@@ -431,12 +432,6 @@ package "Frontend" as V {
             + getView(void) : JPanel
             + draw(void) : void
         }
-        class AdminProfileController {
-            - view : AdminProfileView
-            --
-            + AdminProfileController(void)
-            + getView(void) : JPanel
-        }
     }
     
 
@@ -485,7 +480,9 @@ package "Frontend" as V {
             + RegisterService(registerApiClient : RegisterApiClient, eventBus : EventBus)
             + register(registerRequest : RegisterRequest, onSuccess : Runnable, onError : Consumer<String>) : void
         }
-        class MusicPlayerService
+        class MusicPlayerService{
+            + loadSong(song : Song) : void
+        }
         class LibraryService{
             - libraryApiClient : LibraryApiClient
             --
@@ -812,7 +809,7 @@ package "Frontend" as V {
 
         Artist ..|> ILibraryAsset
     }
-
+}
     package "DTO" {
         folder "Request" {
             class AddSongRequest{
@@ -941,7 +938,7 @@ package "Frontend" as V {
         }
     }
 
-}
+
 ' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 ' INHERITANCE / MODEL STRUCTURE
 ' :::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -974,7 +971,6 @@ package "Frontend" as V {
 
     UserProfileView -- UserProfileController
     ArtistProfileView -- ArtistProfileController
-    AdminProfileView -- AdminProfileController
 
 
 
@@ -996,14 +992,11 @@ package "Frontend" as V {
 
     LibraryView *-- LibraryMusicView
     MusicView *-- ILibraryAssetItem
-    AdminPanel *-- AdminArtistAccountApplicationView
 
     AdminPanel *-- AdminView
-    AdminArtistAccountApplicationView *-- AdminArtistAccountApplicationDetails
     AdminView *-- AdminDashboardView
     ProfilePanel *-- UserProfileView
     ProfilePanel *-- ArtistProfileView
-    ProfilePanel *-- AdminProfileView
 
 ' :::::::::::::::::::::::::::::::::::::::::::::::::::::
 ' CONTROLLER → SERVICE
@@ -1080,9 +1073,6 @@ package "Events" {
         + LogoutEvent()
     }
 
-    class AdminLoginEvent {
-        + AdminLoginEvent()
-    }
 
     class LibraryPlaylistClicked {
         - playlist : ILibraryAsset
@@ -1110,10 +1100,6 @@ package "Events" {
         --
         + OpenSongViewEvent(song : Song)
         + getSong() : Song
-    }
-
-    class OpenSongUploadViewEvent {
-        + OpenSongUploadViewEvent()
     }
 
 
@@ -1356,10 +1342,6 @@ folder "Backend Repository" {
         + findById(id)
         + save(account)
         + findByUsernameAndPassword(username, password)
-    }
-    class AdminBackendRepository
-    interface AlbumBackendRepository{
-        + findByTitleContainingIgnoreCase(query)
     }
     interface ArtistBackendRepository{
         + existsByAccount(account)
