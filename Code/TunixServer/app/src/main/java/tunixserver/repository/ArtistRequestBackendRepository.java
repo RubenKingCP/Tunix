@@ -1,23 +1,16 @@
 package tunixserver.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import tunixserver.entities.ArtistRequestEntity;
+import tunixserver.entities.UserEntity;
+import tunixserver.dto.enums.RequestStatus;
 
 import java.util.List;
-import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
-@Repository
-public class ArtistRequestBackendRepository {
-    public List<ArtistRequestEntity> findAll() {
-        // Logic to retrieve all artist requests from the database
-        return null; // Placeholder return statement
-    }
+public interface ArtistRequestBackendRepository extends JpaRepository<ArtistRequestEntity, Long> {
 
-    public ArtistRequestEntity findById(int requestId) {
-        // Logic to retrieve a specific artist request by ID from the database
-        return null; // Placeholder return statement
-    }
-    
-    public boolean save(ArtistRequestEntity artistRequestEntity) {
-        return false;
-    }
+    List<ArtistRequestEntity> findByStatus(RequestStatus status);
+    boolean existsByUser(UserEntity user);
+    Optional<ArtistRequestEntity> findByUser_Id(Long accountId);
 }

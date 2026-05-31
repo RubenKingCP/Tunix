@@ -1,65 +1,55 @@
 package tunixserver.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "library")
 public class LibraryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long libraryId;
+    private Long id;
 
+    // =========================
+    // OWNER ACCOUNT
+    // =========================
     @OneToOne
-    @JoinColumn(name = "user_id", unique = true)
-    private UserEntity user;
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    private AccountEntity account;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public LibraryEntity() {
-    }
+    // =========================
+    // LIBRARY SONGS
+    // =========================
+    @OneToMany(mappedBy = "library", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LibrarySongEntity> songs = new ArrayList<>();
 
-    public LibraryEntity(UserEntity user) {
-        this.user = user;
-    }
+    // =========================
+    // LIBRARY ALBUMS
+    // =========================
+    @OneToMany(mappedBy = "library", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LibraryAlbumEntity> albums = new ArrayList<>();
 
-    @PrePersist
-    public void prePersist() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-    }
+    // =========================
+    // LIBRARY PLAYLISTS
+    // =========================
+    @OneToMany(mappedBy = "library", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LibraryPlaylistEntity> playlists = new ArrayList<>();
 
-    public Long getLibraryId() {
-        return libraryId;
-    }
-
-    public void setLibraryId(Long libraryId) {
-        this.libraryId = libraryId;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    // =========================
+    // LIBRARY ARTISTS
+    // =========================
+    @OneToMany(mappedBy = "library", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LibraryArtistEntity> artists = new ArrayList<>();
 }

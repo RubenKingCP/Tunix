@@ -1,29 +1,50 @@
 package tunix.controller;
 
-import tunix.event.EventBus;
-import tunix.service.ArtistProfileService;
-import tunix.view.center.ArtistProfileView;
-import tunix.event.OpenSongUploadViewEvent;
-import tunix.model.Artist;
+import javax.swing.JPanel;
+
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.SwitchCenterScreenEvent;
+import tunix.ui.views.profile.ArtistProfileView;
 
 public class ArtistProfileController {
-    private ArtistProfileView artistProfileView;
-    private ArtistProfileService artistProfileService;
-    private EventBus eventBus;
-    private Artist artist;
 
-    public ArtistProfileController(Artist artist, ArtistProfileView artistProfileView, ArtistProfileService artistProfileService, EventBus eventBus) {
-        this.artist = artist;
-        this.artistProfileView = artistProfileView;
-        this.artistProfileService = artistProfileService;
+    private final ArtistProfileView artistProfileView;
+
+
+    private final EventBus eventBus;
+
+    public ArtistProfileController(
+                                   EventBus eventBus) {
+
+
         this.eventBus = eventBus;
+
+        this.artistProfileView = new ArtistProfileView();
+
+        setupListeners();
     }
 
-    public void onUploadSongClicked() {
-        eventBus.publish(new OpenSongUploadViewEvent());
+    private void setupListeners() {
+
+        artistProfileView.setUploadSongListener(e -> {
+
+            eventBus.publish(
+                    new SwitchCenterScreenEvent(
+                            UploadSongController.class
+                    )
+            );
+        });
+    }
+
+    public JPanel getView() {
+
+        return artistProfileView;
     }
 
     public void draw() {
-        // Code to draw the artist profile view, including artist information and songs
+
+        artistProfileView.repaint();
+
+        artistProfileView.revalidate();
     }
 }

@@ -2,33 +2,39 @@
 package tunix.app;
 
 
+import tunix.api.AdminApi;
+import tunix.api.AlbumApi;
 import tunix.api.ApiClient;
+import tunix.api.ArtistApi;
+import tunix.api.ArtistRequestApiClient;
+import tunix.api.LibraryApiClient;
 import tunix.api.LoginApiClient;
 import tunix.api.PlaylistApiClient;
 import tunix.api.RegisterApiClient;
-import tunix.controller.HomeController;
+import tunix.api.SongApiClient;
+import tunix.controller.AdminController;
+import tunix.controller.SearchController;
 import tunix.controller.auth.LoginController;
 import tunix.controller.auth.RegisterController;
 import tunix.controller.main.LibraryController;
 import tunix.controller.main.MusicPlayerController;
 import tunix.controller.main.TopBarController;
+import tunix.model.AppContext;
+import tunix.navigation.ScreenRegistry;
+import tunix.navigation.events.EventBus;
+import tunix.service.AdminService;
+import tunix.service.ArtistRequestService;
 import tunix.service.LibraryService;
 import tunix.service.MusicPlayerService;
 import tunix.service.PlaylistService;
 import tunix.service.SearchService;
+import tunix.service.SongService;
 import tunix.service.auth.LoginService;
 import tunix.service.auth.RegisterService;
 import tunix.service.auth.SessionService;
-import tunix.view.auth.AuthPanel;
-import tunix.view.auth.LoginView;
-import tunix.view.auth.RegisterView;
-import tunix.view.library.*;
-import tunix.view.main.HomeView;
-import tunix.view.main.LibraryView;
-import tunix.view.main.MainPanel;
-import tunix.view.main.MusicPlayerView;
-import tunix.view.main.TopBarView;
-import tunix.event.EventBus;
+import tunix.ui.AdminPanel;
+import tunix.ui.AuthPanel;
+import tunix.ui.MainPanel;
 
 public class AppLauncher {
     public static final String BASE_URL = "http://localhost:8080";
@@ -38,112 +44,86 @@ public class AppLauncher {
     }
 
     public static void main(String[] args) {
-        System.out.print("Testing");
 
-        // Setup ApiClient first
         ApiClient apiClient = new ApiClient(BASE_URL);
-        System.out.print(apiClient);
-
-        // Setup EventBus
         EventBus eventBus = new EventBus();
 
-        // Setup Api shortcuts
-        // Login Api
-        LoginApiClient loginApiClient = new LoginApiClient(apiClient);
-        RegisterApiClient registerApiClient = new RegisterApiClient(apiClient);
+        AppContext context = new AppContext(apiClient, eventBus);
 
-        // Playlist Api
-        PlaylistApiClient playlistApiClient = new PlaylistApiClient(apiClient);
+        AppWindow window = new AppWindow(context);
+        context.setAppWindow(window);
 
-        // Setup Authorization Components
-        AuthPanel authPanel = createAuthPanel(apiClient, eventBus);
-
-        
-
-        // Setup Main Panel
-        MainPanel mainPanel = createMainPanel(apiClient, eventBus, playlistApiClient);
-
-        // Setup AppWindow
-        AppWindow appWindow = new AppWindow(authPanel, mainPanel, eventBus);
-        appWindow.setVisible(true);
-    }
-
-    private static AuthPanel createAuthPanel(ApiClient apiClient, EventBus eventBus) {
-        // Setup sessionService
-
-        SessionService sessionService = new SessionService(eventBus);
-        // Setup login
-        LoginView loginView = new LoginView();
-
+        // =========================
+        // AUTH MODULE
+        // =========================
         LoginService loginService =
-                new LoginService(
-                        new LoginApiClient(apiClient), eventBus
-                );
-
-        LoginController loginController =
-                new LoginController(
-                        loginView,
-                        loginService,
-                        sessionService,
-                        eventBus
-                );
-
-        loginView.setController(loginController);
-        
-
-        // Setup register
-        RegisterView registerView = new RegisterView();
+                new LoginService(new LoginApiClient(apiClient), eventBus);
 
         RegisterService registerService =
-                new RegisterService(
-                        new RegisterApiClient(apiClient), eventBus
-                );
+                new RegisterService(new RegisterApiClient(apiClient), eventBus);
+
+        SessionService sessionService = new SessionService(context);
+
+        LoginController loginController =
+                new LoginController(loginService, sessionService, eventBus);
 
         RegisterController registerController =
-                new RegisterController(
-                        registerView,
-                        registerService,
-                        sessionService,
-                        eventBus
-                );
+                new RegisterController(registerService, sessionService, eventBus);
 
-        registerView.setController(registerController);
+        AuthPanel authPanel = new AuthPanel(loginController.getView(), registerController.getView(), eventBus);
 
-        return new AuthPanel(
-                loginView,
-                registerView,
-                eventBus
-        );
-    }
+        // Create main panel
+        MainPanel mainPanel = createMainPanel(context);
 
-    private static MainPanel createMainPanel(ApiClient apiClient, EventBus eventBus, PlaylistApiClient playlistApiClient) {
-        // Setup Main Panel Components
-        // Library
-        LibraryView libraryView = new LibraryView();
-        LibraryService libraryService = new LibraryService();
-        PlaylistService playlistService = new PlaylistService(playlistApiClient);
-        LibraryController libraryController = new LibraryController(libraryView, libraryService, playlistService);
+        // =========================
+        // ADMIN (placeholder)
+        // =========================
+        AdminPanel adminPanel = new AdminPanel(new AdminController(eventBus, new AdminService(new AdminApi(context.apiClient), new SongApiClient(apiClient)), new ArtistRequestService(new ArtistRequestApiClient(apiClient)), new SongService(eventBus, new SongApiClient(apiClient))));
 
-        libraryView.setController(libraryController);
+        // =========================
+        // REGISTER SCREENS
+        // =========================
+        window.register(AuthPanel.class, authPanel);
+        window.register(MainPanel.class, mainPanel);
+        window.register(AdminPanel.class, adminPanel);
 
-        // Music Player
-        MusicPlayerView musicPlayerView = new MusicPlayerView();
-        MusicPlayerService musicPlayerService = new MusicPlayerService();
-        MusicPlayerController musicPlayerController = new MusicPlayerController(musicPlayerView, musicPlayerService, eventBus);
+        // START APP
+        window.show(AuthPanel.class);
+        window.setVisible(true);
+        }
+
+        private static MainPanel createMainPanel(AppContext context) {
+                // =========================
+                // MAIN MODULE
+                // =========================
+                PlaylistApiClient playlistApiClient = new PlaylistApiClient(context.apiClient);
+                AlbumApi albumApiClient = new AlbumApi(context.apiClient);
+                ArtistApi artistApiClient = new ArtistApi(context.apiClient);
+                LibraryApiClient libraryApiClient = new LibraryApiClient(context.apiClient);
+                LibraryService libraryService = new LibraryService(libraryApiClient);
+                PlaylistService playlistService = new PlaylistService(playlistApiClient);
+                MusicPlayerService musicPlayerService = new MusicPlayerService();
+                SearchService searchService = new SearchService(new SongApiClient(context.apiClient), playlistApiClient, albumApiClient, artistApiClient);
+                SearchController searchController = new SearchController(searchService, context.eventBus);
+
+                LibraryController libraryController =
+                        new LibraryController(libraryService, playlistService, context);
+
+                MusicPlayerController musicPlayerController =
+                        new MusicPlayerController(musicPlayerService, context.eventBus);
+
+                TopBarController topBarController =
+                        new TopBarController(searchController, context.eventBus);
+
+                ScreenRegistry registry = new ScreenRegistry();
+
+                return new MainPanel(
+                        topBarController.getView(),
+                        libraryController.getView(),
+                        musicPlayerController.getView(),
+                        registry,
+                        context,
+                        searchController);
+        }
         
-        musicPlayerView.setController(musicPlayerController);
-
-        // Home
-        HomeView homeView = new HomeView();
-        HomeController homeController = new HomeController(homeView);
-
-        // Top Bar Controller
-        TopBarView topBarView = new TopBarView();
-        SearchService searchService = new SearchService(apiClient);
-        TopBarController topBarController = new TopBarController(topBarView, searchService, eventBus, homeView);
-
-        topBarView.setController(topBarController);
-
-        return new MainPanel(topBarView, libraryView, homeView, musicPlayerView, eventBus);
-    }
 }

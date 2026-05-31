@@ -1,0 +1,83 @@
+@startuml ApproveOrRejectArtistRequest
+
+title Approve Or Reject Artist Request
+
+actor Admin
+
+participant AdminView
+participant AdminController
+participant ArtistRequestService
+participant ArtistRequestApiClient
+participant ApiClient
+participant ArtistRequestBackendController
+participant ArtistRequestBackendService
+participant ArtistRequestBackendRepository
+
+activate AdminView
+Admin -> AdminView : clicks on "Artist Account Applications"
+opt
+AdminView -> AdminView : showArtistAccountApplications()
+Admin -> AdminView : selects an application
+AdminView -> AdminController : getApplicationDetails(applicationId)
+activate AdminController
+AdminController -> ArtistRequestService : getApplicationDetails(applicationId)
+activate ArtistRequestService
+ArtistRequestService -> ArtistRequestApiClient : getApplicationDetails(applicationId)
+activate ArtistRequestApiClient
+ArtistRequestApiClient -> ApiClient : post(artistRequest/getRequests, applicationId)
+activate ApiClient
+ApiClient -> ArtistRequestBackendController : getApplicationDetails(applicationId)
+activate ArtistRequestBackendController
+ArtistRequestBackendController -> ArtistRequestBackendService : getApplicationDetails(applicationId)
+activate ArtistRequestBackendService
+ArtistRequestBackendService -> ArtistRequestBackendRepository : getApplicationDetails(applicationId)
+activate ArtistRequestBackendRepository
+ArtistRequestBackendRepository --> ArtistRequestBackendService : return application details
+deactivate ArtistRequestBackendRepository
+ArtistRequestBackendService --> ArtistRequestBackendController : return application details
+deactivate ArtistRequestBackendService
+ArtistRequestBackendController --> ApiClient : return application details
+deactivate ArtistRequestBackendController
+ApiClient --> ArtistRequestApiClient : return application details
+deactivate ApiClient
+ArtistRequestApiClient --> ArtistRequestService : return application details
+
+deactivate ArtistRequestApiClient
+ArtistRequestService --> AdminController : return application details
+deactivate ArtistRequestService
+AdminController -> AdminView : showApplicationDetails(applicationDetails)
+deactivate AdminController
+end
+alt Admin approves Request
+    Admin -> AdminView : Approve Request
+else Admin rejects Request
+    Admin -> AdminView : Reject Request
+end
+AdminView -> AdminController : saveResponse(adminRes, applicationId)
+activate AdminController
+AdminController -> ArtistRequestService : saveResponse(adminRes, applicationId)
+activate ArtistRequestService
+ArtistRequestService -> ArtistRequestApiClient : saveResponse(adminRes, applicationId)
+activate ArtistRequestApiClient
+ArtistRequestApiClient -> ApiClient : post(artistRequest/saveRequest, adminRes, applicationId)
+activate ApiClient
+ApiClient -> ArtistRequestBackendController : getApplicationDetails(applicationId)
+activate ArtistRequestBackendController
+ArtistRequestBackendController -> ArtistRequestBackendService : saveResponse(adminRes, applicationId)
+activate ArtistRequestBackendService
+ArtistRequestBackendService -> ArtistRequestBackendRepository : saveResponse(adminRes, applicationId)
+activate ArtistRequestBackendRepository
+ArtistRequestBackendRepository --> ArtistRequestBackendService : return success
+deactivate ArtistRequestBackendRepository
+ArtistRequestBackendService --> ArtistRequestBackendController : return success
+deactivate ArtistRequestBackendService
+ArtistRequestBackendController --> ApiClient : return success
+deactivate ArtistRequestBackendController
+ApiClient --> ArtistRequestApiClient : return success
+deactivate ApiClient
+ArtistRequestApiClient --> AdminController : return success
+deactivate ArtistRequestApiClient
+
+
+
+@enduml

@@ -1,15 +1,17 @@
 package tunix.service.auth;
 
-
 import tunix.api.RegisterApiClient;
 import tunix.dto.request.RegisterRequest;
-import tunix.dto.response.ApiResponse;
-import tunix.event.EventBus;
-import tunix.event.RegisterSuccessfulEvent;
-import tunix.model.Account;
 import tunix.dto.response.AccountResponse;
+import tunix.dto.response.ApiResponse;
+import tunix.model.account.Account;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.RegisterSuccessfulEvent;
+
+import java.util.function.Consumer;
 
 public class RegisterService {
+
     private final RegisterApiClient registerApiClient;
     private final EventBus eventBus;
 
@@ -18,23 +20,17 @@ public class RegisterService {
         this.eventBus = eventBus;
     }
 
-    public void register(RegisterRequest registerRequest) {
+    public void register(RegisterRequest registerRequest, Runnable onSuccess, Consumer<String> onError) {
         ApiResponse<AccountResponse> response = registerApiClient.register(registerRequest);
         if (response.isSuccess()) {
-            System.err.println("\nUser registered to dtaabae");
+            System.err.println("\nUser registered to database");
             AccountResponse dto = response.getData();
-            Account account = new Account(
-                dto.getAccountId(),
-                dto.getUsername(),
-                dto.getEmail(),
-                dto.getRole()
-            );
-
+            Account account = Account.from(dto);
             eventBus.publish(new RegisterSuccessfulEvent(account));
-             
+            if (onSuccess != null) onSuccess.run();
         } else {
             System.err.println("No :(\n" + response.getMessage());
+            if (onError != null) onError.accept(response.getMessage());
         }
     }
 }
- 

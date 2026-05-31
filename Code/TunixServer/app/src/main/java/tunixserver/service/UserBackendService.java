@@ -1,6 +1,5 @@
 package tunixserver.service;
 
-
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -9,91 +8,124 @@ import tunixserver.dto.enums.Role;
 import tunixserver.dto.request.LoginRequest;
 import tunixserver.dto.request.RegisterRequest;
 import tunixserver.dto.response.AccountResponse;
-import tunixserver.dto.response.UserResponse;
-import tunixserver.dto.response.ArtistResponse;
 import tunixserver.entities.AccountEntity;
-import tunixserver.entities.ArtistEntity;
 import tunixserver.entities.UserEntity;
 import tunixserver.repository.AccountBackendRepository;
 import tunixserver.repository.UserBackendRepository;
 
 @Service
 public class UserBackendService {
-    private final UserBackendRepository userBackendRepository;
-    private final AccountBackendRepository accountBackendRepository;
 
-    public UserBackendService(UserBackendRepository userBackendRepository, AccountBackendRepository accountBackendRepository) {
-        this.userBackendRepository = userBackendRepository;
-        this.accountBackendRepository = accountBackendRepository;
+    private final UserBackendRepository userRepo;
+    private final AccountBackendRepository accountRepo;
+
+    public UserBackendService(UserBackendRepository userRepo,
+                              AccountBackendRepository accountRepo) {
+        this.userRepo = userRepo;
+        this.accountRepo = accountRepo;
     }
 
-    public AccountResponse registerUser(RegisterRequest registerRequest) {
+        public AccountResponse registerUser(RegisterRequest req) {
+
+    UserEntity user = new UserEntity();
+    user.setDisplayName(req.getUsername());
+    user.setPremium(false);
+    user.setPremiumTrialUsed(false);
+
+    AccountEntity account = AccountEntity.builder()
+            .username(req.getUsername())
+            .email(req.getEmail())
+            .password(req.getPassword())
+            .role(Role.USER)
+            .user(user)  // set relationship here
+            .build();
+
+    user.setAccount(account); // set both sides of the relationship
+
+    AccountEntity savedAccount = accountRepo.save(account); // cascade saves user too
+
+    return AccountResponse.fromEntity(savedAccount);
+}
+        public AccountResponse loginUser(LoginRequest req) {
+
+                Optional<AccountEntity> optional = accountRepo
+                        .findByUsernameAndPassword(
+                                req.getUsername(),
+                                req.getPassword()
+                        );
+
+                AccountEntity account = optional
+                        .orElseThrow(() ->
+                                new RuntimeException("Invalid credentials"));
+
+                // Check if banned
+                if (account.isBanned()) {
+                        throw new RuntimeException(
+                                "Account is banned. Reason: " +
+                                (account.getBanReason() == null
+                                        ? "No reason provided"
+                                        : account.getBanReason())
+                        );
+                }
+
+                return AccountResponse.fromEntity(account);
         
-        // Map Account request to entity
-        AccountEntity accountEntity = AccountEntity.builder()
-                .username(registerRequest.getUsername())
-                .email(registerRequest.getEmail())
-                .password(registerRequest.getPassword())
-                .role(Role.USER)
-                .build();
+        }
+        public boolean startPremium(Long userId) {
 
-        AccountEntity savedAccount = accountBackendRepository.save(accountEntity);
+                System.out.println("START PREMIUM SERVICE");
+                System.out.println("User ID: " + userId);
 
-        // Map user request to entity
-        UserEntity userEntity = UserEntity.builder()
-                .account(savedAccount)
-                .displayName(registerRequest.getUsername())
-                .premiumTrialUsed(false)
-                .build();
+                UserEntity user = userRepo.findByAccount_AccountId(userId)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
 
-        userBackendRepository.save(userEntity);
+                System.out.println("Found user: " + user.getId());
 
-        // Get the user response
-        UserResponse user = new UserResponse(userEntity.getDisplayName(), null, false);
-        
-        // Send the account response to user
-        return new AccountResponse(
-                savedAccount.getAccountId(),
-                savedAccount.getUsername(),
-                savedAccount.getEmail(),
-                savedAccount.getRole(),
-                user,
-                null
-        );
-    }
+                user.setPremium(true);
 
-    public AccountResponse loginUser(LoginRequest loginRequest) {
+                userRepo.save(user);
 
-        Optional<AccountEntity> loginAccount = accountBackendRepository.findByUsernameAndPassword(loginRequest.getUsername(), loginRequest.getPassword());
+                System.out.println("Premium ENABLED for user: " + userId);
 
-        AccountEntity account = loginAccount.get();
-        UserEntity user = account.getUser();
-        ArtistEntity artist = account.getArtist();
-
-        UserResponse userResponse = null;
-        if (user != null) {
-            userResponse = new UserResponse(
-                user.getDisplayName(),
-                user.getProfilePictureUrl(),
-                user.isPremiumTrialUsed()
-            );
+                return true;
         }
 
-        ArtistResponse artistResponse = null;
-        if (artist != null) {
-            artistResponse = new ArtistResponse(
-                artist.getStageName(),
-                artist.getBio()
-            );
+        public boolean cancelPremium(Long userId) {
+
+                System.out.println("CANCEL PREMIUM SERVICE");
+                System.out.println("User ID: " + userId);
+
+                UserEntity user = userRepo.findByAccount_AccountId(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                System.out.println("Found user: " + user.getId());
+
+                user.setPremium(false);
+
+                userRepo.save(user);
+
+                System.out.println("Premium DISABLED for user: " + userId);
+
+                return true;
         }
 
-        return new AccountResponse(
-            account.getAccountId(),
-            account.getUsername(),
-            account.getEmail(),
-            account.getRole(),
-            userResponse,
-            artistResponse
-        );
-    }
+        public boolean startTrial(Long userId) {
+
+                System.out.println("START PREMIUM SERVICE");
+                System.out.println("User ID: " + userId);
+                
+                UserEntity user = userRepo.findByAccount_AccountId(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                System.out.println("Found user: " + user.getId());
+
+                user.setPremium(true);
+                //Add method to set trial used to true
+                user.setPremiumTrialUsed(true);
+                userRepo.save(user);
+
+                System.out.println("Premium ENABLED for user: " + userId);
+
+                return true;
+        }
 }

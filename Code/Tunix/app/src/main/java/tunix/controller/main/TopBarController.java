@@ -2,33 +2,42 @@ package tunix.controller.main;
 
 import javax.swing.JPanel;
 
-import tunix.event.EventBus;
-import tunix.event.LogoutEvent;
-import tunix.event.SwitchMainScreen;
-import tunix.service.SearchService;
-import tunix.view.main.HomeView;
-import tunix.view.main.TopBarView;
+import tunix.controller.HomeController;
+import tunix.controller.SearchController;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.LogoutEvent;
+import tunix.navigation.events.SwitchCenterScreenEvent;
+import tunix.navigation.events.SwitchProfileScreenEvent;
+import tunix.ui.views.main.TopBarView;
+import tunix.ui.views.profile.UserProfileView;
 
 public class TopBarController {
-    private final SearchService searchService;
+    private final SearchController searchController;
     private final TopBarView topBarView;
     private final EventBus eventBus;
-    private final HomeView homeView;
 
-    public TopBarController(TopBarView topBarView, SearchService searchService, EventBus eventBus, HomeView homeView) {
-        this.topBarView = topBarView;
-        this.searchService = searchService;
+    public TopBarController(SearchController searchController, EventBus eventBus) {
+        this.searchController = searchController;
         this.eventBus = eventBus;
-        this.homeView = homeView;
+        this.topBarView = new TopBarView();
+        this.topBarView.setController(this);
     }
+
+    public JPanel getView() {
+        return topBarView;
+    }
+
     public void onSearch(String query, String searchType) {
-        // Handle search logic using searchService
+        searchController.search(query, searchType);
+        eventBus.publish(new SwitchCenterScreenEvent(SearchController.class));
     }
+
     public void onHomeButtonClicked() {
-        eventBus.publish(new SwitchMainScreen(homeView));
+        eventBus.publish(new SwitchCenterScreenEvent(HomeController.class));
     }
+
     public void onProfileButtonClicked() {
-        eventBus.publish(new SwitchMainScreen(new tunix.view.center.UserProfileView()));
+        eventBus.publish(new SwitchProfileScreenEvent(UserProfileView.class));
     }
 
     public void onLogoutButtonClicked() {

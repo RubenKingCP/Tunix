@@ -1,17 +1,14 @@
 package tunixserver.entities;
 
-
-
-import java.time.LocalDateTime;
-
 import tunixserver.dto.enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +18,7 @@ public class AccountEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "account_id")
     private Long accountId;
 
     private String username;
@@ -29,12 +27,26 @@ public class AccountEntity {
 
     private String password;
 
+    @Column(name = "is_banned")
+    private boolean isBanned;
+
+    @Column(name = "ban_reason")
+    private String banReason;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne(mappedBy = "account")
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private UserEntity user;
 
-    @OneToOne(mappedBy = "account")
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private ArtistEntity artist;
+
+    @OneToMany(
+            mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<AccountWarningEntity> warnings = new ArrayList<>();
 }

@@ -1,0 +1,91 @@
+@startuml CreatePlaylist
+
+title Create Playlist
+
+actor User
+
+participant LibraryView
+participant LibraryController
+participant PlaylistService
+participant PlaylistApi
+participant ApiClient
+participant PlaylistBackendController
+participant PlaylistBackendService
+participant PlaylistBackendRepository
+
+
+activate LibraryView
+User -> LibraryView : clicks "Create Playlist"
+LibraryView -> LibraryView : showPlaylistEditor()
+activate LibraryView
+alt user does not cancel
+User -> LibraryView : inserts playlist info
+opt
+User -> LibraryView : inserts playlist image
+end
+User -> LibraryView : clicks "Submit"
+LibraryView -> LibraryController : checkForDuplicates(playlistId, songId)
+activate LibraryController
+LibraryController -> PlaylistService : checkForDuplicateSong(playlistId, songId)
+activate PlaylistService
+PlaylistService -> PlaylistApi : checkForDuplicateSong(playlistId, songId)
+activate PlaylistApi
+PlaylistApi -> ApiClient : post(playlist/checkForDuplicatePlaylist, playlistId)
+'will need to find an alternative to send both ids with one argument
+activate ApiClient
+ApiClient -> PlaylistBackendController : checkForDuplicateSong(playlistId, songId)
+activate PlaylistBackendController
+PlaylistBackendController -> PlaylistBackendService : checkForDuplicateSong(playlistId, songId)
+activate PlaylistBackendService
+PlaylistBackendService -> PlaylistBackendRepository : checkForDuplicateSong(playlistId, songId)
+activate PlaylistBackendRepository
+PlaylistBackendRepository --> PlaylistBackendService : hasDuplicate
+deactivate PlaylistBackendRepository
+PlaylistBackendService --> PlaylistBackendController : hasDuplicate
+deactivate PlaylistBackendService
+PlaylistBackendController --> ApiClient : hasDuplicate
+deactivate PlaylistBackendController
+ApiClient --> PlaylistApi : hasDuplicate
+deactivate ApiClient
+PlaylistApi --> PlaylistService : hasDuplicate
+deactivate PlaylistApi
+PlaylistService --> LibraryController : hasDuplicate
+deactivate PlaylistService
+LibraryController --> LibraryView : hasDuplicate
+deactivate LibraryController
+alt !hasDuplicate
+LibraryView -> LibraryController : createPlaylist(playlistId)
+activate LibraryController
+LibraryController -> PlaylistService : createPlaylist(playlistId)
+activate PlaylistService
+PlaylistService -> PlaylistApi : createPlaylist(playlistId)
+activate PlaylistApi
+PlaylistApi -> ApiClient : post(playlist/create, playlistId)
+'will need to find an alternative to send both ids with one argument
+activate ApiClient
+ApiClient -> PlaylistBackendController : createPlaylist(playlistId)
+activate PlaylistBackendController
+PlaylistBackendController -> PlaylistBackendService : createPlaylist(playlistId)
+activate PlaylistBackendService
+PlaylistBackendService -> PlaylistBackendRepository : createPlaylist(playlistId)
+activate PlaylistBackendRepository
+PlaylistBackendRepository --> PlaylistBackendService : success
+deactivate PlaylistBackendRepository
+PlaylistBackendService --> PlaylistBackendController : success
+deactivate PlaylistBackendService
+PlaylistBackendController --> ApiClient : success
+deactivate PlaylistBackendController
+ApiClient --> PlaylistApi : success
+deactivate ApiClient
+PlaylistApi --> PlaylistService : success
+deactivate PlaylistApi
+PlaylistService --> LibraryController : success
+deactivate PlaylistService
+LibraryController -> LibraryView : showPlaylistCreatedMessage()
+else hasDuplicate
+LibraryView -> LibraryView : showDuplicatePlaylistFoundError()
+else user presses cancel
+deactivate LibraryView
+end
+
+@enduml

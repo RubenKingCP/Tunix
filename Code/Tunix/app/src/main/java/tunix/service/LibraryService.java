@@ -1,100 +1,156 @@
 package tunix.service;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
-
-import tunix.dto.enums.Role;
-import tunix.model.Album;
-import tunix.model.Artist;
 import tunix.model.ILibraryAsset;
-import tunix.model.Playlist;
-import tunix.model.Song;
-import tunix.model.User;
+import tunix.model.account.Account;
+import tunix.model.account.Artist;
+import tunix.model.musicContent.Album;
 import tunix.service.auth.SessionService;
+import tunix.api.*;
+import tunix.dto.response.ApiResponse;
+import tunix.dto.response.LibraryResponse;
+import tunix.dto.response.PlaylistResponse;
+import tunix.dto.response.SongResponse;
 
 public class LibraryService {
+        private final LibraryApiClient libraryApiClient;
 
+        public LibraryService(LibraryApiClient apiClient) {
+                this.libraryApiClient = apiClient;
+        }
+        
     public List<ILibraryAsset> getLibraryAssets() {
-        User you = (User) SessionService.Instance.getUser();
+        Account you = SessionService.Instance.getAccount();
+        if (you == null) {
+            return new ArrayList<>();
+        }
+        List<ILibraryAsset> assets = new ArrayList<>();
 
-        Artist arcticMonkeys = new Artist(
-                2L,
-                "Arctic Monkeys",
-                "arctic@example.com",
-                Role.ARTIST,
-                "A British rock band known for punchy, melodic songs.",
-                1_250_000
+        ApiResponse<LibraryResponse> response =
+                libraryApiClient.getLibrary(you.getLongId());
+
+        if (response == null || !response.isSuccess() || response.getData() == null) {
+            return assets;
+        }
+
+        // PLAYLISTS
+        List<ILibraryAsset> playlists = response.getData().getPlaylists()
+                .stream()
+                .map(PlaylistResponse::toPlaylist)
+                .map(p -> (ILibraryAsset) p)
+                .toList();
+
+        System.out.println("PLAYLISTS mapped: " + playlists.size());
+        playlists.forEach(p -> System.out.println(" -> " + p.getTitle()));
+
+
+        // ALBUMS
+        // ALBUMS
+        List<ILibraryAsset> albums = response.getData().getAlbums()
+        .stream()
+        .map(a -> (ILibraryAsset) new Album(
+                a.getTitle(),
+                a.getId().intValue(),
+                new Artist(a.getArtistId(), null, null, null, 0, false),
+                new ArrayList<>(), // intentionally empty — songs loaded on demand via AlbumApi.getById
+                a.getReleaseDate() != null ? Date.valueOf(a.getReleaseDate()) : null
+        ))
+        .toList();
+
+        System.out.println("ALBUMS mapped: " + albums.size());
+        albums.forEach(a -> System.out.println(" -> " + a.getTitle()));
+
+
+        // SONGS
+        List<ILibraryAsset> songs = response.getData().getSongs()
+                .stream()
+                .map(SongResponse::toSong)
+                .map(s -> (ILibraryAsset) s)
+                .toList();
+
+        System.out.println("SONGS mapped: " + songs.size());
+        songs.forEach(s -> System.out.println(" -> " + s.getTitle()));
+
+
+        // FINAL ASSETS
+        assets.addAll(playlists);
+        assets.addAll(albums);
+        assets.addAll(songs);
+
+        System.out.println("TOTAL assets before return: " + assets.size());
+        assets.forEach(a ->
+                System.out.println("ASSET -> type=" + a.getType() + ", title=" + a.getTitle())
         );
 
-        Artist tameImpala = new Artist(
-                3L,
-                "Tame Impala",
-                "tame@example.com",
-                Role.ARTIST,
-                "A psychedelic rock project focused on atmospheric soundscapes.",
-                4_800_000
-        );
+        return assets;
+        // /*Artist artist = new Artist(3L,
+//                 "test artist",
+//                 "test@gmail.com",
+//                 null,
+//                 0,
+//                 false);
 
-        Song doIWantToKnow = new Song(
-                "Do I Wanna Know?",
-                101,
-                arcticMonkeys,
-                272,
-                "/music/do-i-wanna-know.mp3",
-                null
-        );
+//         Song doIWantToKnow = new Song(
+//                 "Do I Wanna Know?",
+//                 101L,
+//                 artist,
+//                 272,
+//                 "/music/do-i-wanna-know.mp3",
+//                 null
+//         );
 
-        Song letItHappen = new Song(
-                "Let It Happen",
-                102,
-                tameImpala,
-                467,
-                "/music/let-it-happen.mp3",
-                null
-        );
+//         Song letItHappen = new Song(
+//                 "Let It Happen",
+//                 102L,
+//                 artist,
+//                 467,
+//                 "/music/let-it-happen.mp3",
+//                 null
+//         );
 
-        Song ruMine = new Song(
-                "R U Mine?",
-                103,
-                arcticMonkeys,
-                205,
-                "/music/r-u-mine.mp3",
-                null
-        );
+//         Song ruMine = new Song(
+//                 "R U Mine?",
+//                 103L,
+//                 artist,
+//                 205,
+//                 "/music/r-u-mine.mp3",
+//                 null
+//         );
 
-        Album am = new Album(
-                "AM",
-                201,
-                arcticMonkeys,
-                List.of(doIWantToKnow, ruMine),
-                Date.valueOf("2013-09-09")
-        );
+//         Album am = new Album(
+//                 "AM",
+//                 201,
+//                 artist,
+//                 List.of(doIWantToKnow, ruMine),
+//                 Date.valueOf("2013-09-09")
+//         );
 
-        Album currents = new Album(
-                "Currents",
-                202,
-                tameImpala,
-                List.of(letItHappen),
-                Date.valueOf("2015-07-17")
-        );
+//         Album currents = new Album(
+//                 "Currents",
+//                 202,
+//                 artist,
+//                 List.of(letItHappen),
+//                 Date.valueOf("2015-07-17")
+//         );
 
-        Playlist chillVibes = new Playlist("Chill Vibes", 301, you);
-        chillVibes.addSong(doIWantToKnow);
-        chillVibes.addSong(letItHappen);
+//         Playlist chillVibes = new Playlist("Chill Vibes", 301, you);
+//         chillVibes.addSong(doIWantToKnow);
+//         chillVibes.addSong(letItHappen);
 
-        Playlist morningHits = new Playlist("Morning Hits", 302, you);
-        morningHits.addSong(ruMine);
+//         Playlist morningHits = new Playlist("Morning Hits", 302, you);
+//         morningHits.addSong(ruMine);
 
-        return List.of(
-                chillVibes,
-                morningHits,
-                arcticMonkeys,
-                tameImpala,
-                am,
-                currents,
-                doIWantToKnow,
-                letItHappen,
-                ruMine
-        );
+//         return List.of(
+//                 chillVibes,
+//                 morningHits,
+//                 am,
+//                 artist,
+//                 currents,
+//                 doIWantToKnow,
+//                 letItHappen,
+//                 ruMine
+//         );*/
     }
 }

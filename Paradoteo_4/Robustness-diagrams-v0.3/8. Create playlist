@@ -1,0 +1,40 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Γενικός Χρήστης" as GX
+
+boundary "Βιβλιοθήκη" as B_LIB
+boundary "Οθόνη Playlist Editor" as B_PE
+
+control "Εμφάνιση οθόνης\n<<Playlist Editor>>" as C_DPE
+control "(Προεραιτικά) Άντληση εικόνας\nαπό τα αρχεία του Γενικού Χρήστη" as C_FS
+control "Έλεγχος για συνωνυμία playlist\nμε άλλες playlist του Γενικού Χρήστη" as C_SN
+control "Αποθήκευση νέας playlist\nστη βιβλιοθήκη"  as C_SV
+control "Επιστροφή στη βιβλιοθήκη" as C_CCL #orange
+control "Εμφάνιση popup σφάλματος" as C_ERR #red
+
+entity "Database" as E_DB
+entity "Local File System" as E_FS
+entity "Playlist" as E_PL
+
+GX --> B_LIB : Επιλογή\n"Create New\nPlaylist"
+B_LIB --> C_DPE
+C_DPE --> B_PE
+GX --> B_PE : "Εισαγωγή ονόματος και περιγραφής playlist"
+GX --> B_PE : (Προεραιτικά) Επιλογή εικόνας
+B_PE --> C_FS : (Προεραιτικά)
+C_FS --> E_FS
+C_FS --> C_SN
+B_PE --> C_SN
+C_SN --> E_DB
+C_SN --> C_SV : Δεν υπήρχε συνωνυμία
+C_SN --> E_PL
+GX -[#orange]-> B_PE : <font color="orange">επιλογή Cancel</font>
+B_PE -[#orange]-> C_CCL
+C_CCL -[#orange]-> B_LIB
+C_SN -[#red]-> C_ERR : <font color="red">υπήρχε συνωνυμία</font>
+C_ERR -[#red]-> B_PE
+
+
+@enduml

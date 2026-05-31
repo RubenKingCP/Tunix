@@ -1,5 +1,7 @@
 package tunixserver.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,10 +13,14 @@ import tunixserver.dto.response.AlbumResponse;
 import tunixserver.dto.response.ApiResponse;
 import tunixserver.entities.AlbumEntity;
 import tunixserver.service.AlbumBackendService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
-@RequestMapping("/api/albums")
+@RequestMapping("/albums")
 public class AlbumBackendController {
     private final AlbumBackendService albumBackendService;
     AlbumBackendController(AlbumBackendService albumBackendService) {
@@ -25,7 +31,7 @@ public class AlbumBackendController {
     public ResponseEntity<ApiResponse<AlbumResponse>> uploadAlbum(@RequestBody AlbumRequest albumRequest){
         try {
             AlbumEntity album = albumBackendService.uploadAlbum(albumRequest);
-            return ResponseEntity.ok(new ApiResponse<AlbumResponse>(true, "Album uploaded successfully", AlbumResponse.fromAlbum(album)));
+            return ResponseEntity.ok(new ApiResponse<AlbumResponse>(true, "Album uploaded successfully", AlbumResponse.fromEntity(album)));
         } catch (Exception e) {
             return ResponseEntity.ok(new ApiResponse<AlbumResponse>(false, "Failed to upload album: " + e.getMessage(), null));
         }
@@ -35,9 +41,30 @@ public class AlbumBackendController {
     public ResponseEntity<ApiResponse<AlbumResponse>> fetchAlbum(@RequestBody AlbumRequest albumRequest){
         try {
             AlbumEntity album = albumBackendService.fetchAlbum(albumRequest);
-            return ResponseEntity.ok(new ApiResponse<AlbumResponse>(true, "Album fetched successfully", AlbumResponse.fromAlbum(album)));
+            return ResponseEntity.ok(new ApiResponse<AlbumResponse>(true, "Album fetched successfully", AlbumResponse.fromEntity(album)));
         } catch (Exception e) {
             return ResponseEntity.ok(new ApiResponse<AlbumResponse>(false, "Failed to fetch album: " + e.getMessage(), null));
         }
     }
+
+    @GetMapping("/name")
+    public ResponseEntity<ApiResponse<List<AlbumResponse>>> getSongsByName(
+            @RequestParam String query
+    ) {
+
+        List<AlbumResponse> albums = albumBackendService.searchByName(query);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Albums found", albums)
+        );
+    }
+
+    @GetMapping("/{albumId}")
+    public ResponseEntity<ApiResponse<AlbumResponse>> getAlbumById(@PathVariable Long albumId) {
+        AlbumResponse response = albumBackendService.getAlbumById(albumId);
+        return ResponseEntity.ok(
+            new ApiResponse<>(true, "Album found! ", response)
+        );
+    }
+    
 }

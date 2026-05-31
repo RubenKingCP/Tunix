@@ -1,0 +1,36 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Βασικός Χρήστης" as GX
+
+boundary "Οθόνη Premium" as B_PREM
+boundary "Οθόνη επιτυχίας" as B_SUCCESS
+boundary "Οθόνη αποτυχίας" as B_FAIL #red
+
+control "Εκτέλεση Πληρωμής" as C_PAY
+control "Ενημέρωση Βάση για την αλλαγή τύπου χρήστη" as C_UPDB
+control "Εμφάνιση οθόνης επιτυχίας" as C_SUCCESS
+control "Εμφάνιση οθόνης αποτυχίας" as C_FAIL #red
+control "Επιστροφή στην οθόνη Premium" as C_RETURN #red
+
+entity "Database" as E_DB
+entity "User" as E_USR
+
+usecase "Πληρωμή Μέσω\nΤραπεζικού Λογαριασμού" as UC_PAY
+
+GX --> B_PREM : "Επιλογή <<Αγορά Premium>>"
+B_PREM --> C_PAY
+C_PAY --> UC_PAY
+C_PAY --> C_UPDB
+C_UPDB --> E_USR
+C_UPDB --> E_DB
+C_UPDB --> C_SUCCESS
+C_SUCCESS --> B_SUCCESS
+B_SUCCESS --> GX
+C_PAY -[#red]-> C_FAIL : <font color="red">Η πληρωμή απέτυχε</font>
+C_FAIL -[#red]-> B_FAIL
+B_FAIL -[#red]-> GX
+B_FAIL -[#red]-> C_RETURN
+C_RETURN -[#red]-> B_PREM
+@enduml

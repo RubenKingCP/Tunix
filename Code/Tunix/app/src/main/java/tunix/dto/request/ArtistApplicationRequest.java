@@ -1,22 +1,19 @@
 package tunix.dto.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArtistApplicationRequest {
 
-    private String name;
-    private String message;
+    private Long userId;
+    private String stageName;
+    private String reason;
 
-    public ArtistApplicationRequest() {}
 
-    public ArtistApplicationRequest(String name, String message) {
-        this.name = name;
-        this.message = message;
-    }
-
-    public String getStatus() {
-        return null;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-} 
+}

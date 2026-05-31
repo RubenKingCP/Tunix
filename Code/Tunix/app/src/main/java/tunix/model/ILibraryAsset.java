@@ -1,33 +1,41 @@
 package tunix.model;
 
 import java.awt.Color;
-import tunix.event.EventBus;
-import tunix.service.auth.SessionService;
+import java.util.List;
+
+import tunix.dto.enums.LibraryAssetType;
+import tunix.model.account.Account;
+import tunix.model.musicContent.Song;
 
 public interface ILibraryAsset {
-    public EventBus eventBus = SessionService.Instance.getEventBus();
-    
+
     String getTitle();
 
     int getId();
 
-    String getType();
+    LibraryAssetType getType();
 
     String getSubtitle();
+
+    Account getCreator();
+
+    /**
+     * Songs displayed inside MusicView table.
+     */
+    List<Song> getDisplaySongs();
 
     default boolean isCircularAvatar() {
         return false;
     }
 
     default Color getDisplayColor() {
+
         int hash = Math.abs(getTitle().hashCode());
+
         int r = 40 + (hash % 80);
         int g = 50 + ((hash / 7) % 80);
         int b = 70 + ((hash / 11) % 80);
-        return new Color(r, g, b);
-    }
 
-    default void onClick() {
-        System.out.println("Opened " + getType() + ": " + getTitle());
+        return new Color(r, g, b);
     }
 }

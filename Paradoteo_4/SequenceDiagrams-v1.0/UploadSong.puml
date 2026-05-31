@@ -1,0 +1,101 @@
+@startuml UplaodSong
+
+title Upload Song
+
+actor Artist
+
+participant ArtistProfileView
+participant ArtistProfileController
+participant UploadSongView
+participant UploadSongController
+participant FilesystemService
+participant SongService
+participant SongApi
+participant ApiClient
+participant SongBackendController
+participant SongBackendService
+participant SongBackendRepository
+
+
+activate ArtistProfileView
+Artist -> ArtistProfileView : artist clicks on "Upload Song"
+ArtistProfileView -> ArtistProfileController : openUploadSongScreen()
+activate ArtistProfileController
+create UploadSongController
+ArtistProfileController -> UploadSongController : new()
+activate UploadSongController
+create UploadSongView
+UploadSongController -> UploadSongView : new()
+activate UploadSongView
+Artist -> UploadSongView : clicks on Select File
+UploadSongView -> UploadSongController : selectFile()
+UploadSongController -> FilesystemService : openFilePicker()
+
+activate FilesystemService
+FilesystemService --> UploadSongController : return music file
+deactivate FilesystemService
+UploadSongController -> UploadSongView : showSelectedFile(musicFile)
+Artist -> UploadSongView : inserts information about the song
+Artist -> UploadSongView : clicks "Upload"
+UploadSongView -> UploadSongController : uploadSong(song)
+UploadSongController -> SongService : checkForDuplicateName(songName)
+activate SongService
+SongService -> SongApi : checkForDuplicateName(songName)
+activate SongApi
+SongApi -> ApiClient : post(song/checkForDuplicateName, songName)
+'will need to find an alternative to send both ids with one argument
+activate ApiClient
+ApiClient -> SongBackendController : checkForDuplicateName(songName)
+activate SongBackendController
+SongBackendController -> SongBackendService : checkForDuplicateName(songName)
+activate SongBackendService
+SongBackendService -> SongBackendRepository : checkForDuplicateName(songName)
+activate SongBackendRepository
+SongBackendRepository --> SongBackendService : hasDuplicate
+deactivate SongBackendRepository
+SongBackendService --> SongBackendController : hasDuplicate
+deactivate SongBackendService
+SongBackendController --> ApiClient : hasDuplicate
+deactivate SongBackendController
+ApiClient --> SongApi : hasDuplicate
+deactivate ApiClient
+SongApi --> SongService : hasDuplicate
+deactivate SongApi
+SongService --> UploadSongController : hasDuplicate
+deactivate SongService
+alt !hasDuplicate
+UploadSongView -> UploadSongController : uploadSong(song)
+UploadSongController -> SongService : uploadSong(song)
+activate SongService
+SongService -> SongApi : uploadSong(song)
+activate SongApi
+SongApi -> ApiClient : post(song/upload, song)
+'will need to find an alternative to send both ids with one argument
+activate ApiClient
+ApiClient -> SongBackendController : uploadSong(song)
+activate SongBackendController
+SongBackendController -> SongBackendService : uploadSong(song)
+activate SongBackendService
+SongBackendService -> SongBackendRepository : uploadSong(song)
+activate SongBackendRepository
+SongBackendRepository --> SongBackendService : success
+deactivate SongBackendRepository
+SongBackendService --> SongBackendController : success
+deactivate SongBackendService
+SongBackendController --> ApiClient : success
+deactivate SongBackendController
+ApiClient --> SongApi : success
+deactivate ApiClient
+SongApi --> SongService : success
+deactivate SongApi
+SongService --> UploadSongController : success
+deactivate SongService
+else hasDuplicate
+UploadSongController -> UploadSongView : showErrorMessage("Another song has the same name")
+end
+UploadSongView -> UploadSongController : close()
+deactivate UploadSongView
+UploadSongController -> ArtistProfileController : close()
+deactivate UploadSongController
+
+@enduml

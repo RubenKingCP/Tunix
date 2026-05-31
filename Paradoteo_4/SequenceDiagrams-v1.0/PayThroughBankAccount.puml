@@ -1,0 +1,58 @@
+@startuml PaymentThroughBankAccount
+
+title Payment Through Bank Account 
+
+actor User
+
+participant MainPanel
+participant PaymentView
+participant PaymentController
+participant PaymentService
+participant BankApi
+participant UserApi
+participant ApiClient
+participant UserBackendController
+participant UserBackendService
+participant UserBackendRepository
+
+
+participant EventBus
+
+activate PaymentService
+PaymentService -> EventBus : publish SwitchMainController, PaymentController
+deactivate PaymentService
+activate EventBus
+EventBus -> MainPanel : switchMainController(PaymentController)
+deactivate EventBus
+activate MainPanel
+create PaymentController
+MainPanel -->> PaymentController : new()
+deactivate MainPanel
+activate PaymentController
+create PaymentView
+PaymentController -->> PaymentView : new()
+deactivate PaymentController
+activate PaymentView
+
+User -> PaymentView : inputs bank credentials
+PaymentView -> PaymentView : validateCredentials()
+alt Bank Credetials are valid
+PaymentView -> PaymentController : makePayment(credentials)
+activate PaymentController
+PaymentController -> PaymentService : makePayment(credentials)
+activate PaymentService
+PaymentService -> BankApi : makePayment(credentials)
+activate BankApi
+'we are treating the bank api as a black box
+BankApi --> PaymentService : return payment success
+deactivate BankApi
+PaymentService --> PaymentController : return payment success
+deactivate PaymentService
+PaymentController -> PaymentView: showPopUp("Payment Success")
+deactivate PaymentController
+
+else Bank credentials Invalid
+PaymentView -> PaymentView : showPopUp("Invalid credentials")
+end
+
+@enduml

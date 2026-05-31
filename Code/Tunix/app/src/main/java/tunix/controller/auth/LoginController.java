@@ -1,32 +1,41 @@
 package tunix.controller.auth;
 
 import tunix.dto.request.LoginRequest;
-import tunix.event.EventBus;
-import tunix.event.GoToRegisterButtonClicked;
+import tunix.navigation.events.EventBus;
+import tunix.navigation.events.GoToRegisterButtonClicked;
 import tunix.service.auth.LoginService;
 import tunix.service.auth.SessionService;
-import tunix.view.auth.LoginView;
+import tunix.ui.views.auth.LoginView;
 
 public class LoginController {
+
     private final LoginView loginView;
     private final LoginService loginService;
     private final EventBus eventBus;
-    private final SessionService sessionService;
 
-    public LoginController(LoginView loginView, LoginService loginService, SessionService sessionService, EventBus eventBus){
-        this.loginView = loginView;
+    public LoginController(LoginService loginService, SessionService sessionService, EventBus eventBus) {
         this.loginService = loginService;
         this.eventBus = eventBus;
-        this.sessionService = sessionService;
+        this.loginView = new LoginView();
+        this.loginView.setController(this);
     }
 
-    public void onLogin(String username, String password){
+    public LoginView getView() {
+        return loginView;
+    }
+
+    public void onLogin(String username, String password) {
+        loginView.clearMessage();
         LoginRequest loginRequest = new LoginRequest(username, password);
-        loginService.login(loginRequest);
+        loginService.login(loginRequest, errorMessage -> {
+            loginView.showError(errorMessage != null && !errorMessage.isBlank()
+                    ? errorMessage
+                    : "Invalid username or password.");
+        });
     }
 
     public void onGoToRegisterButtonClicked() {
+        loginView.clearMessage();
         eventBus.publish(new GoToRegisterButtonClicked());
     }
 }
- 

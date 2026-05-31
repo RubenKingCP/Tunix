@@ -1,0 +1,55 @@
+@startuml TryPremium
+
+title Try Premium
+
+actor User
+
+participant UserProfileView
+participant UserProfileController
+participant UserService
+participant UserApi
+participant ApiClient
+participant UserBackendController
+participant UserBackendService
+participant UserBackendRepository
+
+
+activate UserProfileView
+User -> UserProfileView : clicks on "Try Premium"
+UserProfileView -> UserProfileController : checkIfUserHasTriedPremium()
+activate UserProfileController
+UserProfileController --> UserProfileView : hasTriedPremium
+deactivate UserProfileController
+alt !hasTriedPremium
+UserProfileView -> UserProfileController : tryPremium(userId)
+activate UserProfileController
+UserProfileController -> UserService : tryPremium(userId)
+activate UserService
+UserService -> UserApi : tryPremium(userId)
+activate UserApi
+UserApi -> ApiClient : post(user/tryPremium,userId)
+activate ApiClient
+ApiClient -> UserBackendController : tryPremium(userId)
+activate UserBackendController
+UserBackendController -> UserBackendService : tryPremium(userId)
+activate UserBackendService
+UserBackendService -> UserBackendRepository : tryPremium(userId)
+activate UserBackendRepository
+UserBackendRepository --> UserBackendService : return success
+deactivate UserBackendRepository
+UserBackendService -> UserBackendController : return success
+deactivate UserBackendService
+UserBackendController --> ApiClient : return success
+deactivate UserBackendController
+ApiClient --> UserApi : return success
+deactivate ApiClient
+UserApi --> UserService : return success
+deactivate UserApi
+UserService --> UserProfileController : return success
+deactivate UserService
+UserProfileController -> UserProfileView : showSuccessMessage("Trial started successfully")
+else hasTriedPremium
+UserProfileView -> UserProfileView : showErrorMessage("You have already tried premium")
+end
+
+@enduml

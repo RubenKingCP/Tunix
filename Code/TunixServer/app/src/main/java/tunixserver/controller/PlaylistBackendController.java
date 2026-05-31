@@ -1,26 +1,41 @@
 package tunixserver.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tunixserver.dto.request.PlaylistCreateRequest;
 import tunixserver.dto.response.ApiResponse;
+import tunixserver.dto.response.PlaylistResponse;
+import tunixserver.entities.PlaylistEntity;
+import tunixserver.repository.PlaylistBackendRepository;
 import tunixserver.service.PlaylistBackendService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 
 @RestController
 @RequestMapping("/playlists")
 public class PlaylistBackendController {
+    private final PlaylistBackendRepository playlistBackendRepository;
     private final PlaylistBackendService playlistBackendService;
 
-    public PlaylistBackendController(PlaylistBackendService playlistBackendService) {
+    public PlaylistBackendController(PlaylistBackendService playlistBackendService, PlaylistBackendRepository playlistBackendRepository) {
         this.playlistBackendService = playlistBackendService;
+        this.playlistBackendRepository = playlistBackendRepository;
     }
 
     @PostMapping("/{playlistId}/add/{songId}")
-    public ResponseEntity<ApiResponse<Void>> addSongToPlaylist(int playlistId, int songId) {
+    public ResponseEntity<ApiResponse<Void>> addSongToPlaylist(@PathVariable Long playlistId, @PathVariable Long songId) {
         if (playlistBackendService.addSongToPlaylist(playlistId, songId)) {
             // Return a success response (e.g., HTTP 200 OK)
             return ResponseEntity.ok(ApiResponse.success());
@@ -31,12 +46,99 @@ public class PlaylistBackendController {
                 ApiResponse.error("Song already exists")
             );
         }
-    } 
-
-    @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<Void>> createPlaylist(PlaylistCreateRequest playlistCreateRequest) {
-        playlistBackendService.createPlaylist(playlistCreateRequest);
-        return null;
     }
 
+    @DeleteMapping("/{playlistId}/remove/{songId}")
+    public ResponseEntity<ApiResponse<Void>> removeSongFromPlaylist(
+            @PathVariable Long playlistId,
+            @PathVariable Long songId
+    ) {
+
+        boolean removed =
+                playlistBackendService.removeSongFromPlaylist(
+                        playlistId,
+                        songId
+                );
+
+        if (!removed) {
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(
+                            false,
+                            "Song was not in playlist",
+                            null
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Song removed successfully",
+                        null
+                )
+        );
+    }
+
+
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<PlaylistResponse>> createPlaylist(
+            @RequestBody PlaylistCreateRequest playlistCreateRequest) {
+
+        try {
+            System.out.println("PlaylistBackendController: Got request\nPlaylistBackendController Request: "
+                    + playlistCreateRequest.getTitle());
+
+            PlaylistEntity playlist = playlistBackendService.createPlaylist(playlistCreateRequest);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            true,
+                            "Playlist created successfully",
+                            PlaylistResponse.fromEntity(playlist)
+                    )
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            false,
+                            "Failed to create playlist: " + e.getMessage(),
+                            null
+                    )
+            );
+        }
+    }
+
+    @GetMapping("/name")
+    public ResponseEntity<ApiResponse<List<PlaylistResponse>>> getPlaylistsByName(
+        @RequestParam String query
+    ) {
+        System.out.println("PlaylistBackendController: Got request query: " + query);
+        List<PlaylistResponse> playlists = playlistBackendService.searchByName(query);
+
+        return ResponseEntity.ok(
+            new ApiResponse<>(true, "Playlists Found!", playlists)
+        );
+    }
+    
+    @GetMapping("/{playlistId}")
+    public ResponseEntity<ApiResponse<PlaylistResponse>> getMethodName(@PathVariable Long playlistId) {
+        try {
+                PlaylistResponse response = playlistBackendService.getPlaylist(playlistId);
+                
+                return ResponseEntity.ok(
+                    new ApiResponse<>(
+                        true,
+                        "Playlist Fetched successfully",
+                        response)
+                );
+        } catch (Exception e) {
+                // TODO: handle exception
+                return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Playlist not found", null)
+                );
+        }
+    }
 }
+    
+

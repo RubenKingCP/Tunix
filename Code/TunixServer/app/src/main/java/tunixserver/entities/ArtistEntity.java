@@ -3,9 +3,11 @@ package tunixserver.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -13,21 +15,23 @@ import lombok.*;
 public class ArtistEntity {
 
     @Id
-    private Long artistId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "artist_id")
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
     private AccountEntity account;
 
-    private String stageName;
+    @Column(nullable = false)
+    private String displayName;
 
-    @Column(length = 1000)
-    private String bio;
+    @Column(columnDefinition = "TEXT")
+    private String biography;
 
-    private String profilePictureUrl;
-
-    private int monthlyListeners;
+    private int followersCount;
 
     private boolean verified;
+
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SongEntity> songs = new ArrayList<>();  // ← was @ManyToMany with non-existent join table
 }

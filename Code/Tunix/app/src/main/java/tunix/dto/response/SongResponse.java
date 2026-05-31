@@ -1,20 +1,48 @@
 package tunix.dto.response;
 
-import tunix.model.Artist;
-import tunix.model.Song;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import tunix.model.account.Artist;
+import tunix.model.musicContent.Song;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class SongResponse {
-    public int songId;
-    public String title;
-    public Artist artist; // nested DTO for artist
-    public int duration;
-    public String filePathUrl;
-    public String coverImageUrl;
 
-    // empty constructor for Jackson
-    public SongResponse() {}
+    private Long id;
+
+    private String title;
+
+    private Long artistId;
+
+    private String artistName;
+
+    private int duration;
+
+    private String filePathUrl;
+
+    private String coverImageUrl;
 
     public Song toSong() {
-        return new Song(title, songId, artist, duration, filePathUrl, coverImageUrl);
+
+        Artist artist = new Artist(
+                artistId,
+                artistName,
+                null,
+                null,
+                0,
+                false
+        );
+
+        return new Song(
+                title,
+                id,
+                artist,
+                duration,
+                filePathUrl,
+                coverImageUrl
+        );
     }
 }

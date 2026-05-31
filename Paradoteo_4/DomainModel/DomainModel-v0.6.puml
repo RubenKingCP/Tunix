@@ -1,0 +1,381 @@
+@startuml Tunix
+
+!theme mars
+skinparam linetype ortho
+left to right direction
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam ranksep 80
+skinparam nodesep 50
+
+' =====================================================
+' LAYERS
+' =====================================================
+
+package "Frontend" as V {
+
+    folder "Views" {
+
+        class AppWindow
+        class AuthPanel
+        class MainPanel
+        class ProfilePanel
+        class AdminPanel
+
+        class LoginView
+        class RegisterView
+
+        class MusicPlayerView
+        class TopBarView
+        class LibraryView
+        abstract class CenterPanel
+
+        class LibraryMusicView
+
+        class MusicView
+        class HomeView
+        class SearchView
+        class ArtistView
+        class ILibraryAssetItem
+
+        class AdminView
+        class PaymentView
+        class UploadSongView
+
+        class UserProfileView
+        class ArtistProfileView
+        class AdminProfileView
+    }
+
+    folder "Controllers" {
+        class MusicController
+        class LoginController
+        class RegisterController
+
+        
+        class TopBarController
+        class LibraryController
+
+        class HomeController
+        class SearchController
+        class ArtistController
+
+        class AdminController
+
+        class UserProfileController
+        class ArtistProfileController
+        class AdminProfileController
+
+        class PaymentController
+        class UploadSongController
+    }
+    
+
+    folder "Services" {
+        class AdminService
+        class AlbumService
+        class ArtistService
+        class ArtistRequestService
+        class FollowService
+        class LoginService
+        class RegisterService
+        class PaymentService
+        class SearchService
+        class MusicPlayerService
+        class LibraryService
+        class PlaylistService
+        class SongService
+        class UserService
+    }
+
+    folder "Api" {
+        class AdminApiClient
+        class AlbumApiClient
+        class ArtistApiClient
+        class ArtistRequestApiClient
+        class LoginApiClient
+        class LibraryApiClient
+        class PaymentApiClient
+        class RegisterApiClient
+        class PlaylistApiClient
+        class SongApiClient
+        class UserApiClient
+        class ApiClient
+
+        ApiClient *-- ArtistRequestApiClient
+        ApiClient *-- LoginApiClient
+        ApiClient *-- RegisterApiClient
+        ApiClient *-- PlaylistApiClient
+        ApiClient *-- SongApiClient
+        ApiClient *-- LibraryApiClient
+    }
+
+
+
+    folder "Models" {
+
+        abstract class Account
+        class User
+        class Artist
+        class Admin
+
+        class Library
+
+        interface ILibraryAsset
+        class Album
+        class Playlist
+        class Song
+        class AlbumItem
+
+        class ArtistRequest
+
+        class ListeningHistory
+        class ListeningHistoryItem
+
+        class ArtistRequest
+
+
+        class AppContext
+
+        Artist *-- Song
+        Artist *-- Album
+
+        Account <|-- User
+        Account <|-- Artist
+        Account <|-- Admin
+
+        User *-- Library
+        Library -- ILibraryAsset
+
+        Album *-- AlbumItem
+        Song *-- AlbumItem
+
+        ListeningHistory *-- ListeningHistoryItem
+        ListeningHistoryItem "1" --o "1" Song
+
+        Artist ..|> ILibraryAsset
+    }
+
+    package "DTO" {
+        folder "Request" {
+            class AddSongRequest
+            class ApproveArtistRequest
+            class AristRequest
+            class LoginRequest
+            class RegisterRequest
+            class PlaylistCreateRequest
+            class SongRequest
+        }
+
+        folder "Response" {
+            class AccountResponse
+            class ApiResponse
+            class ArtistRequestResponse
+            class ArtistResponse
+            class PlaylistResponse
+            class SongResponse
+            class UserResponse
+        }
+    }
+
+    folder "Events" {
+        class EventBus
+        class GoToLoginEvent
+        class GoToRegisterEvent
+        class LoginSuccessEvent
+        class LogoutEvent
+        class OpenSongUploadViewEvent
+        class RegisterSuccessfulEvent
+        class SongUploadedEvent
+        class SwitchMainScreenEvent
+    }
+}
+
+' =====================================================
+' INHERITANCE / MODEL STRUCTURE
+' =====================================================
+    ILibraryAsset <|.. Album
+    ILibraryAsset <|.. Song
+    ILibraryAsset <|.. Playlist
+
+    CenterPanel <|-- MusicView
+    CenterPanel <|-- HomeView
+    CenterPanel <|-- SearchView
+    CenterPanel <|-- ArtistView
+
+' =====================================================
+' VIEW → CONTROLLER BINDINGS
+' =====================================================
+
+    LoginView -- LoginController
+    RegisterView -- RegisterController
+
+    MusicPlayerView -- MusicController
+    TopBarView -- TopBarController
+    LibraryView -- LibraryController
+
+    HomeView -- HomeController
+    SearchView -- SearchController
+    ArtistView -- ArtistController
+
+    AdminView -- AdminController
+
+    UserProfileView -- UserProfileController
+    ArtistProfileView -- ArtistProfileController
+    AdminProfileView -- AdminProfileController
+
+
+
+' =====================================================
+' VIEW COMPOSITION
+' =====================================================
+    AppWindow *-- AuthPanel
+    AppWindow *-- MainPanel
+    AppWindow *-- ProfilePanel
+    AppWindow *-- AdminPanel
+
+    AuthPanel *-- LoginView
+    AuthPanel *-- RegisterView
+
+    MainPanel *-- MusicPlayerView
+    MainPanel *-- TopBarView
+    MainPanel *-- LibraryView
+    MainPanel *-- CenterPanel
+
+    LibraryView *-- LibraryMusicView
+    MusicView *-- ILibraryAssetItem
+    AdminPanel *-- AdminArtistAccountApplicationView
+
+    AdminPanel *-- AdminView
+    AdminArtistAccountApplicationView *-- AdminArtistAccountApplicationDetails
+    AdminView *-- AdminDashboardView
+    ProfilePanel *-- UserProfileView
+    ProfilePanel *-- ArtistProfileView
+    ProfilePanel *-- AdminProfileView
+
+' =====================================================
+' CONTROLLER → SERVICE
+' =====================================================
+
+LoginController -- LoginService
+RegisterController -- RegisterService
+MusicController -- MusicPlayerService
+
+' ==============================
+' Service -> Api
+' ===========================
+PlaylistService -- PlaylistApiClient
+ArtistRequestService -- ArtistRequestApiClient
+LibraryService -- LibraryApiClient
+LoginService -- LoginApiClient
+RegisterService -- RegisterApiClient
+SongService -- SongApiClient
+
+package "Backend" {
+
+    folder "BackendController" {
+        class AccountBackendController
+        class AdminBackendController
+        class AlbumBackendController
+        class ArtistBackendController
+        class ArtistRequestBackendController
+        class PlaylistBackendController
+        class SongBackendController
+    }
+
+    folder "BackendService" {
+        class AdminBackendService
+        class AlbumBackendService
+        class ArtistBackendService
+        class ArtistRequestBackendService
+        class LibraryBackendService
+        class PlaylistBackendService
+        class SongBackendService
+        class UserBackendService
+    }
+
+    folder "Backend Repository" {
+        class AccountBackendRepository
+        class AccoutnWarningBackendRepository
+        class AdminBackendRepository
+        class ArtistBackendRepository
+        class ArtistRequestBackendRepository
+        class LibraryBackendRepository
+        class UserBackendRepository
+        class SongBackendRepository
+        class PlaylistBackendRepository
+    }
+
+    folder "DTO" as backend{
+        folder "Requests" {
+            class AlbumRequestB
+            class BanRequestB
+            class LoginRequestB
+            class RegisterRequestB
+            class SongRequestB
+            class PlaylistRequestB
+            class PlaylistCreateRequestB
+        }
+
+        folder "Responses" {
+            class AccountResponse
+            class AlbumResponse
+            class ApiResponse
+            class ArtistRequestResponse
+            class ArtistResponse
+            class LibraryResponse
+            class PlaylistResponse
+            class RegisterResponse
+            class SongResponse
+            class UserResponse
+        }
+    }
+
+    folder "Entities" {
+            class AccountEntity
+            class AccountWarningEntity
+            class AdminEntity
+            class AlbumEntity
+            class ArtistEntity
+            class AristRequestEntity
+            class LibraryEntity
+            class LibraryAlbumEntity
+            class LibraryArtistEntity
+            class LibraryPlaylistEntity
+            class LibraryArtistEntity
+            class PlaylistEntity
+            class SongEntity
+            class UserEntity
+        }
+
+    '===========================
+    ' BackendController - Service
+    '===================
+        AlbumBackendController -- AlbumBackendService
+        ArtistRequestBackendController -- ArtistRequestBackendService
+        PlaylistBackendController -- PlaylistBackendService
+        SongBackendController -- SongBackendService
+        UserBackendController -- UserBackendService
+
+    '==================
+    'Service - Repostiroy
+        ArtistRequestBackendService -- ArtistRequestBackendRepository
+        PlaylistBackendService -- SongBackendRepository
+        PlaylistBackendService -- PlaylistBackendRepository
+        SongBackendService -- SongBackendRepository
+        UserBackendService -- AccountBackendRepository
+
+}
+
+
+'===================
+'Front to back
+'===================
+
+ApiClient -- UserBackendController
+ApiClient -- AlbumBackendController
+ApiClient -- PlaylistBackendController
+ApiClient -- ArtistRequestBackendController
+ApiClient -- SongBackendController
+@enduml

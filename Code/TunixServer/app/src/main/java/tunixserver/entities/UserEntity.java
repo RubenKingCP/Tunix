@@ -1,13 +1,10 @@
 package tunixserver.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -15,16 +12,20 @@ import lombok.NoArgsConstructor;
 public class UserEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
     private AccountEntity account;
 
     private String displayName;
 
     private String profilePictureUrl;
 
+    private boolean premium;
+
     private boolean premiumTrialUsed;
+
+    private int downloadedSongsCount;
 }

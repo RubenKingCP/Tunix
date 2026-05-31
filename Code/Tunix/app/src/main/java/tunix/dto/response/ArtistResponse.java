@@ -1,16 +1,18 @@
 package tunix.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ArtistResponse {
-    private String stageName;
-    private String bio;
 
-    public ArtistResponse(String stageName, String bio) {
-        this.stageName = stageName;
-        this.bio = bio;
-    }
+    private Long id;
+    private Long accountId;
+    private String displayName;
+    private String biography;
+    private int followersCount;
+    private boolean verified;
 }

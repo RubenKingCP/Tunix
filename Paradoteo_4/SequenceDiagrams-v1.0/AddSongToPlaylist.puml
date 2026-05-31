@@ -1,0 +1,88 @@
+@startuml AddSongToPlaylist
+
+title Add Song To Playlist
+
+actor User
+
+participant MusicView
+participant MusicController
+participant MusicView
+participant MusicController
+participant PlaylistService
+participant PlaylistApi
+participant ApiClient
+participant PlaylistBackendController
+participant PlaylistBackendService
+participant PlaylistBackendRepository
+
+
+participant EventBus
+
+ref over MusicView, MusicController
+SearchSong
+end ref
+activate MusicView
+User -> MusicView : click on three dots next to song
+MusicView -> MusicView : showSongContextMenu()
+activate MusicView
+User -> MusicView : click on "Add to Playlist"
+MusicView -> MusicView : showPlaylistSelection()
+activate MusicView
+User -> MusicView : select playlist
+MusicView -> MusicController : checkForDuplicates(playlistId, songId)
+activate MusicController
+MusicController -> PlaylistService : checkForDuplicateSong(playlistId, songId)
+activate PlaylistService
+PlaylistService -> PlaylistApi : checkForDuplicateSong(playlistId, songId)
+activate PlaylistApi
+PlaylistApi -> ApiClient : post(playlist/checkForDuplicate, playlistId, songId)
+'will need to find an alternative to send both ids with one argument
+activate ApiClient
+ApiClient -> PlaylistBackendController : checkForDuplicateSong(playlistId, songId)
+activate PlaylistBackendController
+PlaylistBackendController -> PlaylistBackendService : checkForDuplicateSong(playlistId, songId)
+activate PlaylistBackendService
+PlaylistBackendService -> PlaylistBackendRepository : checkForDuplicateSong(playlistId, songId)
+activate PlaylistBackendRepository
+PlaylistBackendRepository --> PlaylistBackendService : hasDuplicate
+deactivate PlaylistBackendRepository
+PlaylistBackendService --> PlaylistBackendController : hasDuplicate
+deactivate PlaylistBackendService
+PlaylistBackendController --> ApiClient : hasDuplicate
+deactivate PlaylistBackendController
+ApiClient --> PlaylistApi : hasDuplicate
+deactivate ApiClient
+PlaylistApi --> PlaylistService : hasDuplicate
+deactivate PlaylistApi
+PlaylistService --> MusicController : hasDuplicate
+deactivate PlaylistService
+alt !hasDuplicate
+MusicController -> PlaylistService : addToPlaylist(playlistId, songId)
+activate PlaylistService
+PlaylistService -> PlaylistApi : addToPlaylist(playlistId, songId)
+activate PlaylistApi
+PlaylistApi -> ApiClient : post(playlist/addToPlaylist, playlistId, songId)
+'will need to find an alternative to send both ids with one argument
+activate ApiClient
+ApiClient -> PlaylistBackendController : addToPlaylist(playlistId, songId)
+activate PlaylistBackendController
+PlaylistBackendController -> PlaylistBackendService : addToPlaylist(playlistId, songId)
+activate PlaylistBackendService
+PlaylistBackendService -> PlaylistBackendRepository : addToPlaylist(playlistId, songId)
+activate PlaylistBackendRepository
+PlaylistBackendRepository --> PlaylistBackendService : updated playlist
+deactivate PlaylistBackendRepository
+PlaylistBackendService --> PlaylistBackendController : updated playlist
+deactivate PlaylistBackendService
+PlaylistBackendController --> ApiClient : updated playlist
+deactivate PlaylistBackendController
+ApiClient --> PlaylistApi : updated playlist
+deactivate ApiClient
+PlaylistApi --> PlaylistService : updated playlist
+deactivate PlaylistApi
+
+else hasDuplicate
+MusicController -> MusicView : showDuplicateExistsPopUp()
+end
+
+@enduml

@@ -1,0 +1,47 @@
+@startuml CancelPremium
+
+title Cancel Premium
+
+actor User
+
+participant UserProfileView
+participant UserProfileController
+participant UserService
+participant UserApi
+participant ApiClient
+participant UserBackendController
+participant UserBackendService
+participant UserBackendRepository
+
+
+activate UserProfileView
+User -> UserProfileView : clicks on "Cancel Premium"
+UserProfileView -> UserProfileController : updatePremiumStatus(userId,false)
+activate UserProfileController
+UserProfileController -> UserService : updatePremiumStatus(userId,false)
+activate UserService
+UserService -> UserApi : updatePremiumStatus(userId,false)
+activate UserApi
+UserApi -> ApiClient : post(user/updatePremiumStatus,userId,false)
+activate ApiClient
+ApiClient -> UserBackendController : updatePremiumStatus(userId,false)
+activate UserBackendController
+UserBackendController -> UserBackendService : updatePremiumStatus(userId,false)
+activate UserBackendService
+UserBackendService -> UserBackendRepository : updatePremiumStatus(userId,false)
+activate UserBackendRepository
+UserBackendRepository --> UserBackendService : return success
+deactivate UserBackendRepository
+UserBackendService -> UserBackendController : return success
+deactivate UserBackendService
+UserBackendController --> ApiClient : return success
+deactivate UserBackendController
+ApiClient --> UserApi : return success
+deactivate ApiClient
+UserApi --> UserService : return success
+deactivate UserApi
+UserService --> UserProfileController : return success
+deactivate UserService
+UserProfileController -> UserProfileView : showSuccessMessage("Premium Subscription Canceled successfully")
+
+@enduml

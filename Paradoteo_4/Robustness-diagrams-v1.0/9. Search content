@@ -1,0 +1,32 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Γενικός Χρήστης" as GX
+
+boundary "Μπάρα Αναζήτησης" as B_SB
+boundary "Οθόνη Αποτελεσμάτων Αναζήτησης" as B_RES
+
+control "Αναζήτηση περιεχομένου" as C_SR
+control "Εμφάνιση όλων των\nΆλμπουμ, Τραγουδιών, Καλλιτεχνών ή\nΛίστων Αναπαραγωγής που βρέθηκαν" as C_RES
+control "Εμφάνιση μηνύματος σφάλματος" as C_ERR #red
+
+entity "Database" as E_DB
+entity "Playlist" as E_PL
+entity "Song" as E_SG
+entity "Artist" as E_ART
+entity "Album" as E_ALB
+
+GX --> B_SB : Εισαγωγή τίτλου\nκαι επιλογή αναζήτησης\nΆλμπουμ, Τραγουδιού,\nΚαλλιτέχνη ή Λίστας Αναπαραγωγής
+B_SB --> C_SR
+C_SR --> E_DB
+C_SR --> C_RES : Η αναζήτηση ήταν επιτυχής
+C_RES --> E_PL
+C_RES --> E_SG
+C_RES --> E_ART
+C_RES --> E_ALB
+C_RES --> B_RES
+C_SR -[#red]-> C_ERR : <font color="red">Η αναζήτηση απέτυχε</font>
+C_ERR -[#red]-> B_RES
+B_RES --> GX
+@enduml
