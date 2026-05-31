@@ -16,6 +16,7 @@ public class MusicPlayerController {
     private boolean isShuffled = false;
     private java.util.List<Song> shuffledSongOrder;
     private int currentSongIndex;
+    private boolean isPlaying = false;
 
     public MusicPlayerController(MusicPlayerService musicPlayerService, EventBus eventBus){
         this.musicPlayerService = musicPlayerService;
@@ -58,7 +59,9 @@ public class MusicPlayerController {
 
     public void onPlayPauseButtonClicked() {
         System.out.println("Play/Pause button clicked");
-        System.out.println("Playing song: " + currentSongOrder.get(currentSongIndex).getTitle());
+        
+        System.out.println((isPlaying ? "Playing song: " : "Paused Song: ")+ currentSongOrder.get(currentSongIndex).getTitle());
+        isPlaying = !isPlaying;
     }
 
     public void onPreviousButtonClicked() {
