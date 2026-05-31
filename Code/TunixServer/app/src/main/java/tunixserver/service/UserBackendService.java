@@ -76,7 +76,7 @@ public class UserBackendService {
                 System.out.println("START PREMIUM SERVICE");
                 System.out.println("User ID: " + userId);
 
-                UserEntity user = userRepo.findById(userId)
+                UserEntity user = userRepo.findByAccount_AccountId(userId)
                         .orElseThrow(() -> new RuntimeException("User not found"));
 
                 System.out.println("Found user: " + user.getId());
