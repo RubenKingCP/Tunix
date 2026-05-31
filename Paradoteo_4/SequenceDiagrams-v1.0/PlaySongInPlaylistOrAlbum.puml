@@ -1,0 +1,67 @@
+@startuml PlaySongInPlaylistOrAlbum
+
+title Play Song in Playlist or Album
+
+actor User
+
+participant MusicView
+participant MusicController
+participant MusicPlayerView
+participant MusicPlayerController
+participant SongService
+participant SongApiClient
+participant ApiClient
+participant SongBackendController
+participant SongBackendService
+participant SongBackendRepository
+
+participant EventBus
+
+
+activate MusicPlayerView
+ref over MusicView, MusicController
+SelectPlaylist / SelectAlbum && select Album
+end ref
+activate MusicView
+User -> MusicView : clicks on song
+MusicView -> MusicController : onSongSelected(songOrder) 
+'SongOrder is the list of songs to be played
+activate MusicController
+MusicController -> EventBus : publish(SongSelectedEvent,songOrder)
+activate EventBus
+EventBus -> MusicPlayerController : setCurrentSongOrder(songOrder)
+activate MusicPlayerController
+alt User clicks shuffle toggle
+    User -> MusicPlayerView : clicks on shuffle
+    MusicPlayerView -> MusicPlayerController : selectRandomSong()
+end
+User -> MusicPlayerView : clicks on "Play"
+MusicPlayerView -> MusicPlayerController : getSongById(songId)
+MusicPlayerController -> SongService : getSongById(songId)
+activate SongService
+SongService -> SongApiClient : getSongById(songId)
+activate SongApiClient
+SongApiClient -> ApiClient : post(/songs/getById, songId)
+activate ApiClient
+ApiClient -> SongBackendController : getSongById(songId)
+activate SongBackendController
+SongBackendController -> SongBackendService : getSongById(songId)
+activate SongBackendService
+SongBackendService -> SongBackendRepository : getSongById(songId)
+activate SongBackendRepository
+SongBackendRepository --> SongBackendService : return song
+deactivate SongBackendRepository
+SongBackendService --> SongBackendController : return song
+deactivate SongBackendService
+SongBackendController --> ApiClient : return song
+deactivate SongBackendController
+ApiClient --> SongApiClient : return song
+deactivate ApiClient
+SongApiClient --> SongService : return song
+deactivate SongApiClient
+SongService --> MusicPlayerController : return song
+deactivate SongService
+MusicPlayerController ->> MusicPlayerView : updateView()
+
+
+@enduml

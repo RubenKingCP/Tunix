@@ -1,0 +1,68 @@
+@startuml RemoveSongFromPlaylist
+
+title Remove Song From Playlist
+
+actor User
+
+participant MusicView
+participant MusicController
+participant PlaylistService
+participant PlaylistApi
+participant ApiClient
+participant PlaylistBackendController
+participant PlaylistBackendService
+participant PlaylistBackendRepository
+
+
+ref over MusicView, MusicController
+SelectPlaylist
+end ref
+activate MusicView
+User -> MusicView : click on three dots of a song in the playlist
+
+
+    MusicView -> MusicView : showSongContextMenu()
+    activate MusicView
+    User -> MusicView : click "Remove Song From Playlist"
+    MusicView -> MusicController : checkIfUserIsOwner(playlist)
+    activate MusicController
+    MusicController -> PlaylistService : checkIfUserIsOwner(playlist)
+    activate PlaylistService
+    PlaylistService --> MusicController : return isOwner
+    deactivate PlaylistService
+    MusicController --> MusicView : return isOwner
+    deactivate MusicController
+    deactivate MusicView
+    alt isOwner
+    MusicView -> MusicController : removeSongFromPlaylist(playlistId, songId)
+    activate MusicController
+    MusicController -> PlaylistService : removeSongFromPlaylist(playlistId, songId)
+    activate PlaylistService
+    PlaylistService -> PlaylistApi : removeSongFromPlaylist(playlistId, songId)
+    activate PlaylistApi
+    PlaylistApi -> ApiClient : post(playlist/removeSong, playlistId, songId)
+    activate ApiClient
+    ApiClient -> PlaylistBackendController : removeSongFromPlaylist(playlistId, songId)
+    activate PlaylistBackendController
+    PlaylistBackendController -> PlaylistBackendService : removeSongFromPlaylist(playlistId, songId)
+    activate PlaylistBackendService
+    PlaylistBackendService -> PlaylistBackendRepository : removeSongFromPlaylist(playlistId, songId)
+    activate PlaylistBackendRepository
+    PlaylistBackendRepository --> PlaylistBackendService : return succes/fail
+    deactivate PlaylistBackendRepository
+    PlaylistBackendService --> PlaylistBackendController : return succes/fail
+    deactivate PlaylistBackendService
+    PlaylistBackendController --> ApiClient : return succes/fail
+    deactivate PlaylistBackendController
+    ApiClient --> PlaylistApi : return succes/fail
+    deactivate ApiClient
+    PlaylistApi --> PlaylistService : return succes/fail
+    deactivate PlaylistApi
+    PlaylistService --> MusicController : return succes/fail
+    deactivate PlaylistService
+    deactivate MusicController
+    else !isOwner
+    MusicView -> MusicView : showErrorMessage("Only the playlist owner can remove songs")
+    
+    end
+@enduml

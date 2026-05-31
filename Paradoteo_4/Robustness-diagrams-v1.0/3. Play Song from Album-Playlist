@@ -1,0 +1,48 @@
+@startuml UC_SelectPlaylist_Library
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Γενικός Χρήστης" as GX
+
+boundary "Οθόνη Playlist ή Album" as B_PL
+boundary "Οθόνη Αναπαραγωγής\nΤραγουδιού" as B_PLY
+boundary "Οθόνη Τρέχοντος Τραγουδιού" as B_CPLY
+
+control "Εμφάνιση\nΛίστας Αναπαραγωγής\nή Άλμπουμ" as  C_DPL
+control "Εμφάνιση οθόνης\nΑναπαραγωγής Τραγουδιού" as C_PLY
+control "Άντληση όλων των αρχείων μουσικής" as C_SG
+control "Εμφάνιση δεδομένων\nτραγουδιού" as C_SGD
+control "Αναπαραγωγή\nτραγουδιού" as C_PLAY
+control "Αλλαγή σειράς τραγουδιών" as C_SH #red
+
+entity "Playlist" as E_PL
+entity "Album" as E_ALB
+entity "Database" as E_DB
+entity "Song" as E_SG
+
+usecase "Επιλογή Λίστας\nΑναπαραγωγής" as UC_SPL
+usecase "Αναζήτηση Άλμπουμ" as UC_ALB
+
+C_DPL --> UC_SPL
+C_DPL --> UC_ALB : "Επιλογή Άλμπουμ"
+C_DPL --> E_PL
+C_DPL --> E_ALB
+C_DPL --> B_PL
+GX --> B_PL :"Επιλογή Τραγουδιού"
+B_PL --> C_PLY
+C_PLY --> B_PLY
+GX --> B_PLY : "Επιλογή <<Play>>"
+B_PLY --> C_SG
+C_SG --> E_DB
+C_SG --> E_SG
+C_SG --> C_PLAY
+C_SG --> C_SGD
+C_SGD --> B_CPLY
+B_CPLY --> GX
+GX -[#red]-> B_PLY : <font color="red">Επιλογή <<Shuffle Play>></font>
+B_PLY -[#red]->  C_SG
+C_SG -[#red]-> C_SH
+C_SH -[#red]-> C_PLAY
+C_SH -[#red]-> C_SGD
+
+@enduml

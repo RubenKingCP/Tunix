@@ -1,0 +1,42 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Γενικός Χρήστης" as GX
+
+boundary "Πάνω μπάρα" as B_UB
+boundary "Οθόνη Προφίλ" as B_PF
+boundary "Οθόνη Αίτησης Καλλιτέχνη" as B_RQ
+boundary "Popup επιτυχίας" as B_SUCCESS
+
+control "Έλεγχος: Είναι Καλλιτέχνης?" as C_IA
+control "Εμφάνιση οθόνης προφίλ\nμε την επιλογή\n<<Apply for Artist>>" as C_PWA
+control "Εμφάνιση οθόνης προφίλ\nχωρίς την επιλογή\n<<Apply for Artist>>" as C_PWOA #red
+control "Εμφάνιση\nερωτηματολογίου" as C_SHQ
+control "Αποθήκευση αιτήματος στη βάση,\nκαι ενημέρωση του Γενικού Χρήστη" as C_SVRQ
+
+entity "Database" as E_DB
+entity "UserToArtistRequest" as E_REQ
+entity "User" as E_USR
+
+usecase "Έγκριση/Απόρριψη\nΛογαριασμού Καλλιτέχνη" as UC_RESP
+
+GX --> B_UB : Επιλογή προφίλ
+B_UB --> C_IA
+C_IA --> E_USR
+C_IA --> C_PWA : Ο Γενικός Χρήστης\nδεν είναι Καλλιτέχνης
+C_PWA --> B_PF
+GX --> B_PF : Επιλογή <<Apply for Artist>>
+B_PF --> C_SHQ
+C_SHQ --> B_RQ
+GX --> B_RQ : Συμπλήρωση ερωτηματολογίου\nκαι Submit
+B_RQ --> C_SVRQ
+C_SVRQ --> E_REQ
+C_SVRQ --> E_DB
+C_SVRQ --> B_SUCCESS
+B_SUCCESS --> GX
+C_SVRQ --> UC_RESP
+C_IA -[#red]-> C_PWOA : <font color="red">Ο Γενικός Χρήστης</font>\n<font color="red">είναι ήδη Καλλιτέχνης</font>
+C_PWOA -[#red]-> B_PF
+B_PF -[#red]-> GX : <font color="red">Ο Γενικός Χρήστης δεν έχει την επιλογή <<Apply for</font>\n<font color="red">Artist>> (άρα δεν μπορεί να την επιλέξει)</font>
+@enduml

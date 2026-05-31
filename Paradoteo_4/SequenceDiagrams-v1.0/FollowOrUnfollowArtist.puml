@@ -1,0 +1,110 @@
+@startuml FollowOrUnfollowArtist
+
+title Follow or Unfollow Artist 
+
+actor User
+
+participant MainPanel
+participant SearchView
+participant SearchController
+participant ArtistProfileView
+participant ArtistProfileController
+participant ArtistService
+participant ArtistApi
+participant ArtistFollowService
+participant ArtistFollowApi
+participant UserService
+participant UserApi
+participant ApiClient
+participant ArtistFollowBackendController
+participant ArtistFollowBackendService
+participant ArtistFollowBackendRepository
+participant ArtistBackendController
+participant ArtistBackendService
+participant ArtistBackendRepository
+
+
+participant EventBus
+
+ref over SearchView, SearchController
+SearchArtist
+end ref
+activate SearchView
+User -> SearchView : clicks on Artist
+SearchView -> SearchController : onArtistClicked()
+deactivate SearchView
+activate SearchController
+SearchController -> EventBus : publish SwitchMainController(ArtistProfileController), artistId 
+deactivate SearchController
+activate EventBus
+EventBus -> MainPanel : switchMainController(ArtistProfileController,artistId)
+deactivate EventBus
+activate MainPanel
+create ArtistProfileController
+MainPanel -->> ArtistProfileController : new(artistId)
+activate ArtistProfileController
+deactivate MainPanel
+ArtistProfileController -> ArtistService : getArtistDataAndFollowStatus(artistId,userId)
+activate ArtistService
+ArtistService -> ArtistApi : getArtistDataAndFollowStatus(artistId,userId)
+activate ArtistApi
+ArtistApi -> ApiClient : post(artist/getProfileAndFollow, artistId,userId)
+activate ApiClient
+ApiClient -> ArtistBackendController : getArtistDataAndFollowStatus(artistId,userId)
+activate ArtistBackendController
+ArtistBackendController -> ArtistBackendService : getArtistDataAndFollowStatus(artistId,userId)
+activate ArtistBackendService
+ArtistBackendService -> ArtistBackendRepository : getArtistDataAndFollowStatus(artistId,userId)
+activate ArtistBackendRepository
+ArtistBackendRepository --> ArtistBackendService : return artist data and follow status
+deactivate ArtistBackendRepository
+ArtistBackendService --> ArtistBackendController : return artist data and follow status
+deactivate ArtistBackendService
+ArtistBackendController --> ApiClient : return artist data and follow status
+deactivate ArtistBackendController
+ApiClient --> ArtistApi : return artist data and follow status
+deactivate ApiClient
+ArtistApi --> ArtistService : return artist data and follow status
+deactivate ArtistApi
+ArtistService --> ArtistProfileController : return artist data and follow status
+deactivate ArtistService
+create ArtistProfileView
+ArtistProfileController -->> ArtistProfileView : new(artistData,userFollowStatus)
+activate ArtistProfileView
+alt User does not follow the artist
+    User -> ArtistProfileView : clicks on follow
+    
+else User follows the artist
+    User -> ArtistProfileView : clicks on Unfollow
+end
+ArtistProfileView -> ArtistProfileController : updateFollowStatus(newFollowStatus,artistId,userId)
+ArtistProfileController -> ArtistFollowService : updateFollowStatus(newFollowStatus,artistId,userId)
+activate ArtistFollowService
+ArtistFollowService -> ArtistFollowApi : updateFollowStatus(newFollowStatus,artistId,userId)
+activate ArtistFollowApi
+ArtistFollowApi -> ApiClient : post(artistFollow/updateFollowStatus, artistId,userId,newFollowStatus)
+activate ApiClient
+ApiClient -> ArtistFollowBackendController : updateFollowStatus(newFollowStatus,artistId,userId)
+activate ArtistFollowBackendController
+ArtistFollowBackendController -> ArtistFollowBackendService : updateFollowStatus(newFollowStatus,artistId,userId)
+activate ArtistFollowBackendService
+ArtistFollowBackendService -> ArtistFollowBackendRepository : updateFollowStatus(newFollowStatus,artistId,userId)
+activate ArtistFollowBackendRepository
+ArtistFollowBackendRepository --> ArtistFollowBackendService : return success/fail
+deactivate ArtistFollowBackendRepository
+ArtistFollowBackendService --> ArtistFollowBackendController : return success/fail
+deactivate ArtistFollowBackendService
+ArtistFollowBackendController --> ApiClient : return success/fail
+deactivate ArtistFollowBackendController
+ApiClient --> ArtistFollowApi : return success/fail
+deactivate ApiClient
+ArtistFollowApi --> ArtistFollowService : return success/fail
+deactivate ArtistFollowApi
+ArtistFollowService --> ArtistProfileController : return success/fail
+deactivate ArtistFollowService
+alt success
+    ArtistProfileController -> ArtistProfileView : showSuccessMessage()
+else fail
+    ArtistProfileController -> ArtistProfileView : showFailMessage()
+
+@enduml

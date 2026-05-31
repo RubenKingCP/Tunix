@@ -1,0 +1,21 @@
+@startuml
+skinparam defaultFontSize 12
+left to right direction
+
+actor "Premium Χρήστης" as GX
+
+boundary "Οθόνη Προφίλ" as B_PRPF
+boundary "Οθόνη επιτυχίας" as B_SUCCESS
+
+control "Ενημέρωση βάσης για την ακύρωση της συνδρομής" as C_UPDB
+control "Εμφάνιση οθόνης επιτυχίας" as C_SUCCESS
+
+entity "Database" as E_DB
+
+GX --> B_PRPF : "Επιλογή <<Cancel Premium>>"
+B_PRPF --> C_UPDB
+C_UPDB --> E_DB
+C_UPDB --> C_SUCCESS
+C_SUCCESS --> B_SUCCESS
+B_SUCCESS --> GX
+@enduml
