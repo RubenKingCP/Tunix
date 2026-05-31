@@ -6,9 +6,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 import tunix.dto.request.SongRequest;
+import tunix.model.account.Account;
 import tunix.navigation.events.EventBus;
 import tunix.navigation.events.SongUploadedEvent;
 import tunix.service.SongService;
+import tunix.service.auth.SessionService;
 import tunix.ui.views.main.center.UploadSongView;
 
 public class UploadSongController {
@@ -162,11 +164,17 @@ public class UploadSongController {
         //-------------------------------------------------
         // REQUEST
         //-------------------------------------------------
-        //TODO: Add get the user id session
+        long artist_id;
+        try {
+            artist_id = SessionService.Instance.getArtist().getId();
+        } catch (Exception e) {
+            artist_id = 3L;
+        }
+
         SongRequest songRequest =
                 new SongRequest(
                         title,
-                        3L,
+                        artist_id,
                         selectedSongFile.getAbsolutePath(),
                         0, // duration placeholder
                         null
